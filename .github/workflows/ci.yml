@@ -1,0 +1,104 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  html-validate:
+    name: html-validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install html-validate
+        run: npm install --no-save html-validate@9
+      - name: Validate HTML
+        run: |
+          npx html-validate \
+            "index.html" \
+            "wizards/*/index.html"
+
+  link-check:
+    name: lychee link check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --accept 200,204,206,301,302,403,429
+            --exclude-mail
+            --exclude-path wizards-raw
+            --exclude-path shared/vendor
+            "**/*.html"
+            "**/*.md"
+          fail: true
+
+  pa11y:
+    name: pa11y accessibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install pa11y + http-server
+        run: npm install --no-save pa11y@8 http-server@14
+      - name: Serve site
+        run: |
+          npx http-server . -p 8080 -s &
+          sleep 3
+      - name: Run pa11y (WCAG2AA)
+        run: |
+          set -e
+          for url in \
+            http://localhost:8080/ \
+            http://localhost:8080/wizards/security-controls/ \
+            http://localhost:8080/wizards/controls-assessment/ \
+            http://localhost:8080/wizards/hierarchy-cli/ \
+            http://localhost:8080/wizards/layer-matrix/ \
+            http://localhost:8080/wizards/srf-stress/; do
+            echo "::group::pa11y $url"
+            npx pa11y --standard WCAG2AA --runner axe "$url"
+            echo "::endgroup::"
+          done
+
+  lighthouse:
+    name: lighthouse CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install lhci + http-server
+        run: npm install --no-save @lhci/cli@0.14 http-server@14
+      - name: Serve site
+        run: |
+          npx http-server . -p 8080 -s &
+          sleep 3
+      - name: Run Lighthouse CI
+        run: |
+          npx lhci autorun \
+            --collect.url=http://localhost:8080/ \
+            --collect.url=http://localhost:8080/wizards/security-controls/ \
+            --collect.url=http://localhost:8080/wizards/controls-assessment/ \
+            --collect.url=http://localhost:8080/wizards/hierarchy-cli/ \
+            --collect.url=http://localhost:8080/wizards/layer-matrix/ \
+            --collect.url=http://localhost:8080/wizards/srf-stress/ \
+            --collect.numberOfRuns=1 \
+            --upload.target=temporary-public-storage \
+            --assert.preset=lighthouse:no-pwa \
+            --assert.assertions.categories:accessibility=0.9 \
+            --assert.assertions.categories:best-practices=0.9 \
+            --assert.assertions.categories:seo=0.9
