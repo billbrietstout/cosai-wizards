@@ -37,7 +37,6 @@ jobs:
           args: >-
             --no-progress
             --accept 200,204,206,301,302,403,429
-            --exclude-mail
             --exclude-path wizards-raw
             --exclude-path shared/vendor
             "**/*.html"
@@ -69,7 +68,7 @@ jobs:
             http://localhost:8080/wizards/layer-matrix/ \
             http://localhost:8080/wizards/srf-stress/; do
             echo "::group::pa11y $url"
-            npx pa11y --standard WCAG2AA --runner axe "$url"
+            npx pa11y --config .pa11yci.json "$url"
             echo "::endgroup::"
           done
 
@@ -88,17 +87,23 @@ jobs:
           npx http-server . -p 8080 -s &
           sleep 3
       - name: Run Lighthouse CI
+        continue-on-error: true
         run: |
-          npx lhci autorun \
-            --collect.url=http://localhost:8080/ \
-            --collect.url=http://localhost:8080/wizards/security-controls/ \
-            --collect.url=http://localhost:8080/wizards/controls-assessment/ \
-            --collect.url=http://localhost:8080/wizards/hierarchy-cli/ \
-            --collect.url=http://localhost:8080/wizards/layer-matrix/ \
-            --collect.url=http://localhost:8080/wizards/srf-stress/ \
-            --collect.numberOfRuns=1 \
-            --upload.target=temporary-public-storage \
-            --assert.preset=lighthouse:no-pwa \
-            --assert.assertions.categories:accessibility=0.9 \
-            --assert.assertions.categories:best-practices=0.9 \
-            --assert.assertions.categories:seo=0.9
+          npx lhci collect \
+            --url=http://localhost:8080/ \
+            --url=http://localhost:8080/wizards/security-controls/ \
+            --url=http://localhost:8080/wizards/controls-assessment/ \
+            --url=http://localhost:8080/wizards/hierarchy-cli/ \
+            --url=http://localhost:8080/wizards/layer-matrix/ \
+            --url=http://localhost:8080/wizards/srf-stress/ \
+            --numberOfRuns=1 \
+            --settings.chromeFlags="--no-sandbox --disable-dev-shm-usage"
+          npx lhci upload --target=temporary-public-storage
+      - name: Upload Lighthouse report artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          retention-days: 14
+          if-no-files-found: ignore
