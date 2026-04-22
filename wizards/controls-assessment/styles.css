@@ -85,7 +85,7 @@
   font-weight: 700;
   flex-shrink: 0;
   background: var(--slate-200);
-  color: var(--slate-500);
+  color: var(--slate-700);
   transition: background 0.2s, color 0.2s;
 }
 .phase-num.active { background: var(--cosai-blue); color: #fff; }
@@ -93,11 +93,11 @@
 .phase-num.done::after { content: '✓'; }
 .phase-num.done .phase-num-text { display: none; }
 .phase-title { font-size: 1rem; font-weight: 600; color: var(--slate-800); }
-.phase-meta { font-size: 0.78rem; color: var(--slate-400); margin-top: 2px; }
+.phase-meta { font-size: 0.78rem; color: var(--slate-600); margin-top: 2px; }
 .phase-chevron {
   margin-left: auto;
   width: 18px; height: 18px;
-  color: var(--slate-400);
+  color: var(--slate-500);
   transition: transform 0.2s;
   flex-shrink: 0;
 }
@@ -117,7 +117,8 @@
 .phase-card[data-layer="l5"] { border-left: 3px solid var(--l5); }
 
 .section-intro {
-  background: var(--slate-100);
+  background: #fff;
+  border: 1px solid var(--slate-200);
   border-radius: var(--radius);
   padding: 14px 16px;
   margin: 16px 0 20px;
@@ -399,8 +400,11 @@
   font-weight: 700;
   width: 30px;
   flex-shrink: 0;
-  color: #94a3b8;
+  color: #cbd5e1;
 }
+/* Override inline color="var(--lN)" on dark panel: accent-on-white shades
+   don't clear 4.5:1 on the navy live-panel, so we force a light slate. */
+.live-panel .layer-bar-label { color: #cbd5e1 !important; }
 .layer-bar-track {
   flex: 1;
   height: 6px;
@@ -443,7 +447,7 @@
   justify-content: center;
   font-size: 0.6rem;
   font-weight: 700;
-  color: var(--slate-500);
+  color: var(--slate-300);
   transition: background 0.3s, color 0.3s;
 }
 .owasp-mini-cell.oc-yes { background: #15803d; color: #dcfce7; }

@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Security Hierarchy — NIST → Directive → SRG → STIG → CCI</title><style>
+<title>Enterprise Security Hierarchy — NIST → Directive → SRG → STIG → CCI</title>
+<link rel="stylesheet" href="../../shared/styles.css">
+<style>
 :root {
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, ui-sans-serif, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -11,9 +13,9 @@
   --color-background-secondary: #f8fafc;
   --color-background-tertiary: #fafaf9;
   --color-background-info: hsl(217 70% 95%);
-  --color-text-primary: #1e293b;
-  --color-text-secondary: #64748b;
-  --color-text-tertiary: #94a3b8;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-tertiary: #475569;
   --color-text-info: hsl(217 80% 46%);
   --color-border-primary: #94a3b8;
   --color-border-secondary: #e2e8f0;
@@ -28,9 +30,7 @@
 
 body {
   font-family: var(--font-sans);
-  background: var(--color-background-tertiary);
-  background-image: radial-gradient(circle, rgba(0,0,0,0.025) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-color: var(--color-background-tertiary);
   color: var(--color-text-primary);
   min-height: 100vh;
 }
@@ -274,6 +274,8 @@ body {
 </head>
 <body>
 
+<a class="skip-link" href="#main">Skip to content</a>
+
 <header class="platform-header">
   <div class="platform-header-inner">
     <a href="../../" class="platform-wordmark">CoSAI Wizards</a>
@@ -288,7 +290,7 @@ body {
   </div>
 </header>
 
-<div class="page-wrap">
+<main id="main" class="page-wrap">
 <div class="cli-wrap">
   <div class="cli-header">
     <span class="cli-title">ENTERPRISE SECURITY HIERARCHY</span>
@@ -311,7 +313,7 @@ body {
 
   <div id="layers-container"></div>
 </div>
-</div>
+</main>
 
 <script>
 const layers = [

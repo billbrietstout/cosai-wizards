@@ -3,15 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CoSAI Framework Stress Test</title><style>
+<title>CoSAI Framework Stress Test</title>
+<link rel="stylesheet" href="../../shared/styles.css">
+<style>
   :root {
     --bg: #fafaf9;
     --surface: #ffffff;
     --border: #e2e8f0;
     --border-strong: #cbd5e1;
     --text: #1e293b;
-    --muted: #64748b;
-    --subtle: #94a3b8;
+    --muted: #475569;
+    --subtle: #334155;
     --navy: #0e174d;
     --navy-accent: #1f4af5;
     --navy-light: #eef2ff;
@@ -52,9 +54,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--bg);
-    background-image: radial-gradient(circle, rgba(0,0,0,0.025) 1px, transparent 1px);
-    background-size: 24px 24px;
+    background-color: var(--bg);
     color: var(--text);
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     font-weight: 400;
@@ -231,7 +231,7 @@
     box-shadow: 0 0 0 3px rgba(31,74,245,0.08);
     background: white;
   }
-  textarea::placeholder { color: var(--subtle); }
+  textarea::placeholder { color: var(--text); opacity: 1; }
 
   .run-row {
     display: flex;
@@ -511,6 +511,8 @@
 </head>
 <body>
 
+<a class="skip-link" href="#main">Skip to content</a>
+
 <header>
   <div class="header-inner">
     <a href="../../" class="header-wordmark">CoSAI Wizards</a>
@@ -525,7 +527,7 @@
   </div>
 </header>
 
-<main>
+<main id="main">
   <div class="hero">
     <div class="hero-eyebrow">COSAI SHARED RESPONSIBILITY FRAMEWORK</div>
     <h1>Is the CoSAI framework<br><em>actually functional?</em></h1>

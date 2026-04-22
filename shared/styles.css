@@ -40,11 +40,12 @@
   --status-na-br:      #cbd5e1;
 
   /* Layer accents — kept subdued for print / accessibility */
-  --l1: #16a34a; --l1-bg: #f0fdf4; --l1-border: #bbf7d0; --l1-text: #14532d;
-  --l2: #2563eb; --l2-bg: #eff6ff; --l2-border: #bfdbfe; --l2-text: #1e3a8a;
-  --l3: #ea580c; --l3-bg: #fff7ed; --l3-border: #fed7aa; --l3-text: #7c2d12;
-  --l4: #7c3aed; --l4-bg: #faf5ff; --l4-border: #e9d5ff; --l4-text: #4c1d95;
-  --l5: #0891b2; --l5-bg: #ecfeff; --l5-border: #a5f3fc; --l5-text: #164e63;
+  /* Layer accents: AA-compliant on white (ratio >= 4.5:1 for body text). */
+  --l1: #15803d; --l1-bg: #f0fdf4; --l1-border: #bbf7d0; --l1-text: #14532d;
+  --l2: #1d4ed8; --l2-bg: #eff6ff; --l2-border: #bfdbfe; --l2-text: #1e3a8a;
+  --l3: #c2410c; --l3-bg: #fff7ed; --l3-border: #fed7aa; --l3-text: #7c2d12;
+  --l4: #6d28d9; --l4-bg: #faf5ff; --l4-border: #e9d5ff; --l4-text: #4c1d95;
+  --l5: #0e7490; --l5-bg: #ecfeff; --l5-border: #a5f3fc; --l5-text: #164e63;
 
   /* Layout */
   --radius-sm:   4px;
