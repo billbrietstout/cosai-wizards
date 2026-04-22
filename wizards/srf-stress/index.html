@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoSAI Framework Stress Test</title><style>
+  :root {
+    --bg: #fafaf9;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --text: #1e293b;
+    --muted: #64748b;
+    --subtle: #94a3b8;
+    --navy: #0e174d;
+    --navy-accent: #1f4af5;
+    --navy-light: #eef2ff;
+
+    --l1-bg: hsl(142 50% 94%);
+    --l1-border: hsl(142 45% 70%);
+    --l1-text: hsl(142 55% 24%);
+    --l1-accent: hsl(142 55% 36%);
+
+    --l2-bg: hsl(217 70% 95%);
+    --l2-border: hsl(217 55% 70%);
+    --l2-text: hsl(217 65% 26%);
+    --l2-accent: hsl(217 80% 46%);
+
+    --l3-bg: hsl(21 80% 95%);
+    --l3-border: hsl(21 60% 70%);
+    --l3-text: hsl(21 70% 26%);
+    --l3-accent: hsl(21 85% 44%);
+
+    --l4-bg: hsl(330 55% 95%);
+    --l4-border: hsl(330 45% 70%);
+    --l4-text: hsl(330 55% 26%);
+    --l4-accent: hsl(330 65% 44%);
+
+    --l5-bg: hsl(270 55% 95%);
+    --l5-border: hsl(270 45% 70%);
+    --l5-text: hsl(270 55% 26%);
+    --l5-accent: hsl(270 60% 46%);
+
+    --ok: hsl(142 55% 24%);
+    --ok-bg: hsl(142 50% 94%);
+    --warn: hsl(38 92% 30%);
+    --warn-bg: hsl(38 92% 94%);
+    --gap: hsl(0 72% 35%);
+    --gap-bg: hsl(0 72% 95%);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(circle, rgba(0,0,0,0.025) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--text);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--navy);
+    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .header-wordmark {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  .header-sep {
+    width: 1px;
+    height: 18px;
+    background: rgba(255,255,255,0.2);
+  }
+  .header-tool {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-weight: 400;
+  }
+  .header-back {
+    margin-left: auto;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.15s;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .header-back:hover { color: rgba(255,255,255,0.9); }
+  .header-back svg { width: 12px; height: 12px; }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+  }
+
+  .hero { margin-bottom: 40px; }
+  .hero-eyebrow {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--navy-accent);
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(28px, 4.5vw, 44px);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--navy-accent);
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 540px;
+    font-weight: 300;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--subtle);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── SCENARIO GRID ── */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .scenario-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+  .scenario-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-accent, var(--navy-accent));
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .scenario-card:hover { border-color: var(--border-strong); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .scenario-card:hover::before, .scenario-card.active::before { opacity: 1; }
+  .scenario-card.active { border-color: var(--border-strong); background: #fdfcfb; }
+  .scenario-card .icon { font-size: 18px; margin-bottom: 8px; }
+  .scenario-card .label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .scenario-card .desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+  /* ── INPUT AREA ── */
+  .input-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .input-box label {
+    display: block;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  textarea {
+    width: 100%;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    line-height: 1.6;
+  }
+  textarea:focus {
+    border-color: var(--navy-accent);
+    box-shadow: 0 0 0 3px rgba(31,74,245,0.08);
+    background: white;
+  }
+  textarea::placeholder { color: var(--subtle); }
+
+  .run-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .run-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--navy);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .run-btn:hover { background: #19267a; }
+  .run-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .run-btn .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .run-btn.loading .spinner { display: block; }
+  .run-btn.loading .btn-text { opacity: 0.7; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .rl-badge {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--surface);
+  }
+  .rl-badge.exhausted {
+    color: var(--gap);
+    border-color: hsl(0 72% 75%);
+    background: var(--gap-bg);
+  }
+
+  .error-msg {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--gap);
+    background: var(--gap-bg);
+    border: 1px solid hsl(0 72% 75%);
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: none;
+  }
+  .error-msg.visible { display: block; }
+
+  /* ── RESULTS ── */
+  #results { display: none; }
+  #results.visible { display: block; }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .results-header h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .verdict-badge {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .verdict-functional { background: var(--ok-bg); color: var(--ok); border: 1px solid hsl(142 45% 70%); }
+  .verdict-partial { background: var(--warn-bg); color: var(--warn); border: 1px solid hsl(38 92% 70%); }
+  .verdict-gaps { background: var(--gap-bg); color: var(--gap); border: 1px solid hsl(0 72% 75%); }
+
+  /* ── LAYERS GRID ── */
+  .layers-grid { display: grid; gap: 8px; margin-bottom: 28px; }
+  .layer-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: 190px 1fr 110px;
+    gap: 14px;
+    align-items: start;
+    transition: box-shadow 0.15s;
+  }
+  .layer-row:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .layer-name { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; color: var(--muted); }
+  .layer-name strong { display: block; font-size: 12px; color: var(--text); margin-bottom: 2px; font-weight: 500; }
+  .layer-finding { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .layer-status {
+    text-align: right;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .status-ok { background: var(--ok-bg); color: var(--ok); }
+  .status-warn { background: var(--warn-bg); color: var(--warn); }
+  .status-gap { background: var(--gap-bg); color: var(--gap); }
+
+  /* ── SCORE BARS ── */
+  .score-section { margin-bottom: 28px; }
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .score-label { font-size: 12px; color: var(--muted); width: 170px; flex-shrink: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .score-bar-bg {
+    flex: 1;
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    width: 0;
+  }
+  .score-val { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; color: var(--muted); width: 40px; text-align: right; }
+
+  /* ── THREE PANELS ── */
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 680px) { .three-col { grid-template-columns: 1fr; } }
+
+  .panel-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .panel-card h3 {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .panel-card h3.ok { color: var(--ok); }
+  .panel-card h3.warn { color: var(--warn); }
+  .panel-card h3.info { color: var(--navy-accent); }
+  .panel-card ul { list-style: none; }
+  .panel-card ul li {
+    font-size: 13px;
+    color: var(--muted);
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    line-height: 1.4;
+  }
+  .panel-card ul li:last-child { border-bottom: none; }
+  .panel-card ul li::before {
+    content: '·';
+    color: var(--border-strong);
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+
+  /* ── VERDICT BOX ── */
+  .verdict-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--navy-accent);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .verdict-box h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .verdict-box .summary-text {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ── ALT FRAMEWORKS ── */
+  .alt-models { margin-bottom: 28px; }
+  .alt-models h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: var(--text);
+  }
+  .model-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .model-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--mc, var(--navy-accent));
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .model-card .model-name { font-weight: 500; font-size: 14px; margin-bottom: 3px; color: var(--text); }
+  .model-card .model-origin {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    color: var(--subtle);
+    margin-bottom: 10px;
+  }
+  .model-card .model-desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; font-weight: 300; }
+  .model-card .model-vs {
+    font-size: 12px;
+    color: var(--text);
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 11px;
+    line-height: 1.5;
+  }
+  .model-card .model-verdict {
+    margin-top: 8px;
+    font-size: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--subtle);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+
+  @media (max-width: 640px) {
+    main { padding: 32px 20px 60px; }
+    .layer-row { grid-template-columns: 1fr; }
+    .layer-status { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="../../" class="header-wordmark">CoSAI Wizards</a>
+    <div class="header-sep"></div>
+    <div class="header-tool">CoSAI Stress Test</div>
+    <a href="../../" class="header-back">
+      <svg fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 9L4.5 6l3-3"/>
+      </svg>
+      Back to wizards
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="hero-eyebrow">COSAI SHARED RESPONSIBILITY FRAMEWORK</div>
+    <h1>Is the CoSAI framework<br><em>actually functional?</em></h1>
+    <p>Select a real-world AI incident scenario, run it through the five-layer framework, and see where accountability holds and where it breaks down.</p>
+  </div>
+
+  <div class="section-label">01 — Select a scenario</div>
+  <div class="scenario-grid">
+    <div class="scenario-card active" style="--card-accent:var(--l1-accent)" data-id="chatbot_pii" onclick="selectScenario(this)">
+      <div class="icon">💬</div>
+      <div class="label">Chatbot PII leak</div>
+      <div class="desc">Customer service bot exposes user data via prompt injection</div>
+    </div>
+    <div class="scenario-card" style="--card-accent:var(--l4-accent)" data-id="agentic_financial" onclick="selectScenario(this)">
+      <div class="icon">🤖</div>
+      <div class="label">Autonomous agent</div>
+      <div class="desc">L4 agent makes unauthorized financial transactions</div>
+    </div>
+    <div class="scenario-card" style="--card-accent:var(--l3-accent)" data-id="model_bias" onclick="selectScenario(this)">
+      <div class="icon">⚖️</div>
+      <div class="label">Model bias in hiring</div>
+      <div class="desc">AI screening tool produces discriminatory outcomes</div>
+    </div>
+    <div class="scenario-card" style="--card-accent:var(--l2-accent)" data-id="shadow_ai" onclick="selectScenario(this)">
+      <div class="icon">👤</div>
+      <div class="label">Shadow AI</div>
+      <div class="desc">Employees use unapproved AI tools with sensitive data</div>
+    </div>
+    <div class="scenario-card" style="--card-accent:var(--l5-accent)" data-id="supply_chain" onclick="selectScenario(this)">
+      <div class="icon">⛓️</div>
+      <div class="label">Supply chain attack</div>
+      <div class="desc">Compromised foundation model affects downstream apps</div>
+    </div>
+  </div>
+
+  <div class="input-box">
+    <label>02 — Or describe your own scenario</label>
+    <textarea id="customScenario" rows="3" placeholder="e.g. A generative AI medical diagnosis tool running on Azure gives a patient an incorrect treatment recommendation due to hallucination. The hospital, the platform provider, and the model vendor all disclaim responsibility..."></textarea>
+    <div class="run-row">
+      <button class="run-btn" id="runBtn" onclick="runTest()">
+        <div class="spinner"></div>
+        <span class="btn-text">Run framework test</span>
+      </button>
+      <span class="rl-badge" id="rlBadge">5/5 runs available</span>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <div id="results">
+    <div class="section-label">03 — Layer-by-layer analysis</div>
+    <div class="results-header">
+      <h2 id="resultsTitle">Analysis complete</h2>
+    </div>
+    <div class="layers-grid" id="layersGrid"></div>
+
+    <div class="section-label">04 — Framework scorecard</div>
+    <div class="score-section" id="scoreSection"></div>
+
+    <div class="three-col">
+      <div class="panel-card">
+        <h3 class="ok">WHAT WORKS</h3>
+        <ul id="strengths"></ul>
+      </div>
+      <div class="panel-card">
+        <h3 class="warn">GAPS FOUND</h3>
+        <ul id="gaps"></ul>
+      </div>
+      <div class="panel-card">
+        <h3 class="info">RECOMMENDATIONS</h3>
+        <ul id="recs"></ul>
+      </div>
+    </div>
+
+    <div class="verdict-box">
+      <h2>Overall verdict</h2>
+      <div class="summary-text" id="verdictText"></div>
+    </div>
+
+    <div class="alt-models">
+      <div class="section-label">05 — Alternative frameworks</div>
+      <h2>Is there a better model?</h2>
+      <div class="model-cards" id="modelCards"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── Rate limiting (5 runs / hour via localStorage) ──────────────────────────
+const RL_KEY = 'srf_runs';
+const RL_MAX = 5;
+const RL_WINDOW_MS = 60 * 60 * 1000;
+
+function getRLState() {
+  try { return JSON.parse(localStorage.getItem(RL_KEY) || '{"ts":[]}'); }
+  catch { return { ts: [] }; }
+}
+
+function checkRL() {
+  const now = Date.now();
+  const state = getRLState();
+  state.ts = (state.ts || []).filter(t => now - t < RL_WINDOW_MS);
+  const remaining = Math.max(0, RL_MAX - state.ts.length);
+  return { allowed: remaining > 0, remaining, state };
+}
+
+function consumeRL() {
+  const now = Date.now();
+  const { state } = checkRL();
+  state.ts.push(now);
+  try { localStorage.setItem(RL_KEY, JSON.stringify(state)); } catch {}
+}
+
+function updateRLBadge() {
+  const { remaining } = checkRL();
+  const badge = document.getElementById('rlBadge');
+  badge.textContent = `${remaining}/${RL_MAX} runs available this hour`;
+  if (remaining === 0) {
+    badge.classList.add('exhausted');
+  } else {
+    badge.classList.remove('exhausted');
+  }
+}
+
+// ── Scenario data ────────────────────────────────────────────────────────────
+const SCENARIOS = {
+  chatbot_pii: "A prompt injection attack bypasses guardrails in a customer-facing chatbot deployed via Azure OpenAI (PaaS model), exposing PII from a connected CRM database. The foundation model is GPT-4 from OpenAI, the application was built by an in-house dev team, and the deploying organization is a financial services firm subject to GDPR and SR 11-7.",
+  agentic_financial: "An L4 autonomous agent (human-on-loop) deployed for supplier contract negotiations using LangChain on AWS Bedrock autonomously commits the company to a $2M purchase order outside its authorized limit. The agentic framework provider, cloud provider, and the deploying organization all claim the others are responsible for the authorization boundary failure.",
+  model_bias: "An AI hiring screening tool built on a fine-tuned open-source model deployed via IaaS consistently rejects candidates from certain demographic groups. The application developer claims the bias is in the training data; the original model provider says the fine-tuner is responsible; the deploying HR organization claims they only configured thresholds.",
+  shadow_ai: "Employees across multiple departments are using ChatGPT, Claude, and DeepSeek with sensitive customer data and proprietary IP, without IT or security team knowledge. A regulatory audit reveals this constitutes unauthorized data processing under HIPAA. No organizational policy explicitly addressed AI tool usage.",
+  supply_chain: "A widely-used open-source foundation model on Hugging Face is found to contain a backdoor introduced during training that causes it to output malicious code under specific conditions. Hundreds of downstream applications built on this model are affected. No model card disclosed the vulnerability."
+};
+
+let selectedId = 'chatbot_pii';
+
+function selectScenario(el) {
+  document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedId = el.dataset.id;
+  document.getElementById('customScenario').value = '';
+  document.getElementById('results').classList.remove('visible');
+}
+
+// ── Main run function ────────────────────────────────────────────────────────
+async function runTest() {
+  const btn = document.getElementById('runBtn');
+  const errorEl = document.getElementById('errorMsg');
+  errorEl.classList.remove('visible');
+
+  const { allowed } = checkRL();
+  if (!allowed) {
+    showError('Rate limit reached. You can run up to 5 analyses per hour. Please try again later.');
+    return;
+  }
+
+  const customText = document.getElementById('customScenario').value.trim();
+  const scenario = customText || SCENARIOS[selectedId];
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+  btn.querySelector('.btn-text').textContent = 'Analyzing…';
+  document.getElementById('results').classList.remove('visible');
+
+  const prompt = `You are an AI governance expert. Evaluate this scenario against the CoSAI 5-Layer AI Shared Responsibility Framework. Be concise — keep all string values under 25 words each.
+
+SCENARIO: ${scenario}
+
+Respond ONLY with a JSON object, no markdown, no backticks, no explanation. Use this exact structure with short string values:
+{"verdict":"FUNCTIONAL","verdictSummary":"One or two sentences max.","layers":[{"layer":"L1 — AI Business & Usage","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L2 — AI Information","finding":"Short finding.","status":"WARN","owner":"Role name"},{"layer":"L3 — AI Application","finding":"Short finding.","status":"GAP","owner":"Role name"},{"layer":"L4 — AI Platform","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L5 — AI Model Provider","finding":"Short finding.","status":"OK","owner":"Role name"}],"scores":{"accountabilityClarity":75,"regulatoryAlignment":60,"incidentResponse":50,"agenticCoverage":40,"practicalEnforceability":55},"strengths":["Strength one.","Strength two.","Strength three."],"gaps":["Gap one.","Gap two.","Gap three."],"recommendations":["Rec one.","Rec two.","Rec three."],"alternativeFrameworks":[{"name":"NIST AI RMF","origin":"NIST, 2023","description":"Govern, Map, Measure, Manage risk functions.","vsCoSAI":"One sentence comparison for this scenario.","verdict":"COMPLEMENTARY"},{"name":"ISO 42001","origin":"ISO/IEC, 2023","description":"AI management system standard.","vsCoSAI":"One sentence comparison.","verdict":"COMPLEMENTARY"},{"name":"EU AI Act","origin":"EU, 2024","description":"Risk-tiered regulatory obligations.","vsCoSAI":"One sentence comparison.","verdict":"STRONGER HERE"},{"name":"Google SAIF","origin":"Google, 2023","description":"Secure AI Framework for AI-specific risks.","vsCoSAI":"One sentence comparison.","verdict":"COMPLEMENTARY"}]}
+
+Fill in real values for this scenario. verdict must be FUNCTIONAL, PARTIAL, or GAPS_FOUND. status must be OK, WARN, or GAP. framework verdict must be COMPLEMENTARY, STRONGER HERE, or WEAKER HERE.`;
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+  try {
+    consumeRL();
+    updateRLBadge();
+
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Server error ${res.status}`);
+    }
+
+    const data = await res.json();
+    if (!data || !Array.isArray(data.content) || data.content.length === 0) {
+      throw new Error('Unexpected response format from server.');
+    }
+    const raw = data.content.map(c => (c && typeof c.text === 'string' ? c.text : '')).join('');
+    const clean = raw.replace(/```json\s*|```/g, '').trim();
+    const result = JSON.parse(clean);
+    validateAndRender(result);
+
+  } catch (e) {
+    clearTimeout(timeoutId);
+    const msg = e.name === 'AbortError'
+      ? 'Analysis timed out after 30 seconds. Please try again.'
+      : (e.message || 'Analysis failed. Please try again.');
+    showError(msg);
+    console.error(e);
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    btn.querySelector('.btn-text').textContent = 'Run framework test';
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+// ── Response validation ──────────────────────────────────────────────────────
+function validateAndRender(r) {
+  if (!r || typeof r !== 'object') throw new Error('Invalid response structure.');
+  if (!Array.isArray(r.layers) || r.layers.length === 0) throw new Error('Missing layers in response.');
+  if (typeof r.verdictSummary !== 'string') throw new Error('Missing verdictSummary in response.');
+  if (!r.scores || typeof r.scores !== 'object') throw new Error('Missing scores in response.');
+  if (!Array.isArray(r.strengths) || !Array.isArray(r.gaps) || !Array.isArray(r.recommendations)) {
+    throw new Error('Missing strengths/gaps/recommendations in response.');
+  }
+  renderResults(r);
+}
+
+// ── Rendering ────────────────────────────────────────────────────────────────
+function sanitize(str) {
+  const d = document.createElement('div');
+  d.textContent = String(str || '');
+  return d.innerHTML;
+}
+
+const LAYER_COLORS = {
+  L1: { border: 'var(--l1-accent)', bg: 'var(--l1-bg)' },
+  L2: { border: 'var(--l2-accent)', bg: 'var(--l2-bg)' },
+  L3: { border: 'var(--l3-accent)', bg: 'var(--l3-bg)' },
+  L4: { border: 'var(--l4-accent)', bg: 'var(--l4-bg)' },
+  L5: { border: 'var(--l5-accent)', bg: 'var(--l5-bg)' }
+};
+
+const VERDICT_MAP = {
+  FUNCTIONAL:  { cls: 'verdict-functional', label: 'FUNCTIONAL' },
+  PARTIAL:     { cls: 'verdict-partial',    label: 'PARTIAL' },
+  GAPS_FOUND:  { cls: 'verdict-gaps',       label: 'GAPS FOUND' }
+};
+
+const MC_COLORS = {
+  'COMPLEMENTARY': 'var(--l2-accent)',
+  'STRONGER HERE': 'var(--l1-accent)',
+  'WEAKER HERE':   'var(--l3-accent)'
+};
+
+function renderResults(r) {
+  // Verdict badge
+  const header = document.getElementById('resultsTitle').parentElement;
+  const oldBadge = header.querySelector('.verdict-badge');
+  if (oldBadge) oldBadge.remove();
+  const vm = VERDICT_MAP[r.verdict] || { cls: 'verdict-partial', label: sanitize(r.verdict) };
+  const badge = document.createElement('span');
+  badge.className = `verdict-badge ${vm.cls}`;
+  badge.textContent = vm.label;
+  header.appendChild(badge);
+
+  // Layers
+  const lg = document.getElementById('layersGrid');
+  lg.innerHTML = r.layers.map(l => {
+    const key = (l.layer || '').match(/^(L\d)/)?.[1] || 'L1';
+    const lc = LAYER_COLORS[key] || LAYER_COLORS.L1;
+    const statusClass = { OK: 'status-ok', WARN: 'status-warn', GAP: 'status-gap' }[l.status] || 'status-warn';
+    const statusLabel = { OK: '✓ Covered', WARN: '⚠ Partial', GAP: '✗ Gap' }[l.status] || sanitize(l.status);
+    return `<div class="layer-row" style="border-left: 3px solid ${lc.border}; background: ${lc.bg}">
+      <div class="layer-name"><strong>${sanitize(l.layer)}</strong>${sanitize(l.owner || '')}</div>
+      <div class="layer-finding">${sanitize(l.finding)}</div>
+      <div class="layer-status ${statusClass}">${statusLabel}</div>
+    </div>`;
+  }).join('');
+
+  // Scores
+  const scoreLabels = {
+    accountabilityClarity: 'Accountability clarity',
+    regulatoryAlignment:   'Regulatory alignment',
+    incidentResponse:      'Incident response',
+    agenticCoverage:       'Agentic coverage',
+    practicalEnforceability: 'Enforceability'
+  };
+  const ss = document.getElementById('scoreSection');
+  ss.innerHTML = Object.entries(r.scores).map(([k, v]) => {
+    const num = Number(v) || 0;
+    const fillColor = num >= 70 ? 'var(--l1-accent)' : num >= 40 ? '#d97706' : 'var(--gap)';
+    return `<div class="score-row">
+      <div class="score-label">${scoreLabels[k] || sanitize(k)}</div>
+      <div class="score-bar-bg"><div class="score-bar-fill" data-val="${num}" style="background:${fillColor}"></div></div>
+      <div class="score-val">${num}/100</div>
+    </div>`;
+  }).join('');
+  setTimeout(() => {
+    document.querySelectorAll('.score-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.val + '%';
+    });
+  }, 80);
+
+  // Lists
+  const fill = (id, items) => {
+    document.getElementById(id).innerHTML = (Array.isArray(items) ? items : []).map(i => `<li>${sanitize(i)}</li>`).join('');
+  };
+  fill('strengths', r.strengths);
+  fill('gaps', r.gaps);
+  fill('recs', r.recommendations);
+
+  // Verdict text
+  document.getElementById('verdictText').textContent = r.verdictSummary || '';
+
+  // Alt frameworks
+  const mc = document.getElementById('modelCards');
+  mc.innerHTML = (Array.isArray(r.alternativeFrameworks) ? r.alternativeFrameworks : []).map(m => `
+    <div class="model-card" style="--mc:${MC_COLORS[m.verdict] || 'var(--navy-accent)'}">
+      <div class="model-name">${sanitize(m.name)}</div>
+      <div class="model-origin">${sanitize(m.origin)}</div>
+      <div class="model-desc">${sanitize(m.description)}</div>
+      <div class="model-vs">${sanitize(m.vsCoSAI)}</div>
+      <div class="model-verdict">${sanitize(m.verdict)}</div>
+    </div>`).join('');
+
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Init rate limit badge on load
+document.addEventListener('DOMContentLoaded', updateRLBadge);
+</script>
+</body>
+</html>

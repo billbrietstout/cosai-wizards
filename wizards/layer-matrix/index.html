@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layer Integration Matrix — CoSAI / Enterprise Security</title><style>
+:root {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, ui-sans-serif, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f8fafc;
+  --color-background-tertiary: #fafaf9;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #94a3b8;
+  --color-border-primary: #94a3b8;
+  --color-border-secondary: #e2e8f0;
+  --color-border-tertiary: #f1f5f9;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
+  --navy: #0e174d;
+  --navy-accent: #1f4af5;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-background-tertiary);
+  background-image: radial-gradient(circle, rgba(0,0,0,0.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+/* ── PLATFORM HEADER ── */
+.platform-header {
+  background: var(--navy);
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.platform-header-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.platform-wordmark {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+}
+.platform-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.2); }
+.platform-tool { font-size: 12px; color: rgba(255,255,255,0.6); font-family: var(--font-mono); }
+.platform-back {
+  margin-left: auto;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.15s;
+  font-family: var(--font-mono);
+}
+.platform-back:hover { color: rgba(255,255,255,0.9); }
+
+.page-wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+.page-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.1em;
+  font-family: var(--font-mono);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.wrap { font-size: 13px; }
+
+.tab-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 6px 15px;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  background: var(--color-background-primary);
+  transition: all 0.15s;
+}
+
+.tab.active {
+  background: var(--navy);
+  color: #ffffff;
+  border-color: var(--navy);
+}
+
+.tab:hover:not(.active) {
+  background: var(--color-background-secondary);
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── MATRIX ─── */
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 148px repeat(5, 1fr);
+  gap: 0;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  background: var(--color-background-primary);
+}
+
+.mh {
+  background: var(--color-background-secondary);
+  padding: 9px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  border-right: 0.5px solid var(--color-border-tertiary);
+}
+
+.mh:last-child { border-right: none; }
+
+.rl {
+  padding: 9px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  border-right: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.rl:last-child { border-bottom: none; }
+
+.rdot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.mc {
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  border-right: 0.5px solid var(--color-border-tertiary);
+  line-height: 1.5;
+  vertical-align: top;
+  background: var(--color-background-primary);
+}
+
+.mc:last-child { border-right: none; }
+
+.mc.pri { color: var(--color-text-primary); font-weight: 500; }
+.mc.sec { color: var(--color-text-secondary); }
+.mc.na  { color: var(--color-text-tertiary); font-style: italic; }
+
+.mc .sub { font-weight: 400; font-size: 10.5px; }
+.mc.pri .sub { color: var(--color-text-secondary); }
+.mc.sec .sub { color: var(--color-text-tertiary); }
+
+.row-last .rl,
+.row-last .mc { border-bottom: none; }
+
+/* ─── SUPPLY CHAIN ─── */
+.sc-wrap { display: flex; flex-direction: column; gap: 8px; }
+
+.sc-phase {
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background: var(--color-background-primary);
+}
+
+.sc-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--color-background-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+
+.sc-head:hover { background: var(--color-background-tertiary); }
+
+.sc-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.sc-title { flex: 1; font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.sc-sub   { font-size: 11px; color: var(--color-text-secondary); margin-top: 1px; }
+
+.sc-chev {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  transition: transform 0.2s;
+}
+
+.sc-chev.open { transform: rotate(90deg); }
+
+.sc-body {
+  display: none;
+  padding: 12px 14px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sc-body.open { display: grid; }
+
+.sc-col-head {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.sc-item {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+  padding-left: 12px;
+  position: relative;
+  line-height: 1.45;
+}
+
+.sc-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-border-secondary);
+}
+
+/* ─── GAPS ─── */
+.gap-item {
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 8px;
+  overflow: hidden;
+  background: var(--color-background-primary);
+}
+
+.gap-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--color-background-secondary);
+}
+
+.gap-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.gap-text { flex: 1; }
+.gap-title { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.gap-why   { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+
+.gap-home {
+  font-size: 10px;
+  padding: 2px 9px;
+  border-radius: 3px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.gap-body {
+  padding: 10px 14px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+
+.gap-body strong { font-weight: 500; color: var(--color-text-primary); }
+
+/* ─── LEGEND ─── */
+.legend-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.leg-sq {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.view-note {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 14px;
+  line-height: 1.55;
+}
+</style>
+</head>
+<body>
+
+<header class="platform-header">
+  <div class="platform-header-inner">
+    <a href="../../" class="platform-wordmark">CoSAI Wizards</a>
+    <div class="platform-sep"></div>
+    <span class="platform-tool">Layer Integration Matrix</span>
+    <a href="../../" class="platform-back">
+      <svg width="12" height="12" fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 9L4.5 6l3-3"/>
+      </svg>
+      Back to wizards
+    </a>
+  </div>
+</header>
+
+<div class="page-wrap">
+  <div class="page-title">LAYER INTEGRATION MATRIX</div>
+  <div class="wrap">
+    <div class="tab-row">
+      <button class="tab active" onclick="showView('matrix', this)">integration matrix</button>
+      <button class="tab" onclick="showView('supply', this)">supply chain lifecycle</button>
+      <button class="tab" onclick="showView('gaps', this)">coverage gaps</button>
+    </div>
+
+    <div id="matrix" class="view active">
+      <div class="legend-row">
+        <div class="leg"><div class="leg-sq" style="background:#185FA5"></div> primary owner</div>
+        <div class="leg"><div class="leg-sq" style="background:#9FE1CB"></div> shared / contributes</div>
+        <div class="leg"><div class="leg-sq" style="background:#D3D1C7"></div> minimal / inherited</div>
+      </div>
+      <div class="matrix-grid">
+        <div class="mh">Security domain</div>
+        <div class="mh">Business &amp; usage</div>
+        <div class="mh">Information</div>
+        <div class="mh">Application</div>
+        <div class="mh">Infrastructure</div>
+        <div class="mh">Supply chain</div>
+
+        <div class="rl"><div class="rdot" style="background:#185FA5"></div>Business / strategy</div>
+        <div class="mc pri">Primary<br><span class="sub">Risk appetite, governance, NIST CSF Govern</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">Data classification policy</span></div>
+        <div class="mc na">Inherited</div>
+        <div class="mc na">Inherited</div>
+        <div class="mc sec">Contributes<br><span class="sub">Vendor risk policy</span></div>
+
+        <div class="rl"><div class="rdot" style="background:#0F6E56"></div>People / identity</div>
+        <div class="mc sec">Contributes<br><span class="sub">User roles, usage policy</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">Data access rights</span></div>
+        <div class="mc pri">Primary<br><span class="sub">AuthN/AuthZ, MFA, RBAC, NIST 800-63</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">PAM, admin accounts</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">Vendor identity, API keys</span></div>
+
+        <div class="rl"><div class="rdot" style="background:#854F0B"></div>Data</div>
+        <div class="mc sec">Contributes<br><span class="sub">Usage data, consent</span></div>
+        <div class="mc pri">Primary<br><span class="sub">Classification, DLP, lineage, NIST 800-53</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">API data handling, PII</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">Encryption at rest</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">Training data provenance</span></div>
+
+        <div class="rl"><div class="rdot" style="background:#993C1D"></div>Applications</div>
+        <div class="mc sec">Contributes<br><span class="sub">UX security, consent flows</span></div>
+        <div class="mc na">Inherited</div>
+        <div class="mc pri">Primary<br><span class="sub">SDLC, OWASP ASVS, SAST/DAST, NIST SSDF</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">Runtime env, containers</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">OSS deps, SCA, SBOMs</span></div>
+
+        <div class="rl"><div class="rdot" style="background:#993556"></div>Infrastructure</div>
+        <div class="mc na">Inherited</div>
+        <div class="mc sec">Contributes<br><span class="sub">Storage hardening</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">App runtime security</span></div>
+        <div class="mc pri">Primary<br><span class="sub">CIS benchmarks, STIGs, patch mgmt, EDR</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">Cloud provider controls</span></div>
+
+        <div class="rl"><div class="rdot" style="background:#3B6D11"></div>Network</div>
+        <div class="mc na">Inherited</div>
+        <div class="mc sec">Contributes<br><span class="sub">Data in transit</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">API gateway, TLS</span></div>
+        <div class="mc pri">Primary<br><span class="sub">Segmentation, ZTA, DISA SRG, IDS/IPS</span></div>
+        <div class="mc sec">Contributes<br><span class="sub">Vendor network access</span></div>
+
+        <div class="rl row-last"><div class="rdot" style="background:#534AB7"></div>Physical</div>
+        <div class="mc row-last na">Inherited</div>
+        <div class="mc row-last na">Inherited</div>
+        <div class="mc row-last na">Inherited</div>
+        <div class="mc row-last pri">Primary<br><span class="sub">DC access, ISO 27001 A.7, CCTV, badging</span></div>
+        <div class="mc row-last sec">Contributes<br><span class="sub">Vendor facility audits</span></div>
+      </div>
+    </div>
+
+    <div id="supply" class="view">
+      <p class="view-note">CRISP-ML(Q) / MLOps lifecycle — security controls per phase. Click to expand.</p>
+      <div class="sc-wrap" id="sc-phases"></div>
+    </div>
+
+    <div id="gaps" class="view">
+      <p class="view-note">Controls with no clear owner in the five existing layers — recommended home layer shown.</p>
+      <div id="gaps-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+const phases = [
+  { num:'01', color:'#185FA5', bg:'#E6F1FB', label:'Business understanding', sub:'Define problem, success metrics, feasibility',
+    security:['AI risk appetite documented','Use case ethics review','Regulatory mapping (GDPR, HIPAA, AI Act)','Stakeholder data agreements'],
+    frameworks:['NIST AI RMF — Govern','ISO/IEC 42001 AI Mgmt','EU AI Act risk tier','NIST CSF Govern'] },
+  { num:'02', color:'#0F6E56', bg:'#E1F5EE', label:'Data understanding', sub:'Collect, explore, assess quality',
+    security:['Data provenance & lineage tracked','PII/sensitive field inventory','Training data consent verified','Bias & fairness audit'],
+    frameworks:['NIST SP 800-53 SI-12','DAMA DMBOK data quality','ISO/IEC 5259 data quality for AI','OWASP ML Top 10 — data'] },
+  { num:'03', color:'#854F0B', bg:'#FAEEDA', label:'Data preparation', sub:'Clean, transform, feature engineer',
+    security:['Data poisoning controls','Differential privacy applied','Anonymisation / pseudonymisation','Audit log of transformations'],
+    frameworks:['NIST SP 800-188 de-identification','ISO/IEC 27701 privacy','OWASP ML Top 10 — poisoning','ENISA AI threat landscape'] },
+  { num:'04', color:'#993C1D', bg:'#FAECE7', label:'Modelling', sub:'Select, train, tune algorithms',
+    security:['Model card / transparency doc','Adversarial robustness testing','Hyperparameter access controls','Experiment tracking access logs'],
+    frameworks:['NIST AI RMF — Map & Measure','MITRE ATLAS adversarial ML','Google Model Cards standard','MIT AI Risk Repository'] },
+  { num:'05', color:'#993556', bg:'#FBEAF0', label:'Evaluation', sub:'Validate performance, fairness, safety',
+    security:['Red team / adversarial eval','Explainability requirements met','Fairness metrics documented','Approval gate before promotion'],
+    frameworks:['NIST AI RMF — Measure','OWASP LLM Top 10','NIST SP 800-226 eval of diff privacy','IEEE 7010 wellbeing impact'] },
+  { num:'06', color:'#3B6D11', bg:'#EAF3DE', label:'Deployment', sub:'Package, release, serve',
+    security:['SBOM generated for model + deps','Container image signed & scanned','Model API auth enforced','Inference environment hardened'],
+    frameworks:['NIST SSDF SP 800-218','SLSA supply chain levels','CIS Benchmarks — containers','DISA STIG — Kubernetes'] },
+  { num:'07', color:'#534AB7', bg:'#EEEDFE', label:'Monitoring & maintenance', sub:'Observe drift, retrain, retire',
+    security:['Data/model drift alerts','Inference anomaly detection','Retrain trigger access control','Model retirement & deletion policy'],
+    frameworks:['NIST AI RMF — Manage','MLflow / Evidently AI monitoring','NIST SP 800-137 continuous monitoring','ISO/IEC 42001 — operation'] }
+];
+
+const scWrap = document.getElementById('sc-phases');
+phases.forEach((p, i) => {
+  const d = document.createElement('div');
+  d.className = 'sc-phase';
+  d.innerHTML = `
+    <div class="sc-head" onclick="togglePhase(${i})">
+      <div class="sc-num" style="background:${p.bg};color:${p.color}">${p.num}</div>
+      <div style="flex:1">
+        <div class="sc-title">${p.label}</div>
+        <div class="sc-sub">${p.sub}</div>
+      </div>
+      <div class="sc-chev" id="sc-chev-${i}">▶</div>
+    </div>
+    <div class="sc-body" id="sc-body-${i}">
+      <div>
+        <div class="sc-col-head">SECURITY CONTROLS</div>
+        ${p.security.map(s => `<div class="sc-item">${s}</div>`).join('')}
+      </div>
+      <div>
+        <div class="sc-col-head">GOVERNING FRAMEWORKS</div>
+        ${p.frameworks.map(f => `<div class="sc-item">${f}</div>`).join('')}
+      </div>
+    </div>`;
+  scWrap.appendChild(d);
+});
+
+function togglePhase(i) {
+  document.getElementById('sc-body-' + i).classList.toggle('open');
+  document.getElementById('sc-chev-' + i).classList.toggle('open');
+}
+
+const gaps = [
+  { gap:'AI model governance', why:'No existing layer owns model lifecycle decisions', home:'Business & usage', color:'#185FA5', bg:'#E6F1FB', action:'Add AI governance sub-layer: model cards, ethics review, risk tier classification' },
+  { gap:'Training data provenance', why:'Information layer covers data at rest/transit — not data origin for ML', home:'Information', color:'#0F6E56', bg:'#E1F5EE', action:'Extend information layer: lineage tracking, consent records, DAMA DMBOK integration' },
+  { gap:'Adversarial ML / model attacks', why:'Application security covers code — not model inputs (prompt injection, poisoning)', home:'Application', color:'#993C1D', bg:'#FAECE7', action:'Add MITRE ATLAS + OWASP LLM Top 10 as application-layer security requirements' },
+  { gap:'SBOM for models & datasets', why:'SBOMs exist for software — model/dataset bills of materials are not yet standard', home:'Supply chain', color:'#3B6D11', bg:'#EAF3DE', action:'Adopt SPDX/CycloneDX for model artifacts; require at CRISP-ML deployment phase' },
+  { gap:'Inference environment isolation', why:'Infrastructure STIGs cover servers — model serving has unique isolation needs', home:'Infrastructure', color:'#993556', bg:'#FBEAF0', action:'Apply CIS Benchmarks for containers/K8s specifically to inference workloads' },
+  { gap:'Regulatory compliance (AI Act, GDPR Art.22)', why:'No existing layer maps to AI-specific regulation', home:'Business & usage', color:'#185FA5', bg:'#E6F1FB', action:'Add regulatory register to business layer; map EU AI Act risk tiers per use case' },
+];
+
+const gapsList = document.getElementById('gaps-list');
+gaps.forEach(g => {
+  const d = document.createElement('div');
+  d.className = 'gap-item';
+  d.innerHTML = `
+    <div class="gap-head">
+      <div class="gap-dot" style="background:${g.color}"></div>
+      <div class="gap-text">
+        <div class="gap-title">${g.gap}</div>
+        <div class="gap-why">${g.why}</div>
+      </div>
+      <div class="gap-home" style="background:${g.bg};color:${g.color};border:0.5px solid ${g.color}30">${g.home}</div>
+    </div>
+    <div class="gap-body"><strong>Recommendation: </strong>${g.action}</div>`;
+  gapsList.appendChild(d);
+});
+</script>
+</body>
+</html>
