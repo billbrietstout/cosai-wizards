@@ -1,0 +1,66 @@
+CoSAI Wizards
+Copyright 2026 The CoSAI Wizards Authors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+================================================================================
+Donation intent
+================================================================================
+
+This project is offered as a prospective contribution to the Coalition for
+Secure AI (CoSAI) under OASIS Open. The CoSAI name, marks, and logos are the
+property of their respective owners and are used here only to describe the
+subject matter of the wizards (e.g. references to the CoSAI Shared
+Responsibility Framework and related artifacts). No endorsement by CoSAI or
+OASIS is implied until this project is formally accepted.
+
+================================================================================
+Third-party components
+================================================================================
+
+This distribution bundles the following third-party components. Their licenses
+are reproduced in the files indicated and are compatible with Apache-2.0.
+
+--------------------------------------------------------------------------------
+jsPDF
+--------------------------------------------------------------------------------
+  File:     shared/vendor/jspdf.umd.min.js
+  Version:  2.5.1
+  Source:   https://github.com/parallax/jsPDF (release tag v2.5.1)
+  Mirror:   https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js
+  License:  Apache License, Version 2.0
+  SHA-256:  98ccf17aa10c20bb1301762618fcc9b6ab3a4e7f26b6071d64d0b41154df3875
+
+  Copyright (c) 2010-2021 James Hall, https://github.com/MrRio/jsPDF
+  Contributors: https://github.com/parallax/jsPDF/graphs/contributors
+
+  Licensed under the Apache License, Version 2.0. The unmodified minified UMD
+  build is vendored verbatim; no patches are applied.
+
+================================================================================
+Upstream and reference sources
+================================================================================
+
+The wizards reference (without redistributing) the following public frameworks
+and standards. Consult each source for authoritative, up-to-date text.
+
+  * CoSAI Shared Responsibility Framework (CoSAI, OASIS Open)
+  * CSA AI Controls Matrix (AICM) v1.0.3 (Cloud Security Alliance)
+  * OWASP Top 10 for LLM Applications, 2025 Edition (OWASP Foundation)
+  * NIST AI Risk Management Framework and NISTIR 8605A (NIST)
+  * MITRE ATLAS / AML threat taxonomy (MITRE)
+  * NIST CSF 2.0, NIST SP 800-53r5, SP 800-207, SP 800-218 and related
+    publications (NIST)
+
+Trademarks and logos of the above organisations remain the property of their
+respective owners.
