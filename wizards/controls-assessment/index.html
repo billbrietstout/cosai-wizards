@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Controls Assessment (AICM Variant) — CoSAI Wizards</title>
+    <meta
+      name="description"
+      content="5-layer CoSAI AI security controls assessment with OWASP LLM Top 10 coverage and PDF export. Vanilla web, no tracking, no backend."
+    />
+    <link rel="stylesheet" href="../../shared/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="../../shared/vendor/jspdf.umd.min.js"></script>
+    <script defer src="wizard.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header" role="banner">
+      <div class="header-inner">
+        <svg class="header-shield" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
+          <path d="M20 3L5 9v10c0 9 6.5 17.4 15 19.4C29.5 36.4 36 28 36 19V9L20 3z" fill="#2d5be3" opacity=".3" />
+          <path d="M20 6L8 11v8c0 7.4 5.2 14.3 12 16.4C26.8 33.3 32 26.4 32 19v-8L20 6z" stroke="#2d5be3" stroke-width="1.5" fill="none" />
+          <path d="M15 20l3.5 3.5L26 16" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div>
+          <div class="header-title" data-title>Controls Assessment — AICM Variant</div>
+          <div class="header-sub" data-subtitle>Aligned to CSA AICM v1.0.3 + EU AI Act risk tiers</div>
+        </div>
+        <div class="header-badge" data-badge>AICM ALIGNED</div>
+        <a class="header-home" href="../../">← All wizards</a>
+      </div>
+    </header>
+
+    <div id="boot-error" class="boot-error" role="alert" hidden>
+      Could not load <code>data.json</code>. If you opened this page via <code>file://</code>, some
+      browsers block local <code>fetch()</code>. Serve the directory over HTTP
+      (<code>python3 -m http.server</code>) and reload.
+    </div>
+
+    <main id="main" class="layout">
+      <div class="wizard">
+        <div class="state-bar" role="group" aria-label="Assessment state">
+          <span class="state-bar__label">Your answers stay in this browser.</span>
+          <button id="btn-export" class="btn btn--ghost" type="button">Export JSON</button>
+          <button id="btn-import" class="btn btn--ghost" type="button">Import JSON</button>
+          <input id="file-import" type="file" accept="application/json,.json" />
+          <button id="btn-reset" class="btn btn--ghost" type="button">Reset</button>
+        </div>
+
+        <!-- Phase 1: Context -->
+        <section class="phase-card" id="phase-card-1" aria-labelledby="phase-title-1">
+          <button type="button" class="phase-header" id="phase-header-1" data-phase-toggle="1" aria-expanded="true" aria-controls="phase-body-1">
+            <div class="phase-num active" id="phase-num-1"><span class="phase-num-text">1</span></div>
+            <div>
+              <div class="phase-title" id="phase-title-1">Context</div>
+              <div class="phase-meta" id="phase-meta-1">~2 min · Deployment context for tailored assessment</div>
+            </div>
+            <svg class="phase-chevron open" id="phase-chev-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+          <div class="phase-body open" id="phase-body-1">
+            <div class="section-intro">
+              <div class="section-intro-title">Assessment scope</div>
+              <div class="section-intro-text" id="context-intro">Brief context helps calibrate which controls are most critical. All data stays in this browser — nothing is transmitted.</div>
+            </div>
+            <div id="context-fields"></div>
+            <button class="complete-btn" type="button" data-phase-complete="1" data-phase-next="2">Continue to L1 — Business &amp; Governance →</button>
+          </div>
+        </section>
+
+        <!-- Phases 2–6: Layer controls (templated) -->
+        <section class="phase-card" data-layer="l1" id="phase-card-2" aria-labelledby="phase-title-2">
+          <button type="button" class="phase-header" id="phase-header-2" data-phase-toggle="2" aria-expanded="false" aria-controls="phase-body-2">
+            <div class="phase-num" id="phase-num-2"><span class="phase-num-text">2</span></div>
+            <div>
+              <div class="phase-title" id="phase-title-2">L1 — Business &amp; Governance</div>
+              <div class="phase-meta" id="phase-meta-2"></div>
+            </div>
+            <svg class="phase-chevron" id="phase-chev-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          <div class="phase-body" id="phase-body-2">
+            <div class="section-intro" style="border-left: 3px solid var(--l1)">
+              <div class="section-intro-title" style="color: var(--l1)">L1 · Business</div>
+              <div class="section-intro-text" id="intro-l1"></div>
+            </div>
+            <div id="ctrls-l1"></div>
+            <button class="complete-btn" type="button" data-phase-complete="2" data-phase-next="3" id="next-btn-2">Continue →</button>
+          </div>
+        </section>
+
+        <section class="phase-card" data-layer="l2" id="phase-card-3" aria-labelledby="phase-title-3">
+          <button type="button" class="phase-header" id="phase-header-3" data-phase-toggle="3" aria-expanded="false" aria-controls="phase-body-3">
+            <div class="phase-num" id="phase-num-3"><span class="phase-num-text">3</span></div>
+            <div>
+              <div class="phase-title" id="phase-title-3">L2 — Data Security &amp; Classification</div>
+              <div class="phase-meta" id="phase-meta-3"></div>
+            </div>
+            <svg class="phase-chevron" id="phase-chev-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          <div class="phase-body" id="phase-body-3">
+            <div class="section-intro" style="border-left: 3px solid var(--l2)">
+              <div class="section-intro-title" style="color: var(--l2)">L2 · Information</div>
+              <div class="section-intro-text" id="intro-l2"></div>
+            </div>
+            <div id="ctrls-l2"></div>
+            <button class="complete-btn" type="button" data-phase-complete="3" data-phase-next="4" id="next-btn-3">Continue →</button>
+          </div>
+        </section>
+
+        <section class="phase-card" data-layer="l3" id="phase-card-4" aria-labelledby="phase-title-4">
+          <button type="button" class="phase-header" id="phase-header-4" data-phase-toggle="4" aria-expanded="false" aria-controls="phase-body-4">
+            <div class="phase-num" id="phase-num-4"><span class="phase-num-text">4</span></div>
+            <div>
+              <div class="phase-title" id="phase-title-4">L3 — Application Security &amp; Threat Coverage</div>
+              <div class="phase-meta" id="phase-meta-4"></div>
+            </div>
+            <svg class="phase-chevron" id="phase-chev-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          <div class="phase-body" id="phase-body-4">
+            <div class="section-intro" style="border-left: 3px solid var(--l3)">
+              <div class="section-intro-title" style="color: var(--l3)">L3 · Application</div>
+              <div class="section-intro-text" id="intro-l3"></div>
+            </div>
+
+            <div class="owasp-section">
+              <button type="button" class="owasp-header" id="owasp-header" data-owasp-toggle aria-expanded="false" aria-controls="owasp-body">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <span class="owasp-header-title">OWASP LLM Top 10 — 2025 Edition</span>
+                <span class="owasp-header-sub" id="owasp-coverage-label">0 / 10 addressed</span>
+              </button>
+              <div class="owasp-body" id="owasp-body">
+                <p style="font-size: 0.78rem; color: var(--slate-500); margin-bottom: 12px">
+                  Mark mitigation status for each LLM risk. NIST AI 100-2e attack taxonomy IDs shown where mapped.
+                </p>
+                <div class="owasp-grid" id="owasp-grid"></div>
+              </div>
+            </div>
+
+            <div id="ctrls-l3"></div>
+            <button class="complete-btn" type="button" data-phase-complete="4" data-phase-next="5" id="next-btn-4">Continue →</button>
+          </div>
+        </section>
+
+        <section class="phase-card" data-layer="l4" id="phase-card-5" aria-labelledby="phase-title-5">
+          <button type="button" class="phase-header" id="phase-header-5" data-phase-toggle="5" aria-expanded="false" aria-controls="phase-body-5">
+            <div class="phase-num" id="phase-num-5"><span class="phase-num-text">5</span></div>
+            <div>
+              <div class="phase-title" id="phase-title-5">L4 — Infrastructure Security</div>
+              <div class="phase-meta" id="phase-meta-5"></div>
+            </div>
+            <svg class="phase-chevron" id="phase-chev-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          <div class="phase-body" id="phase-body-5">
+            <div class="section-intro" style="border-left: 3px solid var(--l4)">
+              <div class="section-intro-title" style="color: var(--l4)">L4 · Platform</div>
+              <div class="section-intro-text" id="intro-l4"></div>
+            </div>
+            <div id="ctrls-l4"></div>
+            <button class="complete-btn" type="button" data-phase-complete="5" data-phase-next="6" id="next-btn-5">Continue →</button>
+          </div>
+        </section>
+
+        <section class="phase-card" data-layer="l5" id="phase-card-6" aria-labelledby="phase-title-6">
+          <button type="button" class="phase-header" id="phase-header-6" data-phase-toggle="6" aria-expanded="false" aria-controls="phase-body-6">
+            <div class="phase-num" id="phase-num-6"><span class="phase-num-text">6</span></div>
+            <div>
+              <div class="phase-title" id="phase-title-6">L5 — Supply Chain Security</div>
+              <div class="phase-meta" id="phase-meta-6"></div>
+            </div>
+            <svg class="phase-chevron" id="phase-chev-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          <div class="phase-body" id="phase-body-6">
+            <div class="section-intro" style="border-left: 3px solid var(--l5)">
+              <div class="section-intro-title" style="color: var(--l5)">L5 · Supply Chain</div>
+              <div class="section-intro-text" id="intro-l5"></div>
+            </div>
+            <div id="ctrls-l5"></div>
+            <button class="complete-btn" type="button" data-phase-complete="6" data-phase-next="7" id="next-btn-6">View Security Posture Results →</button>
+          </div>
+        </section>
+
+        <!-- Phase 7: Results -->
+        <section class="phase-card" id="phase-card-7" aria-labelledby="phase-title-7">
+          <button type="button" class="phase-header" id="phase-header-7" data-phase-toggle="7" aria-expanded="false" aria-controls="phase-body-7">
+            <div class="phase-num" id="phase-num-7"><span class="phase-num-text">7</span></div>
+            <div>
+              <div class="phase-title" id="phase-title-7">Security Posture Results</div>
+              <div class="phase-meta">Full breakdown · Priority gaps · PDF export</div>
+            </div>
+            <svg class="phase-chevron" id="phase-chev-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          <div class="phase-body" id="phase-body-7">
+            <div id="results-content">
+              <p class="results-empty">Complete all five layers to generate your security posture report.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="live-panel" aria-label="Live security posture summary">
+        <div class="panel-title">Security Posture · Live</div>
+
+        <div class="score-ring-wrap">
+          <div class="score-ring">
+            <svg width="80" height="80" viewBox="0 0 80 80" aria-hidden="true">
+              <circle class="score-ring-bg" cx="40" cy="40" r="32" />
+              <circle class="score-ring-fg" id="ring-fg" cx="40" cy="40" r="32" stroke="#2d5be3" stroke-dasharray="201.06" stroke-dashoffset="201.06" />
+            </svg>
+            <div class="score-ring-val" id="ring-val" aria-live="polite">—</div>
+          </div>
+          <div class="score-meta">
+            <div class="score-label">Overall Score</div>
+            <div class="score-interp" id="score-interp">Not started</div>
+          </div>
+        </div>
+
+        <div class="layer-bars">
+          <div class="layer-bar-row">
+            <span class="layer-bar-label" style="color: var(--l1)">L1</span>
+            <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l1" style="width: 0%; background: var(--l1)"></div></div>
+            <span class="layer-bar-pct" id="pct-l1">—</span>
+          </div>
+          <div class="layer-bar-row">
+            <span class="layer-bar-label" style="color: var(--l2)">L2</span>
+            <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l2" style="width: 0%; background: var(--l2)"></div></div>
+            <span class="layer-bar-pct" id="pct-l2">—</span>
+          </div>
+          <div class="layer-bar-row">
+            <span class="layer-bar-label" style="color: var(--l3)">L3</span>
+            <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l3" style="width: 0%; background: var(--l3)"></div></div>
+            <span class="layer-bar-pct" id="pct-l3">—</span>
+          </div>
+          <div class="layer-bar-row">
+            <span class="layer-bar-label" style="color: var(--l4)">L4</span>
+            <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l4" style="width: 0%; background: var(--l4)"></div></div>
+            <span class="layer-bar-pct" id="pct-l4">—</span>
+          </div>
+          <div class="layer-bar-row">
+            <span class="layer-bar-label" style="color: var(--l5)">L5</span>
+            <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l5" style="width: 0%; background: var(--l5)"></div></div>
+            <span class="layer-bar-pct" id="pct-l5">—</span>
+          </div>
+        </div>
+
+        <div class="owasp-mini">
+          <div class="owasp-mini-title">OWASP LLM Top 10 Coverage</div>
+          <div class="owasp-mini-grid" id="owasp-mini-grid"></div>
+        </div>
+
+        <div class="gaps-row">
+          <div class="gaps-num" id="gaps-num">—</div>
+          <div class="gaps-info">critical gaps<br />not implemented</div>
+        </div>
+      </aside>
+    </main>
+  </body>
+</html>
