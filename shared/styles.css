@@ -1,0 +1,259 @@
+/* ==========================================================================
+   CoSAI Wizards — shared design tokens, resets, accessibility + print
+   Licensed under the Apache License, Version 2.0.
+   Palette: neutral CoSAI navy / blue / muted slate. System fonts only.
+   ========================================================================== */
+
+:root {
+  /* Brand */
+  --cosai-navy:        #0f1f3d;
+  --cosai-navy-light:  #1a2d52;
+  --cosai-navy-muted:  #1e2d4a;
+  --cosai-blue:        #2d5be3;
+  --cosai-blue-light:  #eef2fd;
+  --cosai-blue-soft:   #dbe6fb;
+
+  /* Neutrals */
+  --slate-50:          #f8fafc;
+  --slate-100:         #f1f5f9;
+  --slate-200:         #e2e8f0;
+  --slate-300:         #cbd5e1;
+  --slate-400:         #94a3b8;
+  --slate-500:         #64748b;
+  --slate-600:         #475569;
+  --slate-700:         #334155;
+  --slate-800:         #1e293b;
+  --slate-900:         #0f172a;
+
+  /* Status (≥ 4.5:1 contrast on white for text use) */
+  --status-good:       #15803d;
+  --status-good-bg:    #f0fdf4;
+  --status-good-br:    #86efac;
+  --status-warn:       #a16207;
+  --status-warn-bg:    #fffbeb;
+  --status-warn-br:    #fcd34d;
+  --status-bad:        #b91c1c;
+  --status-bad-bg:     #fef2f2;
+  --status-bad-br:     #fca5a5;
+  --status-na:         #64748b;
+  --status-na-bg:      #f1f5f9;
+  --status-na-br:      #cbd5e1;
+
+  /* Layer accents — kept subdued for print / accessibility */
+  --l1: #16a34a; --l1-bg: #f0fdf4; --l1-border: #bbf7d0; --l1-text: #14532d;
+  --l2: #2563eb; --l2-bg: #eff6ff; --l2-border: #bfdbfe; --l2-text: #1e3a8a;
+  --l3: #ea580c; --l3-bg: #fff7ed; --l3-border: #fed7aa; --l3-text: #7c2d12;
+  --l4: #7c3aed; --l4-bg: #faf5ff; --l4-border: #e9d5ff; --l4-text: #4c1d95;
+  --l5: #0891b2; --l5-bg: #ecfeff; --l5-border: #a5f3fc; --l5-text: #164e63;
+
+  /* Layout */
+  --radius-sm:   4px;
+  --radius:      8px;
+  --radius-lg:   12px;
+  --shadow:      0 1px 3px rgba(15, 31, 61, 0.08), 0 1px 2px rgba(15, 31, 61, 0.06);
+  --shadow-md:   0 4px 6px rgba(15, 31, 61, 0.07), 0 2px 4px rgba(15, 31, 61, 0.06);
+
+  /* Focus ring — WCAG 2.2 non-text contrast compliant on white and navy */
+  --focus-ring:  0 0 0 3px rgba(45, 91, 227, 0.45);
+
+  /* Typography — system stack only, no external fonts */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+               Arial, 'Noto Sans', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', 'Menlo',
+               'Consolas', monospace;
+}
+
+/* Resets ------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--slate-50);
+  color: var(--slate-800);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, svg { max-width: 100%; height: auto; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+a { color: var(--cosai-blue); }
+a:hover { text-decoration: underline; }
+
+/* Skip link -------------------------------------------------------------- */
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 8px;
+  background: var(--cosai-navy);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  z-index: 1000;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.skip-link:focus {
+  top: 8px;
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Focus -------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--cosai-blue);
+  outline-offset: 2px;
+  box-shadow: var(--focus-ring);
+  border-radius: 3px;
+}
+
+/* Buttons ----------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: var(--cosai-blue);
+  color: #fff;
+  border: 1px solid var(--cosai-blue);
+  transition: background 0.15s, border-color 0.15s;
+}
+.btn:hover { background: #1d4ed8; border-color: #1d4ed8; }
+.btn--ghost {
+  background: #fff;
+  color: var(--cosai-blue);
+  border-color: var(--slate-300);
+}
+.btn--ghost:hover { background: var(--cosai-blue-light); border-color: var(--cosai-blue); }
+.btn--dark {
+  background: var(--cosai-navy);
+  color: #fff;
+  border-color: var(--cosai-navy);
+}
+.btn--dark:hover { background: var(--cosai-navy-light); border-color: var(--cosai-navy-light); }
+
+/* Shared persistence bar (Export / Import JSON / Reset) ------------------- */
+
+.state-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--slate-100);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius);
+  margin: 12px 0 18px;
+  font-size: 0.82rem;
+  color: var(--slate-600);
+}
+.state-bar__label {
+  font-weight: 600;
+  color: var(--slate-700);
+  margin-right: auto;
+}
+.state-bar .btn {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+.state-bar input[type="file"] {
+  display: none;
+}
+
+/* Utility ----------------------------------------------------------------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Reduced motion --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print ------------------------------------------------------------------- */
+
+@media print {
+  :root { --shadow: none; --shadow-md: none; }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .no-print,
+  .state-bar,
+  .skip-link,
+  .pdf-btn,
+  .complete-btn,
+  .ans-btn:not(.sel-yes):not(.sel-partial):not(.sel-no):not(.sel-na),
+  .btn-opt:not(.sel),
+  .btn,
+  footer .btn {
+    display: none !important;
+  }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.78em;
+    color: #555;
+  }
+  .phase-card,
+  .layer-row,
+  .scenario-card,
+  section,
+  .results-grid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+  .print-break,
+  .phase-card + .phase-card,
+  .results-section,
+  .gaps-section {
+    break-before: page;
+    page-break-before: always;
+  }
+  .phase-body { display: block !important; }
+  .layer-body { display: block !important; }
+}
+
+/* High-contrast fallback ------------------------------------------------- */
+
+@media (prefers-contrast: more) {
+  :root {
+    --slate-200: #9aa5b1;
+    --slate-300: #64748b;
+  }
+  .btn--ghost { border-color: var(--cosai-navy); color: var(--cosai-navy); }
+}

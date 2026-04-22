@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CoSAI Wizards — open-source AI security assessment tools</title>
+    <meta
+      name="description"
+      content="Five vanilla-web assessment wizards for the CoSAI Shared Responsibility Framework, CSA AICM, OWASP LLM Top 10, NIST AI RMF, and MITRE ATLAS. Apache-2.0, no tracking, no build step."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="shared/styles.css" />
+    <style>
+      .hero {
+        background: linear-gradient(135deg, var(--cosai-navy) 0%, var(--cosai-navy-light) 100%);
+        color: #fff;
+        padding: 64px 24px 48px;
+      }
+      .hero__inner {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      .hero__eyebrow {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #93c5fd;
+        padding: 4px 10px;
+        border: 1px solid rgba(147, 197, 253, 0.3);
+        border-radius: 999px;
+        margin-bottom: 18px;
+      }
+      .hero__title {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        font-weight: 700;
+        letter-spacing: -0.015em;
+        margin-bottom: 14px;
+      }
+      .hero__lede {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+        max-width: 700px;
+        line-height: 1.55;
+      }
+      .hero__meta {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+        font-size: 0.82rem;
+        color: #94a3b8;
+      }
+      .hero__meta code {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #e2e8f0;
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+
+      h2 {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        margin: 32px 0 14px;
+      }
+
+      .cards {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        background: #fff;
+        box-shadow: var(--shadow);
+        transition: border-color 0.15s, transform 0.15s;
+        color: inherit;
+        text-decoration: none;
+      }
+      .card:hover {
+        border-color: var(--cosai-blue);
+        transform: translateY(-1px);
+        text-decoration: none;
+      }
+      .card__badge {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cosai-blue);
+        margin-bottom: 8px;
+      }
+      .card__title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+      }
+      .card__desc {
+        font-size: 0.88rem;
+        color: var(--slate-600);
+        line-height: 1.55;
+        flex: 1;
+      }
+      .card__foot {
+        margin-top: 14px;
+        font-size: 0.78rem;
+        color: var(--slate-500);
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .card__foot code {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--slate-700);
+        background: var(--slate-100);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+
+      .notice {
+        border-left: 3px solid var(--cosai-blue);
+        background: var(--cosai-blue-light);
+        padding: 16px 18px;
+        border-radius: 0 var(--radius) var(--radius) 0;
+        font-size: 0.88rem;
+        color: var(--slate-700);
+        margin: 28px 0;
+      }
+
+      footer {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 24px;
+        border-top: 1px solid var(--slate-200);
+        font-size: 0.8rem;
+        color: var(--slate-500);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      footer a { color: var(--slate-600); }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="hero">
+      <div class="hero__inner">
+        <span class="hero__eyebrow">Donation candidate · Coalition for Secure AI</span>
+        <h1 class="hero__title">CoSAI Wizards</h1>
+        <p class="hero__lede">
+          Five vanilla-web assessment tools for practitioners working with the CoSAI Shared
+          Responsibility Framework, CSA AICM, OWASP LLM Top 10, NIST AI RMF, and MITRE
+          ATLAS. Apache-2.0, no build step, no backend, no trackers, every answer stays in
+          your browser.
+        </p>
+        <p class="hero__meta">
+          <span>License: <code>Apache-2.0</code></span>
+          <span>Runtime: <code>HTML + CSS + JS</code></span>
+          <span>Dependencies: <code>jsPDF (self-hosted)</code></span>
+        </p>
+      </div>
+    </header>
+
+    <main id="main">
+      <p class="notice">
+        This project is offered as a prospective contribution to the
+        <strong>Coalition for Secure AI (CoSAI)</strong> under OASIS Open. Names and marks
+        belong to their respective owners; CoSAI endorsement is not implied.
+      </p>
+
+      <h2>v1 · Production-ready wizards</h2>
+      <div class="cards">
+        <a class="card" href="wizards/security-controls/">
+          <div class="card__badge">Security posture</div>
+          <div class="card__title">AI Security Controls Assessment</div>
+          <div class="card__desc">
+            Five-layer controls walkthrough (Business · Information · Application · Platform
+            · Supply Chain) with OWASP LLM Top 10 coverage, live scoring, priority-gap list,
+            and PDF export.
+          </div>
+          <div class="card__foot">
+            <code>wizards/security-controls/</code>
+            <span>PDF export</span>
+          </div>
+        </a>
+
+        <a class="card" href="wizards/controls-assessment/">
+          <div class="card__badge">CSA AICM aligned</div>
+          <div class="card__title">Controls Assessment (AICM variant)</div>
+          <div class="card__desc">
+            Same five-layer engine, re-weighted against the CSA AI Controls Matrix v1.0.3
+            with an added EU AI Act risk-tier control. Useful for teams already mapped to
+            AICM domains.
+          </div>
+          <div class="card__foot">
+            <code>wizards/controls-assessment/</code>
+            <span>PDF export</span>
+          </div>
+        </a>
+      </div>
+
+      <h2>v1.1 · Reference explorers</h2>
+      <div class="cards">
+        <a class="card" href="wizards/hierarchy-cli/">
+          <div class="card__badge">Reference</div>
+          <div class="card__title">Enterprise Security Hierarchy</div>
+          <div class="card__desc">
+            Policy → Directive → SRG → STIG → CCI for each of seven enterprise layers, with
+            authoritative source links (NIST, DISA, CIS, OWASP, CISA).
+          </div>
+          <div class="card__foot">
+            <code>wizards/hierarchy-cli/</code>
+            <span>Filter · Expand</span>
+          </div>
+        </a>
+
+        <a class="card" href="wizards/layer-matrix/">
+          <div class="card__badge">Reference</div>
+          <div class="card__title">Layer Integration Matrix</div>
+          <div class="card__desc">
+            Cross-cut view of who owns which security domain across business, information,
+            application, infrastructure, and supply-chain layers — plus coverage-gap
+            overlay.
+          </div>
+          <div class="card__foot">
+            <code>wizards/layer-matrix/</code>
+            <span>Matrix · Gaps</span>
+          </div>
+        </a>
+
+        <a class="card" href="wizards/srf-stress/">
+          <div class="card__badge">Scenario</div>
+          <div class="card__title">CoSAI SRF Stress Test</div>
+          <div class="card__desc">
+            Walk a real AI incident through the five-layer Shared Responsibility Framework
+            and see where accountability holds and where it breaks down.
+          </div>
+          <div class="card__foot">
+            <code>wizards/srf-stress/</code>
+            <span>Scenarios · Layers</span>
+          </div>
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      <span>
+        © 2026 The CoSAI Wizards Authors. Apache-2.0. See
+        <a href="NOTICE">NOTICE</a>.
+      </span>
+      <span>
+        <a href="https://github.com/billbrietstout/cosai-wizards">Source on GitHub</a> ·
+        <a href="docs/EMBEDDING.md">Embedding guide</a> ·
+        <a href="SECURITY.md">Security</a>
+      </span>
+    </footer>
+  </body>
+</html>
