@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Security Hierarchy — NIST → Directive → SRG → STIG → CCI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f8fafc;
+  --color-background-tertiary: #fafaf9;
+  --color-background-info: hsl(217 70% 95%);
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-text-tertiary: #94a3b8;
+  --color-text-info: hsl(217 80% 46%);
+  --color-border-primary: #94a3b8;
+  --color-border-secondary: #e2e8f0;
+  --color-border-tertiary: #f1f5f9;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
+  --navy: #0e174d;
+  --navy-accent: #1f4af5;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-background-tertiary);
+  background-image: radial-gradient(circle, rgba(0,0,0,0.025) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+/* ── PLATFORM HEADER ── */
+.platform-header {
+  background: var(--navy);
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.platform-header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.platform-wordmark {
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+.platform-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.2); }
+.platform-tool { font-size: 12px; color: rgba(255,255,255,0.6); font-family: var(--font-mono); }
+.platform-back {
+  margin-left: auto;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.15s;
+  font-family: var(--font-mono);
+}
+.platform-back:hover { color: rgba(255,255,255,0.9); }
+
+.page-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+.cli-wrap { padding: 0; }
+
+.cli-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.cli-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+}
+
+.cli-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--color-background-info);
+  color: var(--color-text-info);
+  border: 0.5px solid rgba(31,74,245,0.2);
+  font-family: var(--font-mono);
+}
+
+.layer-row {
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 8px;
+  overflow: hidden;
+  background: var(--color-background-primary);
+}
+
+.layer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.layer-header:hover { background: var(--color-background-secondary); }
+
+.layer-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.layer-label { flex: 1; }
+
+.layer-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.layer-sub {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+.layer-chevron {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  transition: transform 0.2s;
+}
+
+.layer-chevron.open { transform: rotate(90deg); }
+
+.layer-body {
+  display: none;
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+
+.layer-body.open { display: block; }
+
+.hier-table { width: 100%; border-collapse: collapse; }
+
+.hier-table tr { border-bottom: 0.5px solid var(--color-border-tertiary); }
+.hier-table tr:last-child { border-bottom: none; }
+
+.hier-table td { padding: 10px 14px; font-size: 12px; vertical-align: top; }
+
+.tier-label {
+  width: 110px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.tier-value { color: var(--color-text-primary); line-height: 1.5; }
+
+.tier-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--color-text-info);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tier-link:hover { text-decoration: underline; }
+
+.policy-pill {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  margin-right: 4px;
+  margin-bottom: 2px;
+}
+
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.search-bar input:focus {
+  border-color: var(--navy-accent);
+  box-shadow: 0 0 0 3px rgba(31,74,245,0.08);
+}
+
+.search-bar button {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.search-bar button:hover { background: var(--color-background-tertiary); }
+
+.legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.leg-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.empty-msg {
+  font-size: 12px;
+  color: var(--color-text-tertiary);
+  padding: 20px 0;
+}
+</style>
+</head>
+<body>
+
+<header class="platform-header">
+  <div class="platform-header-inner">
+    <a href="/" class="platform-wordmark">AI Readiness</a>
+    <div class="platform-sep"></div>
+    <span class="platform-tool">Enterprise Security Hierarchy</span>
+    <a href="/" class="platform-back">
+      <svg width="12" height="12" fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 9L4.5 6l3-3"/>
+      </svg>
+      Back to platform
+    </a>
+  </div>
+</header>
+
+<div class="page-wrap">
+<div class="cli-wrap">
+  <div class="cli-header">
+    <span class="cli-title">ENTERPRISE SECURITY HIERARCHY</span>
+    <span class="cli-badge">NIST → Directive → SRG → STIG → CCI</span>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="filter layers or controls..." oninput="filterLayers(this.value)">
+    <button onclick="expandAll()">expand all</button>
+    <button onclick="collapseAll()">collapse all</button>
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#185FA5"></div> Policy</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#0F6E56"></div> Directive</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#854F0B"></div> SRG</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#993C1D"></div> STIG</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#993556"></div> CCI</div>
+  </div>
+
+  <div id="layers-container"></div>
+</div>
+</div>
+
+<script>
+const layers = [
+  {
+    id: "business", icon: "🏛️", color: "#E6F1FB",
+    name: "Business / Strategy",
+    sub: "Governance, risk appetite, organizational policy",
+    tiers: [
+      { level: "Policy", label: "NIST CSF 2.0 — Govern function", desc: "Establish cybersecurity strategy, risk tolerance, accountability", url: "https://csrc.nist.gov/pubs/cswp/29/the-nist-cybersecurity-framework-csf-20/final", urlLabel: "NIST CSF 2.0 (CSRC)" },
+      { level: "Directive", label: "ISO 31000 Risk Management", desc: "Enterprise risk management principles and guidelines", url: "https://www.iso.org/standard/65694.html", urlLabel: "ISO 31000" },
+      { level: "SRG", label: "CISA Cybersecurity Performance Goals", desc: "Cross-sector baseline goals for critical infrastructure", url: "https://www.cisa.gov/cross-sector-cybersecurity-performance-goals", urlLabel: "CISA CPGs" },
+      { level: "STIG", label: "Board-level Risk Reporting Template", desc: "Exec and board reporting on cyber risk posture, KPIs/KRIs", url: "https://www.nacdonline.org/all-governance/governance-resources/governance-research/director-handbooks/nacd-directors-handbook-on-cyber-risk-oversight/", urlLabel: "NACD Cyber Risk Handbook" },
+      { level: "CCI", label: "Measurable control", desc: "Risk register reviewed quarterly ✓ | Board briefed annually ✓ | CISO reports to board ✓", url: null }
+    ]
+  },
+  {
+    id: "people", icon: "👤", color: "#EAF3DE",
+    name: "People / Identity",
+    sub: "Users, roles, access, authentication",
+    tiers: [
+      { level: "Policy", label: "NIST SP 800-63 Digital Identity", desc: "Identity assurance, authentication, and federation standards", url: "https://csrc.nist.gov/pubs/sp/800/63/4/final", urlLabel: "NIST SP 800-63-4" },
+      { level: "Directive", label: "Zero Trust Architecture (NIST SP 800-207)", desc: "Zero trust principles: verify identity, least privilege, assume breach", url: "https://csrc.nist.gov/pubs/sp/800/207/final", urlLabel: "NIST SP 800-207" },
+      { level: "SRG", label: "DISA IAM SRG / CIS Identity Controls", desc: "Identity and access management security requirements by system type", url: "https://www.cisecurity.org/controls/v8", urlLabel: "CIS Controls v8" },
+      { level: "STIG", label: "Entra ID / Okta STIG Equivalent", desc: "MFA = FIDO2 enforced, session timeout 15min, privileged role review 30-day", url: "https://public.cyber.mil/stigs/", urlLabel: "DISA STIG Library" },
+      { level: "CCI", label: "Measurable control", desc: "MFA enforced: all admins ✓ | Phishing-resistant auth ✓ | PAM deployed ✓ | JIT access ✓", url: null }
+    ]
+  },
+  {
+    id: "data", icon: "🗄️", color: "#FAEEDA",
+    name: "Data",
+    sub: "Classification, protection, retention, sovereignty",
+    tiers: [
+      { level: "Policy", label: "NIST SP 800-53 Rev 5 — AU/SC/SI families", desc: "Audit, system & communications protection, information integrity", url: "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final", urlLabel: "NIST SP 800-53r5" },
+      { level: "Directive", label: "Data Classification Policy (4-tier)", desc: "Public / Internal / Confidential / Restricted with handling rules", url: "https://www.cisa.gov/topics/cyber-threats-and-advisories/information-sharing", urlLabel: "CISA Info Sharing" },
+      { level: "SRG", label: "CIS Data Protection Controls", desc: "Data recovery, encryption, DLP requirements by classification tier", url: "https://www.cisecurity.org/controls/v8", urlLabel: "CIS Controls v8 — Data Protection" },
+      { level: "STIG", label: "Database / Storage STIG", desc: "Encryption at rest (AES-256), TLS 1.3 in transit, audit logging enabled", url: "https://public.cyber.mil/stigs/", urlLabel: "DISA STIG — Database" },
+      { level: "CCI", label: "Measurable control", desc: "Data classified: 100% ✓ | Encrypted at rest ✓ | DLP policy enforced ✓ | Retention scheduled ✓", url: null }
+    ]
+  },
+  {
+    id: "applications", icon: "⚙️", color: "#FAECE7",
+    name: "Applications",
+    sub: "Software, APIs, secure SDLC, vulnerability management",
+    tiers: [
+      { level: "Policy", label: "NIST SSDF (SP 800-218)", desc: "Secure Software Development Framework — build security in from day one", url: "https://csrc.nist.gov/pubs/sp/800/218/final", urlLabel: "NIST SP 800-218 SSDF" },
+      { level: "Directive", label: "OWASP ASVS 4.0", desc: "Application Security Verification Standard — levels 1/2/3 by criticality", url: "https://owasp.org/www-project-application-security-verification-standard/", urlLabel: "OWASP ASVS" },
+      { level: "SRG", label: "DISA Application Security SRG", desc: "Security requirements for web, mobile, and API applications", url: "https://public.cyber.mil/stigs/srgs/", urlLabel: "DISA App SRG" },
+      { level: "STIG", label: "App-specific STIG (e.g. JBoss, IIS, .NET)", desc: "TLS config, secure headers, input validation, session management per platform", url: "https://public.cyber.mil/stigs/", urlLabel: "DISA STIG Library" },
+      { level: "CCI", label: "Measurable control", desc: "SAST/DAST in pipeline ✓ | OWASP Top 10 mitigated ✓ | Secrets scanning enabled ✓ | SCA licensed ✓", url: null }
+    ]
+  },
+  {
+    id: "infrastructure", icon: "🖥️", color: "#FBEAF0",
+    name: "Infrastructure",
+    sub: "Servers, cloud, endpoints, containers",
+    tiers: [
+      { level: "Policy", label: "CIS Benchmarks (all asset classes)", desc: "Configuration baselines for OS, cloud, containers, databases", url: "https://www.cisecurity.org/cis-benchmarks", urlLabel: "CIS Benchmarks" },
+      { level: "Directive", label: "NIST SP 800-190 Container Security", desc: "Image, registry, orchestration, and runtime security guidance", url: "https://csrc.nist.gov/pubs/sp/800/190/final", urlLabel: "NIST SP 800-190" },
+      { level: "SRG", label: "DISA Cloud / General-Purpose OS SRG", desc: "Security requirements for cloud workloads and server operating systems", url: "https://public.cyber.mil/stigs/srgs/", urlLabel: "DISA Cloud SRG" },
+      { level: "STIG", label: "RHEL / Windows / AWS / Azure STIG", desc: "Specific hardening settings: auditd rules, patch cadence, AMI baselines", url: "https://public.cyber.mil/stigs/", urlLabel: "DISA STIG Library" },
+      { level: "CCI", label: "Measurable control", desc: "Patch SLA met (critical 24h) ✓ | CIS L2 baseline enforced ✓ | EDR deployed ✓ | Vuln scan weekly ✓", url: null }
+    ]
+  },
+  {
+    id: "network", icon: "🌐", color: "#EAF3DE",
+    name: "Network",
+    sub: "Segmentation, perimeter, zero trust networking",
+    tiers: [
+      { level: "Policy", label: "NIST SP 800-41 Firewall Guidelines", desc: "Firewall policy, rule review, and network perimeter security", url: "https://csrc.nist.gov/pubs/sp/800/41/r1/final", urlLabel: "NIST SP 800-41r1" },
+      { level: "Directive", label: "NIST SP 800-207 Zero Trust (Network)", desc: "Micro-segmentation, software-defined perimeter, continuous validation", url: "https://csrc.nist.gov/pubs/sp/800/207/final", urlLabel: "NIST SP 800-207" },
+      { level: "SRG", label: "DISA Network Devices SRG", desc: "Security requirements for routers, switches, firewalls, and load balancers", url: "https://public.cyber.mil/stigs/srgs/", urlLabel: "DISA Network SRG" },
+      { level: "STIG", label: "Cisco / Palo Alto / F5 STIG", desc: "ACL rules, BGP authentication, SNMP v3, management plane isolation", url: "https://public.cyber.mil/stigs/", urlLabel: "DISA Network STIGs" },
+      { level: "CCI", label: "Measurable control", desc: "Flat network eliminated ✓ | E-W traffic inspected ✓ | IDS/IPS enabled ✓ | DNS over HTTPS ✓", url: null }
+    ]
+  },
+  {
+    id: "physical", icon: "🏢", color: "#EEEDFE",
+    name: "Physical",
+    sub: "Facilities, hardware, environmental controls",
+    tiers: [
+      { level: "Policy", label: "ISO/IEC 27001:2022 — A.7 Physical Controls", desc: "Physical security boundaries, equipment protection, clear desk", url: "https://www.iso.org/standard/27001", urlLabel: "ISO 27001:2022" },
+      { level: "Directive", label: "NIST SP 800-116 PIV / Physical Access", desc: "PIV credential use for physical access to federal facilities", url: "https://csrc.nist.gov/pubs/sp/800/116/r1/final", urlLabel: "NIST SP 800-116r1" },
+      { level: "SRG", label: "DISA Facility / Data Center SRG", desc: "Physical access controls, environmental monitoring for classified facilities", url: "https://public.cyber.mil/stigs/srgs/", urlLabel: "DISA Facility SRG" },
+      { level: "STIG", label: "Data Center Physical Security Checklist", desc: "Biometric locks, CCTV retention 90-day, mantrap, UPS/generator tested", url: "https://www.cisa.gov/sites/default/files/publications/ISC-Facility-Security-Plan-Guide-2015-508.pdf", urlLabel: "CISA ISC Facility Security Plan" },
+      { level: "CCI", label: "Measurable control", desc: "Badge access logged ✓ | CCTV 90-day retention ✓ | Tailgating controls ✓ | Annual physical audit ✓", url: null }
+    ]
+  }
+];
+
+const tierColors = {
+  "Policy":    { text: "#185FA5", bg: "rgba(24,95,165,0.09)",   border: "rgba(24,95,165,0.25)"  },
+  "Directive": { text: "#0F6E56", bg: "rgba(15,110,86,0.09)",   border: "rgba(15,110,86,0.25)"  },
+  "SRG":       { text: "#854F0B", bg: "rgba(133,79,11,0.09)",   border: "rgba(133,79,11,0.25)"  },
+  "STIG":      { text: "#993C1D", bg: "rgba(153,60,29,0.09)",   border: "rgba(153,60,29,0.25)"  },
+  "CCI":       { text: "#993556", bg: "rgba(153,53,86,0.09)",   border: "rgba(153,53,86,0.25)"  }
+};
+
+function renderLayers(data) {
+  const container = document.getElementById("layers-container");
+  container.innerHTML = "";
+  if (data.length === 0) {
+    container.innerHTML = '<div class="empty-msg">no layers match filter</div>';
+    return;
+  }
+  data.forEach(layer => {
+    const row = document.createElement("div");
+    row.className = "layer-row";
+    row.dataset.id = layer.id;
+    row.innerHTML = `
+      <div class="layer-header" onclick="toggleLayer('${layer.id}')">
+        <div class="layer-icon" style="background:${layer.color};border:0.5px solid ${layer.color};">${layer.icon}</div>
+        <div class="layer-label">
+          <div class="layer-name">${layer.name}</div>
+          <div class="layer-sub">${layer.sub}</div>
+        </div>
+        <div class="layer-chevron" id="chev-${layer.id}">▶</div>
+      </div>
+      <div class="layer-body" id="body-${layer.id}">
+        <table class="hier-table">
+          ${layer.tiers.map(t => {
+            const tc = tierColors[t.level];
+            return `<tr>
+              <td class="tier-label">
+                <span class="policy-pill" style="background:${tc.bg};color:${tc.text};border:0.5px solid ${tc.border};">${t.level}</span>
+              </td>
+              <td class="tier-value">
+                <div style="font-weight:500;font-size:12px;color:var(--color-text-primary);margin-bottom:3px;">${t.label}</div>
+                <div style="font-size:11px;color:var(--color-text-secondary);line-height:1.5;">${t.desc}</div>
+                ${t.url ? `<a class="tier-link" href="${t.url}" target="_blank">↗ ${t.urlLabel}</a>` : ''}
+              </td>
+            </tr>`;
+          }).join("")}
+        </table>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function toggleLayer(id) {
+  const body = document.getElementById("body-" + id);
+  const chev = document.getElementById("chev-" + id);
+  const isOpen = body.classList.contains("open");
+  body.classList.toggle("open", !isOpen);
+  chev.classList.toggle("open", !isOpen);
+}
+
+function expandAll() {
+  document.querySelectorAll(".layer-body").forEach(b => b.classList.add("open"));
+  document.querySelectorAll(".layer-chevron").forEach(c => c.classList.add("open"));
+}
+
+function collapseAll() {
+  document.querySelectorAll(".layer-body").forEach(b => b.classList.remove("open"));
+  document.querySelectorAll(".layer-chevron").forEach(c => c.classList.remove("open"));
+}
+
+function filterLayers(q) {
+  const term = q.toLowerCase().trim();
+  if (!term) { renderLayers(layers); return; }
+  const filtered = layers.filter(l =>
+    l.name.toLowerCase().includes(term) ||
+    l.sub.toLowerCase().includes(term) ||
+    l.tiers.some(t => t.label.toLowerCase().includes(term) || t.desc.toLowerCase().includes(term) || t.level.toLowerCase().includes(term))
+  );
+  renderLayers(filtered);
+  if (term) setTimeout(expandAll, 50);
+}
+
+renderLayers(layers);
+</script>
+</body>
+</html>

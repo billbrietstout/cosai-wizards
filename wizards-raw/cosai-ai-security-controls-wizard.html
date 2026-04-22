@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CoSAI — AI Security Controls Assessment — AI Readiness</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --navy:        #0e174d;
+      --navy-light:  #19267a;
+      --blue:        #1f4af5;
+      --blue-light:  #eef2ff;
+      --green:       #16a34a;
+      --amber:       #d97706;
+      --red:         #dc2626;
+      --slate:       #64748b;
+      --slate-light: #f1f5f9;
+
+      --l1: #16a34a; --l1-bg: #f0fdf4; --l1-border: #bbf7d0; --l1-text: #14532d;
+      --l2: #2563eb; --l2-bg: #eff6ff; --l2-border: #bfdbfe; --l2-text: #1e3a8a;
+      --l3: #ea580c; --l3-bg: #fff7ed; --l3-border: #fed7aa; --l3-text: #7c2d12;
+      --l4: #9333ea; --l4-bg: #faf5ff; --l4-border: #e9d5ff; --l4-text: #581c87;
+      --l5: #0891b2; --l5-bg: #ecfeff; --l5-border: #a5f3fc; --l5-text: #164e63;
+
+      --shadow:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+      --radius:    8px;
+      --radius-lg: 12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #fafaf9;
+      background-image: radial-gradient(circle, rgba(0,0,0,0.025) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    /* ── Header ──────────────────────────────────────────────────────── */
+    .header {
+      background: var(--navy);
+      color: #fff;
+      padding: 0 24px;
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 20px 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .header-shield {
+      width: 40px; height: 40px; flex-shrink: 0;
+    }
+    .header-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .header-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+    .header-badge {
+      margin-left: auto;
+      background: rgba(31,74,245,.2);
+      border: 1px solid rgba(31,74,245,.35);
+      color: #93c5fd;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      font-family: 'DM Mono', monospace;
+    }
+    .header-back {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.15s;
+      font-family: 'DM Mono', monospace;
+    }
+    .header-back:hover { color: rgba(255,255,255,0.9); }
+
+    /* ── Layout ──────────────────────────────────────────────────────── */
+    .layout {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 24px 60px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .live-panel { order: -1; }
+    }
+
+    /* ── Wizard phases ───────────────────────────────────────────────── */
+    .phase-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+    .phase-header:hover { background: #f8fafc; }
+    .phase-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      background: #e2e8f0;
+      color: #64748b;
+      transition: background .2s, color .2s;
+    }
+    .phase-num.active   { background: var(--blue); color: #fff; }
+    .phase-num.done     { background: var(--green); color: #fff; }
+    .phase-num.done::after { content: '✓'; }
+    .phase-num.done .phase-num-text { display: none; }
+    .phase-title { font-size: 1rem; font-weight: 600; color: #1e293b; }
+    .phase-meta  { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+    .phase-chevron {
+      margin-left: auto;
+      width: 18px; height: 18px;
+      color: #94a3b8;
+      transition: transform .2s;
+    }
+    .phase-chevron.open { transform: rotate(180deg); }
+
+    .phase-body {
+      display: none;
+      padding: 0 20px 24px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .phase-body.open { display: block; }
+
+    /* layer accent stripe */
+    .phase-card[data-layer="l1"] { border-left: 3px solid var(--l1); }
+    .phase-card[data-layer="l2"] { border-left: 3px solid var(--l2); }
+    .phase-card[data-layer="l3"] { border-left: 3px solid var(--l3); }
+    .phase-card[data-layer="l4"] { border-left: 3px solid var(--l4); }
+    .phase-card[data-layer="l5"] { border-left: 3px solid var(--l5); }
+
+    /* ── Section headings inside phases ──────────────────────────────── */
+    .section-intro {
+      background: var(--slate-light);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin: 16px 0 20px;
+    }
+    .section-intro-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--slate);
+      margin-bottom: 4px;
+    }
+    .section-intro-text {
+      font-size: 0.85rem;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    /* ── Context form ─────────────────────────────────────────────────── */
+    .form-row {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .btn-opt {
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: 0.82rem;
+      color: #475569;
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .btn-opt:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+    .btn-opt.sel   { border-color: var(--blue); background: var(--blue-light); color: var(--blue); font-weight: 600; }
+
+    /* ── Control question cards ──────────────────────────────────────── */
+    .ctrl-card {
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: border-color .2s;
+    }
+    .ctrl-card.answered-yes     { border-color: #86efac; background: #f0fdf4; }
+    .ctrl-card.answered-partial { border-color: #fcd34d; background: #fffbeb; }
+    .ctrl-card.answered-no      { border-color: #fca5a5; background: #fef2f2; }
+    .ctrl-card.answered-na      { border-color: #cbd5e1; background: #f8fafc; opacity: .75; }
+
+    .ctrl-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+    .ctrl-why {
+      font-size: 0.78rem;
+      color: #64748b;
+      line-height: 1.5;
+      margin-bottom: 10px;
+    }
+    .ctrl-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .badge-aicm {
+      font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+    .badge-phase {
+      font-size: 0.68rem;
+      font-weight: 600;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+    .badge-phase.training    { background: #ede9fe; color: #5b21b6; }
+    .badge-phase.deployment  { background: #dbeafe; color: #1d4ed8; }
+    .badge-phase.maintenance { background: #fef3c7; color: #92400e; }
+    .badge-phase.continuous  { background: #f1f5f9; color: #475569; }
+    .badge-aml {
+      font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      background: #fff7ed;
+      color: #c2410c;
+      border: 1px solid #fed7aa;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .ctrl-answers {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .ans-btn {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      background: #f8fafc;
+      color: #475569;
+    }
+    .ans-btn:hover { opacity: .85; }
+    .ans-btn.sel-yes     { background: #dcfce7; border-color: #86efac; color: #15803d; }
+    .ans-btn.sel-partial { background: #fef9c3; border-color: #fde047; color: #a16207; }
+    .ans-btn.sel-no      { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+    .ans-btn.sel-na      { background: #f1f5f9; border-color: #cbd5e1; color: #64748b; }
+
+    /* ── OWASP LLM grid ──────────────────────────────────────────────── */
+    .owasp-section {
+      margin: 20px 0;
+      border: 1px solid var(--l3-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .owasp-header {
+      background: var(--l3-bg);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .owasp-header-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--l3-text);
+    }
+    .owasp-header-sub {
+      font-size: 0.75rem;
+      color: #9a3412;
+      margin-left: auto;
+    }
+    .owasp-body {
+      display: none;
+      padding: 12px 16px;
+      background: #fff;
+    }
+    .owasp-body.open { display: block; }
+    .owasp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+    }
+    .owasp-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .owasp-item:hover { border-color: var(--l3); }
+    .owasp-item.oi-yes     { background: #f0fdf4; border-color: #86efac; }
+    .owasp-item.oi-partial { background: #fffbeb; border-color: #fcd34d; }
+    .owasp-item.oi-no      { background: #fef2f2; border-color: #fca5a5; }
+    .owasp-code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--l3);
+      margin-bottom: 3px;
+    }
+    .owasp-name { font-size: 0.82rem; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+    .owasp-desc { font-size: 0.73rem; color: #64748b; line-height: 1.4; margin-bottom: 8px; }
+    .owasp-aml-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .owasp-ans-row { display: flex; gap: 4px; }
+    .owasp-ans {
+      flex: 1;
+      padding: 4px 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      background: #fff;
+      color: #64748b;
+      transition: all .15s;
+    }
+    .owasp-ans.sel-yes     { background: #dcfce7; border-color: #86efac; color: #15803d; }
+    .owasp-ans.sel-partial { background: #fef9c3; border-color: #fde047; color: #a16207; }
+    .owasp-ans.sel-no      { background: #fee2e2; border-color: #fca5a5; color: #b91c1c; }
+
+    /* ── Complete button ─────────────────────────────────────────────── */
+    .complete-btn {
+      display: block;
+      margin-top: 24px;
+      padding: 12px 24px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .complete-btn:hover { background: #1d4ed8; }
+
+    /* ── Live panel ──────────────────────────────────────────────────── */
+    .live-panel {
+      background: var(--navy);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      color: #fff;
+      position: sticky;
+      top: 24px;
+    }
+    .panel-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #94a3b8;
+      margin-bottom: 16px;
+    }
+
+    /* Score ring */
+    .score-ring-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .score-ring {
+      position: relative;
+      width: 80px; height: 80px;
+      flex-shrink: 0;
+    }
+    .score-ring svg {
+      transform: rotate(-90deg);
+    }
+    .score-ring-bg  { fill: none; stroke: #1e2d4a; stroke-width: 8; }
+    .score-ring-fg  { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset .5s; }
+    .score-ring-val {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+    }
+    .score-meta { flex: 1; }
+    .score-label { font-size: 0.8rem; color: #94a3b8; }
+    .score-interp { font-size: 0.85rem; font-weight: 600; margin-top: 4px; }
+    .score-interp.good   { color: #4ade80; }
+    .score-interp.warn   { color: #fbbf24; }
+    .score-interp.alert  { color: #f87171; }
+
+    /* Layer bars */
+    .layer-bars { margin-bottom: 16px; }
+    .layer-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .layer-bar-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      width: 30px;
+      flex-shrink: 0;
+      color: #94a3b8;
+    }
+    .layer-bar-track {
+      flex: 1;
+      height: 6px;
+      background: #1e2d4a;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .layer-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width .4s;
+    }
+    .layer-bar-pct {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      width: 30px;
+      text-align: right;
+    }
+
+    /* OWASP mini coverage */
+    .owasp-mini {
+      border-top: 1px solid #1e2d4a;
+      padding-top: 14px;
+    }
+    .owasp-mini-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .owasp-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(5,1fr);
+      gap: 4px;
+    }
+    .owasp-mini-cell {
+      height: 22px;
+      border-radius: 3px;
+      background: #1e2d4a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #475569;
+      transition: background .3s;
+      cursor: default;
+    }
+    .owasp-mini-cell.oc-yes     { background: #15803d; color: #dcfce7; }
+    .owasp-mini-cell.oc-partial { background: #a16207; color: #fef9c3; }
+    .owasp-mini-cell.oc-no      { background: #991b1b; color: #fee2e2; }
+
+    /* Gaps count */
+    .gaps-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #1e2d4a;
+    }
+    .gaps-num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #f87171;
+    }
+    .gaps-num.ok { color: #4ade80; }
+    .gaps-info { font-size: 0.78rem; color: #94a3b8; }
+
+    /* ── Results phase ───────────────────────────────────────────────── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .results-stat {
+      background: var(--slate-light);
+      border-radius: var(--radius);
+      padding: 14px;
+      text-align: center;
+    }
+    .results-stat-val {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+    .results-stat-val.green  { color: var(--green); }
+    .results-stat-val.amber  { color: var(--amber); }
+    .results-stat-val.red    { color: var(--red); }
+    .results-stat-label { font-size: 0.78rem; color: #64748b; margin-top: 2px; }
+
+    .layer-results { margin: 20px 0; }
+    .layer-result-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .layer-result-badge {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .layer-result-info { flex: 1; }
+    .layer-result-name { font-size: 0.88rem; font-weight: 600; }
+    .layer-result-sub  { font-size: 0.75rem; color: #64748b; margin-top: 2px; }
+    .layer-result-score {
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+    .layer-result-bar-track {
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .layer-result-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    .gaps-section { margin: 20px 0; }
+    .gap-item {
+      border-left: 3px solid var(--red);
+      background: #fff5f5;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .gap-item.warn { border-left-color: var(--amber); background: #fffbeb; }
+    .gap-item-title { font-size: 0.85rem; font-weight: 600; color: #1e293b; }
+    .gap-item-layer { font-size: 0.72rem; color: #64748b; margin-top: 2px; }
+
+    .owasp-results {
+      margin: 20px 0;
+    }
+    .owasp-result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .owasp-result-item {
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    .owasp-result-item.oi-yes     { background: #f0fdf4; border-color: #86efac; }
+    .owasp-result-item.oi-partial { background: #fffbeb; border-color: #fcd34d; }
+    .owasp-result-item.oi-no      { background: #fef2f2; border-color: #fca5a5; }
+    .owasp-result-item.oi-none    { background: #f8fafc; border-color: #e2e8f0; }
+    .ori-code { font-family: monospace; font-size: 0.72rem; font-weight: 700; }
+    .ori-name { font-size: 0.8rem; font-weight: 600; color: #1e293b; margin-top: 2px; }
+    .ori-status { font-size: 0.7rem; margin-top: 4px; font-weight: 600; }
+    .ori-status.s-yes     { color: #15803d; }
+    .ori-status.s-partial { color: #a16207; }
+    .ori-status.s-no      { color: #b91c1c; }
+    .ori-status.s-none    { color: #94a3b8; }
+
+    .pdf-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      padding: 12px 24px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .pdf-btn:hover { background: var(--navy-light); }
+
+    .disclaimer {
+      margin-top: 32px;
+      padding: 14px 16px;
+      background: var(--blue-light);
+      border-radius: var(--radius);
+      border-left: 3px solid var(--blue);
+      font-size: 0.78rem;
+      color: #374151;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <svg class="header-shield" viewBox="0 0 40 40" fill="none">
+      <path d="M20 3L5 9v10c0 9 6.5 17.4 15 19.4C29.5 36.4 36 28 36 19V9L20 3z" fill="#1f4af5" opacity=".3"/>
+      <path d="M20 6L8 11v8c0 7.4 5.2 14.3 12 16.4C26.8 33.3 32 26.4 32 19v-8L20 6z" stroke="#1f4af5" stroke-width="1.5" fill="none"/>
+      <path d="M15 20l3.5 3.5L26 16" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <div class="header-title">CoSAI — AI Security Controls Assessment</div>
+      <div class="header-sub">Coalition for Secure AI · CCI-level security posture across 5 layers</div>
+    </div>
+    <div class="header-badge">SECURITY FOCUSED</div>
+    <a href="/" class="header-back">
+      <svg width="12" height="12" fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 9L4.5 6l3-3"/>
+      </svg>
+      Back to platform
+    </a>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Left: Wizard phases -->
+  <div class="wizard">
+
+    <!-- ── Phase 1: Context ───────────────────────────────────────────── -->
+    <div class="phase-card" id="phase-card-1">
+      <div class="phase-header" onclick="togglePhase(1)">
+        <div class="phase-num active" id="phase-num-1"><span class="phase-num-text">1</span></div>
+        <div>
+          <div class="phase-title">Context</div>
+          <div class="phase-meta">~2 min · Deployment context for tailored assessment</div>
+        </div>
+        <svg class="phase-chevron open" id="phase-chev-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="phase-body open" id="phase-body-1">
+        <div class="section-intro">
+          <div class="section-intro-title">Assessment scope</div>
+          <div class="section-intro-text">Brief context helps calibrate which controls are most critical. All data stays in this browser — nothing is transmitted.</div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">AI system type</label>
+          <div class="btn-group">
+            <button class="btn-opt" onclick="select(this,'aitype','predictive')">Predictive / ML</button>
+            <button class="btn-opt" onclick="select(this,'aitype','generative')">Generative AI / LLM</button>
+            <button class="btn-opt" onclick="select(this,'aitype','agentic')">Agentic / Autonomous</button>
+            <button class="btn-opt" onclick="select(this,'aitype','mixed')">Mixed / Multi-modal</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Deployment model</label>
+          <div class="btn-group">
+            <button class="btn-opt" onclick="select(this,'deployment','saas')">SaaS / Third-party hosted</button>
+            <button class="btn-opt" onclick="select(this,'deployment','paas')">PaaS / Cloud platform</button>
+            <button class="btn-opt" onclick="select(this,'deployment','onprem')">On-premises</button>
+            <button class="btn-opt" onclick="select(this,'deployment','hybrid')">Hybrid</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Current lifecycle stage</label>
+          <div class="btn-group">
+            <button class="btn-opt" onclick="select(this,'stage','building')">Building / Training</button>
+            <button class="btn-opt" onclick="select(this,'stage','deploying')">Deploying / Launching</button>
+            <button class="btn-opt" onclick="select(this,'stage','production')">In Production</button>
+            <button class="btn-opt" onclick="select(this,'stage','reviewing')">Reviewing / Auditing</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Data sensitivity</label>
+          <div class="btn-group">
+            <button class="btn-opt" onclick="multiSelect(this,'datasensitivity','pii')">Personal / PII</button>
+            <button class="btn-opt" onclick="multiSelect(this,'datasensitivity','health')">Health data</button>
+            <button class="btn-opt" onclick="multiSelect(this,'datasensitivity','financial')">Financial data</button>
+            <button class="btn-opt" onclick="multiSelect(this,'datasensitivity','biometric')">Biometric</button>
+            <button class="btn-opt" onclick="multiSelect(this,'datasensitivity','none')">No sensitive data</button>
+          </div>
+        </div>
+
+        <button class="complete-btn" onclick="completePhase(1,2)">Continue to L1 — Business &amp; Governance →</button>
+      </div>
+    </div>
+
+    <!-- ── Phase 2: L1 Business ───────────────────────────────────────── -->
+    <div class="phase-card" data-layer="l1" id="phase-card-2">
+      <div class="phase-header" onclick="togglePhase(2)">
+        <div class="phase-num" id="phase-num-2"><span class="phase-num-text">2</span></div>
+        <div>
+          <div class="phase-title">L1 — Business &amp; Governance</div>
+          <div class="phase-meta">~4 min · Risk governance, accountability structures, AI policy</div>
+        </div>
+        <svg class="phase-chevron" id="phase-chev-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="phase-body" id="phase-body-2">
+        <div class="section-intro" style="border-left:3px solid var(--l1)">
+          <div class="section-intro-title" style="color:var(--l1)">L1 · Business</div>
+          <div class="section-intro-text">Governance controls ensure AI systems operate within a structured risk management framework with clear ownership. AICM domain: <strong>GRC</strong></div>
+        </div>
+        <div id="ctrls-l1"></div>
+        <button class="complete-btn" onclick="completePhase(2,3)">Continue to L2 — Data Security →</button>
+      </div>
+    </div>
+
+    <!-- ── Phase 3: L2 Information ────────────────────────────────────── -->
+    <div class="phase-card" data-layer="l2" id="phase-card-3">
+      <div class="phase-header" onclick="togglePhase(3)">
+        <div class="phase-num" id="phase-num-3"><span class="phase-num-text">3</span></div>
+        <div>
+          <div class="phase-title">L2 — Data Security &amp; Classification</div>
+          <div class="phase-meta">~4 min · Data classification, provenance, access controls</div>
+        </div>
+        <svg class="phase-chevron" id="phase-chev-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="phase-body" id="phase-body-3">
+        <div class="section-intro" style="border-left:3px solid var(--l2)">
+          <div class="section-intro-title" style="color:var(--l2)">L2 · Information</div>
+          <div class="section-intro-text">Data security controls protect training datasets, inference inputs, and model outputs from exposure, poisoning, and unauthorized access. AICM domains: <strong>DSP · CEK · STA</strong></div>
+        </div>
+        <div id="ctrls-l2"></div>
+        <button class="complete-btn" onclick="completePhase(3,4)">Continue to L3 — Application Security →</button>
+      </div>
+    </div>
+
+    <!-- ── Phase 4: L3 Application ────────────────────────────────────── -->
+    <div class="phase-card" data-layer="l3" id="phase-card-4">
+      <div class="phase-header" onclick="togglePhase(4)">
+        <div class="phase-num" id="phase-num-4"><span class="phase-num-text">4</span></div>
+        <div>
+          <div class="phase-title">L3 — Application Security &amp; Threat Coverage</div>
+          <div class="phase-meta">~6 min · OWASP LLM Top 10 · Prompt injection · Agent security</div>
+        </div>
+        <svg class="phase-chevron" id="phase-chev-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="phase-body" id="phase-body-4">
+        <div class="section-intro" style="border-left:3px solid var(--l3)">
+          <div class="section-intro-title" style="color:var(--l3)">L3 · Application</div>
+          <div class="section-intro-text">Application security controls address LLM-specific attack vectors — prompt injection, insecure output handling, excessive agent agency, and plugin abuse. AICM domains: <strong>AIS · MDS · LOG</strong></div>
+        </div>
+
+        <!-- OWASP LLM Top 10 subsection -->
+        <div class="owasp-section">
+          <div class="owasp-header" onclick="toggleOwasp()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="owasp-header-title">OWASP LLM Top 10 — 2025 Edition</span>
+            <span class="owasp-header-sub" id="owasp-coverage-label">0 / 10 addressed</span>
+          </div>
+          <div class="owasp-body" id="owasp-body">
+            <p style="font-size:.78rem;color:#64748b;margin-bottom:12px;">Mark mitigation status for each LLM risk. NIST AI 100-2e attack taxonomy IDs shown where mapped.</p>
+            <div class="owasp-grid" id="owasp-grid"></div>
+          </div>
+        </div>
+
+        <div id="ctrls-l3"></div>
+        <button class="complete-btn" onclick="completePhase(4,5)">Continue to L4 — Infrastructure Security →</button>
+      </div>
+    </div>
+
+    <!-- ── Phase 5: L4 Platform ────────────────────────────────────────── -->
+    <div class="phase-card" data-layer="l4" id="phase-card-5">
+      <div class="phase-header" onclick="togglePhase(5)">
+        <div class="phase-num" id="phase-num-5"><span class="phase-num-text">5</span></div>
+        <div>
+          <div class="phase-title">L4 — Infrastructure Security</div>
+          <div class="phase-meta">~4 min · Zero trust · Hardening · Monitoring · Logging</div>
+        </div>
+        <svg class="phase-chevron" id="phase-chev-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="phase-body" id="phase-body-5">
+        <div class="section-intro" style="border-left:3px solid var(--l4)">
+          <div class="section-intro-title" style="color:var(--l4)">L4 · Platform</div>
+          <div class="section-intro-text">Infrastructure controls harden the compute, network, and storage environments that host AI workloads — critical for preventing lateral movement and model exfiltration. AICM domains: <strong>I&amp;S · IAM · LOG · TVM · A&amp;A</strong></div>
+        </div>
+        <div id="ctrls-l4"></div>
+        <button class="complete-btn" onclick="completePhase(5,6)">Continue to L5 — Supply Chain Security →</button>
+      </div>
+    </div>
+
+    <!-- ── Phase 6: L5 Supply Chain ────────────────────────────────────── -->
+    <div class="phase-card" data-layer="l5" id="phase-card-6">
+      <div class="phase-header" onclick="togglePhase(6)">
+        <div class="phase-num" id="phase-num-6"><span class="phase-num-text">6</span></div>
+        <div>
+          <div class="phase-title">L5 — Supply Chain Security</div>
+          <div class="phase-meta">~4 min · Vendor risk · Model cards · SBOM · Provenance</div>
+        </div>
+        <svg class="phase-chevron" id="phase-chev-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="phase-body" id="phase-body-6">
+        <div class="section-intro" style="border-left:3px solid var(--l5)">
+          <div class="section-intro-title" style="color:var(--l5)">L5 · Supply Chain</div>
+          <div class="section-intro-text">Supply chain controls govern vendor security posture, model provenance, and dependency integrity across the AI ecosystem. AICM domains: <strong>STA · DSP · GRC</strong></div>
+        </div>
+        <div id="ctrls-l5"></div>
+        <button class="complete-btn" onclick="completePhase(6,7)">View Security Posture Results →</button>
+      </div>
+    </div>
+
+    <!-- ── Phase 7: Results ──────────────────────────────────────────────── -->
+    <div class="phase-card" id="phase-card-7">
+      <div class="phase-header" onclick="togglePhase(7)">
+        <div class="phase-num" id="phase-num-7"><span class="phase-num-text">7</span></div>
+        <div>
+          <div class="phase-title">Security Posture Results</div>
+          <div class="phase-meta">Full breakdown · Priority gaps · PDF export</div>
+        </div>
+        <svg class="phase-chevron" id="phase-chev-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="phase-body" id="phase-body-7">
+        <div id="results-content">
+          <p style="font-size:.85rem;color:#94a3b8;padding:20px 0">Complete all five layers to generate your security posture report.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /wizard -->
+
+  <!-- Right: Live panel -->
+  <aside class="live-panel">
+    <div class="panel-title">Security Posture · Live</div>
+
+    <div class="score-ring-wrap">
+      <div class="score-ring">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="score-ring-bg" cx="40" cy="40" r="32"/>
+          <circle class="score-ring-fg" id="ring-fg" cx="40" cy="40" r="32"
+            stroke="#2d5be3"
+            stroke-dasharray="201.06"
+            stroke-dashoffset="201.06"/>
+        </svg>
+        <div class="score-ring-val" id="ring-val">—</div>
+      </div>
+      <div class="score-meta">
+        <div class="score-label">Overall Score</div>
+        <div class="score-interp" id="score-interp">Not started</div>
+      </div>
+    </div>
+
+    <div class="layer-bars">
+      <div class="layer-bar-row">
+        <span class="layer-bar-label" style="color:var(--l1)">L1</span>
+        <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l1" style="width:0%;background:var(--l1)"></div></div>
+        <span class="layer-bar-pct" id="pct-l1">—</span>
+      </div>
+      <div class="layer-bar-row">
+        <span class="layer-bar-label" style="color:var(--l2)">L2</span>
+        <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l2" style="width:0%;background:var(--l2)"></div></div>
+        <span class="layer-bar-pct" id="pct-l2">—</span>
+      </div>
+      <div class="layer-bar-row">
+        <span class="layer-bar-label" style="color:var(--l3)">L3</span>
+        <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l3" style="width:0%;background:var(--l3)"></div></div>
+        <span class="layer-bar-pct" id="pct-l3">—</span>
+      </div>
+      <div class="layer-bar-row">
+        <span class="layer-bar-label" style="color:var(--l4)">L4</span>
+        <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l4" style="width:0%;background:var(--l4)"></div></div>
+        <span class="layer-bar-pct" id="pct-l4">—</span>
+      </div>
+      <div class="layer-bar-row">
+        <span class="layer-bar-label" style="color:var(--l5)">L5</span>
+        <div class="layer-bar-track"><div class="layer-bar-fill" id="bar-l5" style="width:0%;background:var(--l5)"></div></div>
+        <span class="layer-bar-pct" id="pct-l5">—</span>
+      </div>
+    </div>
+
+    <div class="owasp-mini">
+      <div class="owasp-mini-title">OWASP LLM Top 10 Coverage</div>
+      <div class="owasp-mini-grid" id="owasp-mini-grid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <div class="gaps-row">
+      <div class="gaps-num" id="gaps-num">—</div>
+      <div class="gaps-info">critical gaps<br>not implemented</div>
+    </div>
+  </aside>
+</div><!-- /layout -->
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CONTROLS = {
+  l1: [
+    { id:'l1c1', label:'AI risk register reviewed quarterly',
+      why:'Maintains a living inventory of AI-related risks enabling proactive mitigation before incidents occur. Without it, risks are discovered reactively after harm.',
+      aicm:'GRC', phases:['continuous'], aml:null },
+    { id:'l1c2', label:'Board / executive AI risk briefing conducted annually',
+      why:'Executive oversight is a foundational control. Without board-level accountability, AI risk is under-resourced and incidents escalate without authority to act.',
+      aicm:'GRC', phases:['continuous'], aml:null },
+    { id:'l1c3', label:'AI use case approval process documented',
+      why:'Undocumented approval processes lead to shadow AI and unreviewed deployments. A defined gate prevents high-risk use cases reaching production without review.',
+      aicm:'GRC', phases:['continuous'], aml:null },
+    { id:'l1c4', label:'Autonomy level (L0–L5) classified per AI system',
+      why:'Autonomous agents require stronger controls than advisory tools. Without autonomy classification, human-in-the-loop thresholds and override mechanisms cannot be correctly calibrated.',
+      aicm:'GRC', phases:['continuous'], aml:null },
+    { id:'l1c5', label:'AI incident response plan documented and tested',
+      why:'AI system failures differ from software failures — model drift, adversarial inputs, and output hallucinations require specialized playbooks separate from standard IT incident response.',
+      aicm:'GRC', phases:['continuous'], aml:null },
+    { id:'l1c6', label:'AI ethics and acceptable use policy established',
+      why:'Defines what AI systems are permitted to do, preventing mission creep into high-risk use cases without appropriate controls or review.',
+      aicm:'GRC', phases:['continuous'], aml:null },
+    { id:'l1c7', label:'EU AI Act risk tier assigned per use case',
+      why:'High-risk AI systems under the EU AI Act require conformity assessments, human oversight, and ongoing monitoring. Without per-use-case risk tier classification, compliance obligations go unrecognised and unresourced.',
+      aicm:'GRC', phases:['continuous'], aml:null }
+  ],
+  l2: [
+    { id:'l2c1', label:'Data classified for 100% of AI training assets',
+      why:'Unclassified training data leads to uncontrolled access and GDPR/CCPA exposure. Classification is the prerequisite for all other data controls.',
+      aicm:'DSP', phases:['continuous'], aml:null },
+    { id:'l2c2', label:'Training data encrypted at rest (AES-256)',
+      why:'Training datasets often contain sensitive information. Encryption at rest protects against storage-layer breaches and insider threat scenarios.',
+      aicm:'CEK', phases:['training','continuous'], aml:null },
+    { id:'l2c3', label:'Training data provenance and lineage documented',
+      why:'Without provenance, poisoned or biased datasets cannot be traced or remediated. Required for NIST AI RMF MAP 2.3 and EU AI Act Art. 10 compliance.',
+      aicm:'DSP', phases:['training'], aml:'AML.022' },
+    { id:'l2c4', label:'GDPR / CCPA data opt-out consent proof collected',
+      why:'Using personal data in training without consent creates regulatory liability. Consent proof must be retained and verifiable at audit time.',
+      aicm:'DSP', phases:['training'], aml:null },
+    { id:'l2c5', label:'Prompt / inference data excluded from model training by default',
+      why:'Production inference data often contains user PII. Without explicit training exclusion, this data may be incorporated in fine-tuning, creating disclosure risk.',
+      aicm:'DSP', phases:['training'], aml:'AML.03' },
+    { id:'l2c6', label:'Access logging enabled on AI data stores (retain ≥ 90 days)',
+      why:'Audit trails on training data access are required to detect insider threats, data poisoning attempts, and to support breach investigation.',
+      aicm:'DSP', phases:['continuous'], aml:null },
+    { id:'l2c7', label:'Data deletion certificates on file from AI vendors',
+      why:'Vendors with access to training data must certify deletion upon contract termination. Without certificates, data may persist in third-party environments indefinitely.',
+      aicm:'DSP', phases:['maintenance'], aml:null }
+  ],
+  l3: [
+    { id:'l3c1', label:'Prompt injection testing completed in CI/CD',
+      why:'Prompt injection is the #1 LLM threat vector. Testing in CI/CD catches regressions before deployment. Manual-only testing is insufficient for fast-moving model updates.',
+      aicm:'AIS', phases:['training','deployment'], aml:'AML.05,AML.051' },
+    { id:'l3c2', label:'LLM output validated before execution or rendering',
+      why:'Unsanitized LLM output routed to code execution, SQL, or HTML leads to injection vulnerabilities. Output must be treated as untrusted input from an external system.',
+      aicm:'AIS', phases:['deployment'], aml:'AML.031' },
+    { id:'l3c3', label:'SAST / DAST integrated in AI application CI/CD pipeline',
+      why:'Static and dynamic analysis catches code-level vulnerabilities introduced by AI-assisted development or conventional injection flaws in the application layer.',
+      aicm:'AIS', phases:['training','deployment'], aml:null },
+    { id:'l3c4', label:'Secrets scanning enabled on AI application repositories',
+      why:'LLM applications commonly include API keys and model tokens in code or configuration. Secrets scanning prevents credential exposure in source control.',
+      aicm:'AIS', phases:['continuous'], aml:null },
+    { id:'l3c5', label:'Human override mechanisms implemented and tested (T1–T5)',
+      why:'Agentic AI systems require graduated human control tiers. Without tested override mechanisms, autonomous systems cannot be safely halted during abnormal behavior.',
+      aicm:'MDS', phases:['deployment','maintenance'], aml:'AML.011' },
+    { id:'l3c6', label:'Agent actions and tool calls logged with full telemetry',
+      why:'Agent trajectories must be auditable. Without telemetry, post-incident forensics is impossible and drift from intended behavior goes undetected.',
+      aicm:'LOG', phases:['deployment','continuous'], aml:null },
+    { id:'l3c7', label:'SBOM generated for AI model components and dependencies',
+      why:'AI applications inherit supply chain risk from their model dependencies. An SBOM enables rapid identification of vulnerable or poisoned components.',
+      aicm:'STA', phases:['training','deployment'], aml:'AML.013,AML.024' }
+  ],
+  l4: [
+    { id:'l4c1', label:'CIS Level 2 hardening baseline enforced on AI compute nodes',
+      why:'AI compute environments are high-value targets. CIS L2 removes default credentials, unnecessary services, and misconfigurations that enable lateral movement.',
+      aicm:'I&S', phases:['deployment','continuous'], aml:null },
+    { id:'l4c2', label:'EDR deployed on all AI training and inference nodes',
+      why:'Endpoint detection is required to identify cryptojacking, unauthorized model access, and exfiltration attempts in AI compute environments.',
+      aicm:'I&S', phases:['deployment','continuous'], aml:null },
+    { id:'l4c3', label:'Critical patch SLA met (critical vulnerabilities: ≤ 24 hours)',
+      why:'Unpatched ML frameworks and AI libraries are a primary attack vector. Documented and measured SLAs are required to demonstrate control effectiveness.',
+      aicm:'TVM', phases:['continuous'], aml:'AML.024,AML.026' },
+    { id:'l4c4', label:'Inference environment isolated from training environment',
+      why:'Shared inference/training environments create risk of training data contamination and model theft. Network and storage isolation is a critical boundary.',
+      aicm:'I&S', phases:['deployment'], aml:null },
+    { id:'l4c5', label:'MFA enforced for all AI platform administrators',
+      why:'Admin access to AI infrastructure is a high-value target. MFA prevents credential-stuffing and phishing attacks from reaching control planes.',
+      aicm:'IAM', phases:['continuous'], aml:'AML.011' },
+    { id:'l4c6', label:'AI workload events collected in centralised SIEM / logging',
+      why:'AI systems produce distinctive telemetry (query volumes, latency spikes, unusual input patterns) that requires centralised collection to detect abuse.',
+      aicm:'LOG', phases:['deployment','continuous'], aml:'AML.031' },
+    { id:'l4c7', label:'Tenant isolation architecture documented for multi-tenant AI services',
+      why:'Multi-tenant AI services must prevent cross-tenant data leakage. Without documented isolation architecture, security reviews cannot verify the boundary.',
+      aicm:'I&S', phases:['deployment'], aml:null },
+    { id:'l4c8', label:'SOC 2 Type II report current (< 12 months) from AI platform provider',
+      why:'Platform vendors must demonstrate operational security through independent audit. An expired or absent SOC 2 cannot be used to satisfy customer compliance obligations.',
+      aicm:'A&A', phases:['continuous'], aml:null }
+  ],
+  l5: [
+    { id:'l5c1', label:'Model cards received from all Cat2 vendors (model / foundation model providers)',
+      why:'Model cards document training data, intended use, limitations, and known biases. Without them, risk assessment of the model is blind to its provenance.',
+      aicm:'STA', phases:['training'], aml:null },
+    { id:'l5c2', label:'SOC 2 / ISO 27001 certification current for all Cat1–5 vendors',
+      why:'Third-party vendors are a primary attack surface. Expired certifications indicate degraded security posture that may not be visible to customers.',
+      aicm:'STA', phases:['continuous'], aml:null },
+    { id:'l5c3', label:'Sub-processor lists current and reviewed (< 6 months)',
+      why:'AI vendors typically use sub-processors for compute, storage, and labeling. Outdated sub-processor lists prevent identification of fourth-party risks.',
+      aicm:'STA', phases:['continuous'], aml:null },
+    { id:'l5c4', label:'SBOM generated for AI model artifacts and published to VRM',
+      why:'Model SBOMs enable rapid response to compromised base models or dependencies. Without them, the blast radius of supply chain attacks cannot be assessed.',
+      aicm:'STA', phases:['training','deployment'], aml:'AML.013,AML.024' },
+    { id:'l5c5', label:'Vendor Risk Assessment (VRA) questionnaire completed per vendor category',
+      why:'Generic vendor questionnaires miss AI-specific risks. Category-specific VRA (Model Provider, Infrastructure, Data Labeling) surfaces controls relevant to the vendor\'s role.',
+      aicm:'STA', phases:['continuous'], aml:null },
+    { id:'l5c6', label:'Cryptographic signing verified for all deployed model artifacts',
+      why:'Unsigned models cannot be verified as unmodified from the source. Cryptographic signing detects tampering and supply chain substitution attacks.',
+      aicm:'STA', phases:['deployment'], aml:'AML.013' },
+    { id:'l5c7', label:'IP ownership and data destruction obligations documented (consulting / Cat4)',
+      why:'Professional services engagements often have de facto access to models and proprietary data. Without documented obligations, post-engagement data retention is uncontrolled.',
+      aicm:'GRC', phases:['continuous'], aml:null },
+    { id:'l5c8', label:'EU AI Act risk category mapped per deployed model',
+      why:'High-risk AI systems require conformity assessments and ongoing monitoring. Without per-model risk tier mapping, compliance obligations may be unrecognised.',
+      aicm:'GRC', phases:['continuous'], aml:null }
+  ]
+};
+
+const OWASP = [
+  { id:'LLM01', name:'Prompt Injection',
+    desc:'Manipulating LLM behavior via crafted inputs to bypass guardrails or exfiltrate data',
+    aml:['AML.05','AML.051'] },
+  { id:'LLM02', name:'Insecure Output Handling',
+    desc:'Unvalidated LLM output routed to code execution, SQL, or rendering contexts',
+    aml:['AML.031'] },
+  { id:'LLM03', name:'Training Data Poisoning',
+    desc:'Malicious or biased data in training sets corrupting model behavior',
+    aml:['AML.022'] },
+  { id:'LLM04', name:'Model Denial of Service',
+    desc:'Resource exhaustion via computationally expensive prompts or requests',
+    aml:['AML.031'] },
+  { id:'LLM05', name:'Supply Chain Vulnerabilities',
+    desc:'Compromised models, plugins, or dependencies from untrusted sources',
+    aml:['AML.013','AML.024'] },
+  { id:'LLM06', name:'Sensitive Information Disclosure',
+    desc:'LLM revealing confidential data from training data or active context',
+    aml:['AML.03'] },
+  { id:'LLM07', name:'Insecure Plugin Design',
+    desc:'Plugins with excessive permissions or inadequate authorization controls',
+    aml:['AML.011'] },
+  { id:'LLM08', name:'Excessive Agency',
+    desc:'Agents taking unintended high-impact actions without adequate human oversight',
+    aml:['AML.011','AML.013'] },
+  { id:'LLM09', name:'Overreliance',
+    desc:'Blind trust in LLM outputs without validation or fallback procedures',
+    aml:[] },
+  { id:'LLM10', name:'Model Theft',
+    desc:'Unauthorized extraction of model weights, parameters, or capabilities',
+    aml:['AML.03'] }
+];
+
+const LAYER_META = {
+  l1:{ name:'Business', color:'#16a34a', bg:'#f0fdf4', text:'#14532d', aicm:'GRC' },
+  l2:{ name:'Information', color:'#2563eb', bg:'#eff6ff', text:'#1e3a8a', aicm:'DSP/CEK/STA' },
+  l3:{ name:'Application', color:'#ea580c', bg:'#fff7ed', text:'#7c2d12', aicm:'AIS/MDS/LOG' },
+  l4:{ name:'Platform', color:'#9333ea', bg:'#faf5ff', text:'#581c87', aicm:'I&S/IAM/LOG/TVM' },
+  l5:{ name:'Supply Chain', color:'#0891b2', bg:'#ecfeff', text:'#164e63', aicm:'STA/DSP/GRC' }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+
+const state = {
+  aitype: null, deployment: null, stage: null, datasensitivity: [],
+  l1:{}, l2:{}, l3:{}, l4:{}, l5:{},
+  owasp:{},
+  completedPhases: new Set()
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDER CONTROLS
+// ─────────────────────────────────────────────────────────────────────────────
+
+function renderControls() {
+  ['l1','l2','l3','l4','l5'].forEach(layer => {
+    const el = document.getElementById('ctrls-' + layer);
+    if (!el) return;
+    el.innerHTML = CONTROLS[layer].map(c => `
+      <div class="ctrl-card" id="card-${c.id}">
+        <div class="ctrl-label">${c.label}</div>
+        <div class="ctrl-why">${c.why}</div>
+        <div class="ctrl-badges">
+          <span class="badge-aicm">${c.aicm}</span>
+          ${c.phases.map(p => `<span class="badge-phase ${p}">${phaseLabel(p)}</span>`).join('')}
+          ${c.aml ? c.aml.split(',').map(a => `<span class="badge-aml">${a.trim()}</span>`).join('') : ''}
+        </div>
+        <div class="ctrl-answers">
+          <button class="ans-btn" onclick="answer('${layer}','${c.id}','yes',this)">✅ Implemented</button>
+          <button class="ans-btn" onclick="answer('${layer}','${c.id}','partial',this)">⚠️ Partial</button>
+          <button class="ans-btn" onclick="answer('${layer}','${c.id}','no',this)">❌ Not done</button>
+          <button class="ans-btn" onclick="answer('${layer}','${c.id}','na',this)">— N/A</button>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+function renderOwasp() {
+  const grid = document.getElementById('owasp-grid');
+  grid.innerHTML = OWASP.map(r => `
+    <div class="owasp-item" id="oi-${r.id}">
+      <div class="owasp-code">${r.id}</div>
+      <div class="owasp-name">${r.name}</div>
+      <div class="owasp-desc">${r.desc}</div>
+      ${r.aml.length ? `<div class="owasp-aml-row">${r.aml.map(a=>`<span class="badge-aml">${a}</span>`).join('')}</div>` : ''}
+      <div class="owasp-ans-row">
+        <button class="owasp-ans" onclick="owaspAnswer('${r.id}','yes',this)">✅ Addressed</button>
+        <button class="owasp-ans" onclick="owaspAnswer('${r.id}','partial',this)">⚠️ Partial</button>
+        <button class="owasp-ans" onclick="owaspAnswer('${r.id}','no',this)">❌ Open</button>
+      </div>
+    </div>
+  `).join('');
+
+  // mini grid in panel
+  const mini = document.getElementById('owasp-mini-grid');
+  mini.innerHTML = OWASP.map(r => `
+    <div class="owasp-mini-cell" id="omini-${r.id}" title="${r.id}: ${r.name}">${r.id.replace('LLM','')}</div>
+  `).join('');
+}
+
+function phaseLabel(p) {
+  return { training:'Train', deployment:'Deploy', maintenance:'Maintain', continuous:'Continuous' }[p] || p;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INTERACTION
+// ─────────────────────────────────────────────────────────────────────────────
+
+function select(btn, key, val) {
+  const group = btn.closest('.btn-group');
+  group.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  state[key] = val;
+  updateLivePanel();
+}
+
+function multiSelect(btn, key, val) {
+  btn.classList.toggle('sel');
+  if (!Array.isArray(state[key])) state[key] = [];
+  if (btn.classList.contains('sel')) {
+    if (!state[key].includes(val)) state[key].push(val);
+  } else {
+    state[key] = state[key].filter(v => v !== val);
+  }
+  updateLivePanel();
+}
+
+function answer(layer, ctrlId, val, btn) {
+  state[layer][ctrlId] = val;
+  // update card style
+  const card = document.getElementById('card-' + ctrlId);
+  card.classList.remove('answered-yes','answered-partial','answered-no','answered-na');
+  card.classList.add('answered-' + val);
+  // update button styles
+  const btns = btn.closest('.ctrl-answers').querySelectorAll('.ans-btn');
+  btns.forEach(b => b.classList.remove('sel-yes','sel-partial','sel-no','sel-na'));
+  btn.classList.add('sel-' + val);
+  updateLivePanel();
+}
+
+function owaspAnswer(id, val, btn) {
+  state.owasp[id] = val;
+  const item = document.getElementById('oi-' + id);
+  item.classList.remove('oi-yes','oi-partial','oi-no');
+  item.classList.add('oi-' + val);
+  const btns = btn.closest('.owasp-ans-row').querySelectorAll('.owasp-ans');
+  btns.forEach(b => b.classList.remove('sel-yes','sel-partial','sel-no'));
+  btn.classList.add('sel-' + val);
+  // update mini grid cell
+  const cell = document.getElementById('omini-' + id);
+  cell.classList.remove('oc-yes','oc-partial','oc-no');
+  cell.classList.add('oc-' + val);
+  updateOwaspCoverageLabel();
+  updateLivePanel();
+}
+
+function togglePhase(n) {
+  const body = document.getElementById('phase-body-' + n);
+  const chev = document.getElementById('phase-chev-' + n);
+  const isOpen = body.classList.contains('open');
+  // close all
+  for (let i = 1; i <= 7; i++) {
+    document.getElementById('phase-body-' + i).classList.remove('open');
+    document.getElementById('phase-chev-' + i).classList.remove('open');
+    const num = document.getElementById('phase-num-' + i);
+    if (!state.completedPhases.has(i)) num.classList.remove('active');
+  }
+  if (!isOpen) {
+    body.classList.add('open');
+    chev.classList.add('open');
+    const num = document.getElementById('phase-num-' + n);
+    if (!state.completedPhases.has(n)) num.classList.add('active');
+  }
+}
+
+function toggleOwasp() {
+  const body = document.getElementById('owasp-body');
+  body.classList.toggle('open');
+}
+
+function completePhase(current, next) {
+  state.completedPhases.add(current);
+  const num = document.getElementById('phase-num-' + current);
+  num.classList.remove('active');
+  num.classList.add('done');
+  // close current, open next
+  document.getElementById('phase-body-' + current).classList.remove('open');
+  document.getElementById('phase-chev-' + current).classList.remove('open');
+  if (next <= 7) {
+    document.getElementById('phase-body-' + next).classList.add('open');
+    document.getElementById('phase-chev-' + next).classList.add('open');
+    document.getElementById('phase-num-' + next).classList.add('active');
+    document.getElementById('phase-body-' + next).scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  if (next === 7) renderResults();
+  updateLivePanel();
+}
+
+function updateOwaspCoverageLabel() {
+  const yes = Object.values(state.owasp).filter(v => v === 'yes').length;
+  const partial = Object.values(state.owasp).filter(v => v === 'partial').length;
+  document.getElementById('owasp-coverage-label').textContent =
+    `${yes} addressed · ${partial} partial`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SCORING
+// ─────────────────────────────────────────────────────────────────────────────
+
+function calcLayerScore(layer) {
+  const answers = state[layer];
+  let points = 0, max = 0;
+  for (const val of Object.values(answers)) {
+    if (val === 'na') continue;
+    max++;
+    if (val === 'yes') points += 1;
+    else if (val === 'partial') points += 0.5;
+  }
+  return { points, max, pct: max > 0 ? Math.round((points / max) * 100) : null };
+}
+
+function calcOverallScore() {
+  const layers = ['l1','l2','l3','l4','l5'];
+  let totalPts = 0, totalMax = 0;
+  layers.forEach(l => {
+    const s = calcLayerScore(l);
+    totalPts += s.points;
+    totalMax += s.max;
+  });
+  // also include OWASP answers
+  let owaspPts = 0, owaspMax = 0;
+  for (const val of Object.values(state.owasp)) {
+    owaspMax++;
+    if (val === 'yes') owaspPts += 1;
+    else if (val === 'partial') owaspPts += 0.5;
+  }
+  totalPts += owaspPts;
+  totalMax += owaspMax;
+  return totalMax > 0 ? Math.round((totalPts / totalMax) * 100) : null;
+}
+
+function countGaps() {
+  let gaps = 0;
+  ['l1','l2','l3','l4','l5'].forEach(l => {
+    for (const val of Object.values(state[l])) {
+      if (val === 'no') gaps++;
+    }
+  });
+  for (const val of Object.values(state.owasp)) {
+    if (val === 'no') gaps++;
+  }
+  return gaps;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LIVE PANEL UPDATE
+// ─────────────────────────────────────────────────────────────────────────────
+
+function updateLivePanel() {
+  const circumference = 2 * Math.PI * 32; // 201.06
+  const overall = calcOverallScore();
+  const ringFg = document.getElementById('ring-fg');
+  const ringVal = document.getElementById('ring-val');
+  const interp = document.getElementById('score-interp');
+
+  if (overall !== null) {
+    const offset = circumference * (1 - overall / 100);
+    ringFg.style.strokeDashoffset = offset;
+    ringVal.textContent = overall + '%';
+    const color = overall >= 70 ? '#4ade80' : overall >= 40 ? '#fbbf24' : '#f87171';
+    ringFg.style.stroke = color;
+    interp.textContent = overall >= 70 ? 'Strong posture' : overall >= 40 ? 'Gaps identified' : 'Action needed';
+    interp.className = 'score-interp ' + (overall >= 70 ? 'good' : overall >= 40 ? 'warn' : 'alert');
+  } else {
+    ringFg.style.strokeDashoffset = circumference;
+    ringVal.textContent = '—';
+    interp.textContent = 'Not started';
+    interp.className = 'score-interp';
+  }
+
+  ['l1','l2','l3','l4','l5'].forEach(l => {
+    const s = calcLayerScore(l);
+    const bar = document.getElementById('bar-' + l);
+    const pct = document.getElementById('pct-' + l);
+    if (s.pct !== null) {
+      bar.style.width = s.pct + '%';
+      pct.textContent = s.pct + '%';
+    } else {
+      bar.style.width = '0%';
+      pct.textContent = '—';
+    }
+  });
+
+  // gaps
+  const gaps = countGaps();
+  const gapsEl = document.getElementById('gaps-num');
+  gapsEl.textContent = gaps;
+  gapsEl.className = 'gaps-num' + (gaps === 0 ? ' ok' : '');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESULTS
+// ─────────────────────────────────────────────────────────────────────────────
+
+function renderResults() {
+  const overall = calcOverallScore() ?? 0;
+  const gaps = countGaps();
+  const owaspYes = Object.values(state.owasp).filter(v => v === 'yes').length;
+  const owaspPartial = Object.values(state.owasp).filter(v => v === 'partial').length;
+  const overallColor = overall >= 70 ? 'green' : overall >= 40 ? 'amber' : 'red';
+
+  const layerRows = ['l1','l2','l3','l4','l5'].map(l => {
+    const s = calcLayerScore(l);
+    const m = LAYER_META[l];
+    const pct = s.pct ?? 0;
+    const scoreColor = pct >= 70 ? '#16a34a' : pct >= 40 ? '#d97706' : '#dc2626';
+    const num = l.toUpperCase().replace('L','');
+    return `
+      <div class="layer-result-row">
+        <div class="layer-result-badge" style="background:${m.bg};color:${m.color}">L${num}</div>
+        <div class="layer-result-info">
+          <div class="layer-result-name">${m.name}</div>
+          <div class="layer-result-sub">AICM: ${m.aicm}</div>
+          <div class="layer-result-bar-track">
+            <div class="layer-result-bar-fill" style="width:${pct}%;background:${scoreColor}"></div>
+          </div>
+        </div>
+        <div class="layer-result-score" style="color:${scoreColor}">${s.pct !== null ? s.pct+'%' : '—'}</div>
+      </div>`;
+  }).join('');
+
+  // Priority gaps
+  const gapItems = [];
+  ['l1','l2','l3','l4','l5'].forEach(layer => {
+    CONTROLS[layer].forEach(ctrl => {
+      const val = state[layer][ctrl.id];
+      if (val === 'no') {
+        gapItems.push({ label: ctrl.label, layer: layer.toUpperCase(), severity:'critical' });
+      } else if (val === 'partial') {
+        gapItems.push({ label: ctrl.label, layer: layer.toUpperCase(), severity:'warn' });
+      }
+    });
+  });
+  OWASP.forEach(r => {
+    const val = state.owasp[r.id];
+    if (val === 'no') gapItems.push({ label: r.name + ' (' + r.id + ')', layer:'L3 OWASP', severity:'critical' });
+    else if (val === 'partial') gapItems.push({ label: r.name + ' (' + r.id + ')', layer:'L3 OWASP', severity:'warn' });
+  });
+
+  const gapsHtml = gapItems.length === 0
+    ? '<p style="color:#16a34a;font-weight:600;font-size:.9rem">✅ No gaps identified across all layers.</p>'
+    : gapItems.slice(0, 15).map(g => `
+        <div class="gap-item ${g.severity==='warn'?'warn':''}">
+          <div class="gap-item-title">${g.label}</div>
+          <div class="gap-item-layer">${g.layer}</div>
+        </div>`).join('') +
+      (gapItems.length > 15 ? `<p style="font-size:.78rem;color:#64748b;margin-top:8px">+ ${gapItems.length-15} more gaps</p>` : '');
+
+  // OWASP results grid
+  const owaspResultsHtml = OWASP.map(r => {
+    const val = state.owasp[r.id];
+    const cls = val ? 'oi-' + val : 'oi-none';
+    const statusText = { yes:'✅ Addressed', partial:'⚠️ Partial', no:'❌ Open', undefined:'— Not assessed' }[val];
+    const statusCls  = { yes:'s-yes', partial:'s-partial', no:'s-no', undefined:'s-none' }[val];
+    return `
+      <div class="owasp-result-item ${cls}">
+        <div class="ori-code" style="color:#ea580c">${r.id}</div>
+        <div class="ori-name">${r.name}</div>
+        <div class="ori-status ${statusCls}">${statusText}</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('results-content').innerHTML = `
+    <div class="results-grid">
+      <div class="results-stat">
+        <div class="results-stat-val ${overallColor}">${overall}%</div>
+        <div class="results-stat-label">Overall Security Score</div>
+      </div>
+      <div class="results-stat">
+        <div class="results-stat-val ${gaps===0?'green':'red'}">${gaps}</div>
+        <div class="results-stat-label">Critical Gaps</div>
+      </div>
+      <div class="results-stat">
+        <div class="results-stat-val ${owaspYes>=7?'green':owaspYes>=4?'amber':'red'}">${owaspYes}/${OWASP.length}</div>
+        <div class="results-stat-label">OWASP LLM Addressed</div>
+      </div>
+    </div>
+
+    <h3 style="font-size:.9rem;font-weight:700;color:#1e293b;margin-bottom:12px">Layer Breakdown</h3>
+    <div class="layer-results">${layerRows}</div>
+
+    <h3 style="font-size:.9rem;font-weight:700;color:#1e293b;margin:20px 0 12px">OWASP LLM Top 10 Coverage</h3>
+    <div class="owasp-results">
+      <div class="owasp-result-grid">${owaspResultsHtml}</div>
+    </div>
+
+    ${gapItems.length > 0 ? `
+    <h3 style="font-size:.9rem;font-weight:700;color:#1e293b;margin:20px 0 12px">
+      Priority Gaps ${gapItems.filter(g=>g.severity==='critical').length > 0 ? '— ' + gapItems.filter(g=>g.severity==='critical').length + ' critical' : ''}
+    </h3>
+    <div class="gaps-section">${gapsHtml}</div>` : ''}
+
+    <button class="pdf-btn" onclick="generatePDF()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+      Download PDF Report
+    </button>
+
+    <div class="disclaimer">
+      <strong>Privacy notice:</strong> This assessment runs entirely in your browser. No data is transmitted to any server. Results exist only in this session — download the PDF to retain your findings.
+      <br><br>
+      <strong>About this tool:</strong> Controls derived from CSA AICM v1.0.3, NISTIR 8605A (Predictive AI Overlay), OWASP Top 10 for LLM Applications 2025, and the CoSAI Shared Responsibility Framework 2026. This is a self-assessment tool — findings should be validated with qualified security professionals.
+    </div>
+  `;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PDF GENERATION
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Replace Unicode chars unsupported by jsPDF's built-in Helvetica */
+function pdfSafe(str) {
+  return String(str)
+    .replace(/≤/g, '<=')
+    .replace(/≥/g, '>=')
+    .replace(/[–—]/g, '-')
+    .replace(/['']/g, "'")
+    .replace(/[""]/g, '"')
+    .replace(/…/g, '...')
+    .replace(/[^\x00-\x7F]/g, '?');
+}
+
+function generatePDF() {
+  if (typeof window.jspdf === 'undefined') {
+    alert('PDF library not loaded. Please ensure you have an internet connection.');
+    return;
+  }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+
+  const navy   = [15, 22, 35];
+  const blue   = [45, 91, 227];
+  const white  = [255, 255, 255];
+  const green  = [22, 163, 74];
+  const amber  = [217, 119, 6];
+  const red    = [220, 38, 38];
+  const slate  = [100, 116, 139];
+  const lightgray = [241, 245, 249];
+
+  const W = 210, H = 297, M = 18;
+  let y = 0;
+
+  // Header band
+  doc.setFillColor(...navy);
+  doc.rect(0, 0, W, 36, 'F');
+  doc.setFillColor(...blue);
+  doc.rect(0, 36, W, 3, 'F');
+
+  doc.setTextColor(...white);
+  doc.setFontSize(15);
+  doc.setFont('helvetica','bold');
+  doc.text('CoSAI — AI Security Controls Assessment', M, 14);
+  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');
+  doc.text('Coalition for Secure AI · CCI-level security posture across 5 layers', M, 21);
+  doc.setFontSize(8);
+  doc.setTextColor(148, 163, 184);
+  const now = new Date().toLocaleDateString('en-GB', { year:'numeric', month:'long', day:'numeric' });
+  doc.text(`Generated: ${now}`, M, 28);
+  doc.text('SECURITY FOCUSED', W - M, 14, {align:'right'});
+
+  y = 50;
+
+  // Context
+  const ctxLines = [
+    state.aitype ? `AI Type: ${state.aitype}` : null,
+    state.deployment ? `Deployment: ${state.deployment}` : null,
+    state.stage ? `Stage: ${state.stage}` : null,
+    state.datasensitivity?.length ? `Data sensitivity: ${state.datasensitivity.join(', ')}` : null
+  ].filter(Boolean);
+
+  if (ctxLines.length) {
+    doc.setFillColor(...lightgray);
+    doc.roundedRect(M, y, W - M*2, 8 + ctxLines.length * 5, 2, 2, 'F');
+    doc.setFontSize(8);
+    doc.setTextColor(...slate);
+    doc.setFont('helvetica','bold');
+    doc.text('ASSESSMENT CONTEXT', M+4, y+5);
+    doc.setFont('helvetica','normal');
+    ctxLines.forEach((l,i) => doc.text(l, M+4, y+10+i*5));
+    y += 12 + ctxLines.length * 5;
+  }
+
+  y += 6;
+
+  // Score summary box
+  const overall = calcOverallScore() ?? 0;
+  const gaps = countGaps();
+  const owaspYes = Object.values(state.owasp).filter(v=>v==='yes').length;
+  const scoreColor = overall >= 70 ? green : overall >= 40 ? amber : red;
+
+  doc.setFillColor(...lightgray);
+  doc.roundedRect(M, y, W - M*2, 28, 3, 3, 'F');
+  // Score circle simulation
+  doc.setFillColor(...scoreColor);
+  doc.circle(M+16, y+14, 10, 'F');
+  doc.setTextColor(...white);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.text(overall+'%', M+16, y+15, {align:'center'});
+
+  doc.setTextColor(...navy);
+  doc.setFontSize(12);
+  doc.text('Overall Security Score', M+30, y+9);
+  doc.setFontSize(9);
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(...slate);
+  const interp = overall >= 70 ? 'Strong security posture' : overall >= 40 ? 'Gaps identified — action required' : 'Critical gaps — immediate action needed';
+  doc.text(interp, M+30, y+15);
+  doc.setFontSize(8);
+  doc.text(`${gaps} critical gap${gaps !== 1 ? 's' : ''}   ·   OWASP LLM: ${owaspYes}/10 addressed`, M+30, y+21);
+  y += 36;
+
+  // Layer scores table
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...navy);
+  doc.text('Layer Security Scores', M, y);
+  y += 6;
+
+  const layerData = ['l1','l2','l3','l4','l5'].map(l => {
+    const s = calcLayerScore(l);
+    const m = LAYER_META[l];
+    const pct = s.pct ?? 0;
+    return { layer: 'L' + l[1].toUpperCase(), name: m.name, pct, max: s.max, points: s.points, color: pct >= 70 ? green : pct >= 40 ? amber : red };
+  });
+
+  doc.setFontSize(8);
+  layerData.forEach(row => {
+    doc.setFillColor(...lightgray);
+    doc.roundedRect(M, y, W-M*2, 13, 2, 2, 'F');
+    // layer badge
+    doc.setFillColor(...(row.color));
+    doc.roundedRect(M+2, y+2.5, 16, 8, 1, 1, 'F');
+    doc.setTextColor(...white);
+    doc.setFont('helvetica','bold');
+    doc.text(row.layer, M+10, y+7.5, {align:'center'});
+    // layer name
+    doc.setTextColor(...navy);
+    doc.setFont('helvetica','normal');
+    doc.text(row.name, M+22, y+7.5);
+    // score text — right-aligned, stacked: pct on top, X/Y below
+    doc.setTextColor(...row.color);
+    doc.setFont('helvetica','bold');
+    doc.text(`${row.pct}%`, W-M-4, y+7.5, {align:'right'});
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(...slate);
+    doc.text(`${Math.round(row.points)}/${row.max}`, W-M-4, y+11.5, {align:'right'});
+    // progress bar — leaves 32mm on right for the score text
+    const barX = M+52, barW = W - M*2 - 52 - 34;
+    doc.setFillColor(226,232,240);
+    doc.roundedRect(barX, y+5, barW, 3.5, 1, 1, 'F');
+    if (row.pct > 0) {
+      doc.setFillColor(...row.color);
+      doc.roundedRect(barX, y+5, barW*(row.pct/100), 3.5, 1, 1, 'F');
+    }
+    y += 15;
+  });
+
+  y += 4;
+
+  // OWASP summary
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...navy);
+  doc.text('OWASP LLM Top 10 Coverage', M, y);
+  y += 6;
+
+  // 2-column table: LLM01-05 left, LLM06-10 right — full names, no truncation
+  const colW = (W - M*2 - 4) / 2;
+  const rowH = 11;
+  doc.setFontSize(7.5);
+  OWASP.forEach((r, i) => {
+    const col = i < 5 ? 0 : 1;
+    const rowIdx = i < 5 ? i : i - 5;
+    const cx = M + col * (colW + 4);
+    const cy = y + rowIdx * rowH;
+    const val = state.owasp[r.id];
+    const bg     = val === 'yes' ? [240,253,244] : val === 'partial' ? [255,251,235] : val === 'no' ? [254,242,242] : [248,250,252];
+    const border = val === 'yes' ? [134,239,172] : val === 'partial' ? [252,211,77]  : val === 'no' ? [252,165,165] : [226,232,240];
+    const statusLabel = val === 'yes' ? 'Addressed' : val === 'partial' ? 'Partial' : val === 'no' ? 'Open' : '—';
+    const statusColor = val === 'yes' ? green : val === 'partial' ? amber : val === 'no' ? red : slate;
+    doc.setFillColor(...bg);
+    doc.setDrawColor(...border);
+    doc.roundedRect(cx, cy, colW, rowH - 1, 1, 1, 'FD');
+    // code
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(...statusColor);
+    doc.text(r.id, cx + 3, cy + 4.5);
+    // name (full, no truncation — colW allows ~32 chars at 7.5pt)
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(...navy);
+    doc.text(pdfSafe(r.name), cx + 3, cy + 8.5);
+    // status right-aligned
+    doc.setFont('helvetica','bold');
+    doc.setTextColor(...statusColor);
+    doc.text(statusLabel, cx + colW - 3, cy + 8.5, {align:'right'});
+  });
+  y += 5 * rowH + 4;
+
+  // Gaps section
+  const critGaps = [];
+  const warnGaps = [];
+  ['l1','l2','l3','l4','l5'].forEach(layer => {
+    CONTROLS[layer].forEach(ctrl => {
+      const val = state[layer][ctrl.id];
+      if (val === 'no') critGaps.push({ label: ctrl.label, layer: layer.toUpperCase() });
+      else if (val === 'partial') warnGaps.push({ label: ctrl.label, layer: layer.toUpperCase() });
+    });
+  });
+  OWASP.forEach(r => {
+    const val = state.owasp[r.id];
+    if (val === 'no') critGaps.push({ label: `${r.id}: ${r.name}`, layer: 'L3 OWASP' });
+    else if (val === 'partial') warnGaps.push({ label: `${r.id}: ${r.name}`, layer: 'L3 OWASP' });
+  });
+
+  if (y + 20 > H - 20) { doc.addPage(); y = 20; }
+
+  if (critGaps.length > 0) {
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...navy);
+    doc.text(`Critical Gaps (${critGaps.length})`, M, y);
+    y += 6;
+    critGaps.slice(0, 12).forEach(g => {
+      if (y + 10 > H - 20) { doc.addPage(); y = 20; }
+      doc.setFillColor(254, 242, 242);
+      doc.setDrawColor(252, 165, 165);
+      doc.roundedRect(M, y, W-M*2, 9, 1, 1, 'FD');
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...red);
+      doc.text('✗', M+3, y+6);
+      doc.setTextColor(...navy);
+      doc.text(pdfSafe(g.label), M+8, y+6);
+      doc.setTextColor(...slate);
+      doc.text(g.layer, W-M-4, y+6, {align:'right'});
+      y += 11;
+    });
+    y += 4;
+  }
+
+  if (warnGaps.length > 0 && y + 20 < H - 20) {
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...navy);
+    doc.text(`Partial Implementation (${warnGaps.length})`, M, y);
+    y += 6;
+    warnGaps.slice(0, 8).forEach(g => {
+      if (y + 10 > H - 20) return;
+      doc.setFillColor(255, 251, 235);
+      doc.setDrawColor(252, 211, 77);
+      doc.roundedRect(M, y, W-M*2, 9, 1, 1, 'FD');
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...amber);
+      doc.text('⚠', M+3, y+6);
+      doc.setTextColor(...navy);
+      doc.text(pdfSafe(g.label), M+8, y+6);
+      doc.setTextColor(...slate);
+      doc.text(g.layer, W-M-4, y+6, {align:'right'});
+      y += 11;
+    });
+  }
+
+  // Footer
+  doc.setFillColor(...navy);
+  doc.rect(0, H-16, W, 16, 'F');
+  doc.setTextColor(148, 163, 184);
+  doc.setFontSize(7);
+  doc.setFont('helvetica','normal');
+  doc.text('CoSAI AI Security Controls Assessment · Controls derived from CSA AICM v1.0.3, NISTIR 8605A, OWASP LLM Top 10 2025, CoSAI SRF 2026', M, H-8);
+  doc.text('Self-assessment only — validate findings with qualified security professionals', W-M, H-8, {align:'right'});
+
+  doc.save('CoSAI-AI-Security-Controls-Assessment.pdf');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderControls();
+  renderOwasp();
+  updateLivePanel();
+});
+</script>
+<footer style="text-align:center;padding:12px;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0;margin-top:24px;">
+  &copy; 2025 Stout Computer Services, LLC
+</footer>
+</body>
+</html>
