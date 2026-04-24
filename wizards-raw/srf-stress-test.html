@@ -505,6 +505,16 @@
     letter-spacing: 0.06em;
   }
 
+  .offline-note {
+    display: none;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 10px;
+    line-height: 1.45;
+    max-width: 52em;
+  }
+  .offline-note.visible { display: block; }
+
   @media (max-width: 640px) {
     main { padding: 32px 20px 60px; }
     .layer-row { grid-template-columns: 1fr; }
@@ -575,6 +585,7 @@
       <span class="rl-badge" id="rlBadge">5/5 runs available</span>
     </div>
     <div class="error-msg" id="errorMsg"></div>
+    <p class="offline-note" id="offlineNote" aria-live="polite"></p>
   </div>
 
   <div id="results">
@@ -661,6 +672,167 @@ const SCENARIOS = {
   supply_chain: "A widely-used open-source foundation model on Hugging Face is found to contain a backdoor introduced during training that causes it to output malicious code under specific conditions. Hundreds of downstream applications built on this model are affected. No model card disclosed the vulnerability."
 };
 
+const ALT_FRAMEWORKS_DEFAULT = [
+  { name: 'NIST AI RMF', origin: 'NIST, 2023', description: 'Govern, Map, Measure, Manage risk functions.', vsCoSAI: 'Lifecycle risk functions complement CoSAI’s actor-layer split for this case.', verdict: 'COMPLEMENTARY' },
+  { name: 'ISO 42001', origin: 'ISO/IEC, 2023', description: 'AI management system standard.', vsCoSAI: 'Adds auditable management-system evidence beyond layer RACI alone.', verdict: 'COMPLEMENTARY' },
+  { name: 'EU AI Act', origin: 'EU, 2024', description: 'Risk-tiered regulatory obligations.', vsCoSAI: 'Deployer/provider duties and high-risk obligations sharpen enforcement paths.', verdict: 'STRONGER HERE' },
+  { name: 'Google SAIF', origin: 'Google, 2023', description: 'Secure AI Framework for AI-specific risks.', vsCoSAI: 'Security control themes map cleanly onto L3–L5 technical measures.', verdict: 'COMPLEMENTARY' }
+];
+
+const ANALYSIS_PRESETS = {
+  chatbot_pii: {
+    verdict: 'PARTIAL',
+    verdictSummary: 'CoSAI spans the actors, but prompt-injection plus CRM data paths blur who must enforce segregation at L3 versus guardrails at L4–L5.',
+    layers: [
+      { layer: 'L1 — AI Business & Usage', finding: 'Financial services context with GDPR and SR 11-7 sets clear business risk appetite.', status: 'WARN', owner: ' — Business owner' },
+      { layer: 'L2 — AI Information', finding: 'PII in CRM connected to the bot raises classification and lawful-basis duties.', status: 'WARN', owner: ' — Data governance lead' },
+      { layer: 'L3 — AI Application', finding: 'Injection bypassed app-level controls; tool-use and retrieval boundaries were insufficient.', status: 'GAP', owner: ' — Application security' },
+      { layer: 'L4 — AI Platform', finding: 'Azure OpenAI PaaS provides baseline controls; tenant misconfiguration still enabled exfiltration.', status: 'WARN', owner: ' — Cloud platform owner' },
+      { layer: 'L5 — AI Model Provider', finding: 'GPT-4 vendor publishes safety guidance; it does not cover your CRM connector policy.', status: 'OK', owner: ' — Model vendor relations' }
+    ],
+    scores: { accountabilityClarity: 58, regulatoryAlignment: 72, incidentResponse: 48, agenticCoverage: 62, practicalEnforceability: 55 },
+    strengths: ['Clear multi-vendor stack (app, cloud, model) maps to layers.', 'Regulatory hooks (GDPR, SR 11-7) anchor L1–L2 duties.', 'Good language for post-incident RACI workshops.'],
+    gaps: ['Injection is an L3 design issue but vendors dispute L4/L5 scope.', 'CRM connector ownership for prompt contexts is underspecified.', 'Cross-layer testing for tool-use exfiltration is not implied by the model alone.'],
+    recommendations: ['Contractual split: who operates retrieval and logs tool calls.', 'Red-team prompt injection with production-like CRM fixtures.', 'Publish an internal “AI data boundary” standard tied to L2 classification.'],
+    alternativeFrameworks: ALT_FRAMEWORKS_DEFAULT
+  },
+  agentic_financial: {
+    verdict: 'GAPS_FOUND',
+    verdictSummary: 'Autonomous spend outside limits is exactly where CoSAI needs crisp human-on-loop and authorization boundaries; the framework names layers but under-specifies enforcement.',
+    layers: [
+      { layer: 'L1 — AI Business & Usage', finding: 'Procurement use case and dollar limits belong here; policy did not bind the agent’s tools.', status: 'GAP', owner: ' — Finance / procurement' },
+      { layer: 'L2 — AI Information', finding: 'Contract metadata sensitivity is clear; who may commit spend was not encoded as data rules.', status: 'WARN', owner: ' — Legal / records' },
+      { layer: 'L3 — AI Application', finding: 'LangChain workflow lacked hard stops before PO issuance.', status: 'GAP', owner: ' — Engineering lead' },
+      { layer: 'L4 — AI Platform', finding: 'Bedrock and IAM could enforce tool scopes; configuration gap vs policy.', status: 'WARN', owner: ' — Cloud security' },
+      { layer: 'L5 — AI Model Provider', finding: 'Model did not “authorize” spend; still cited as black box by business stakeholders.', status: 'WARN', owner: ' — Vendor management' }
+    ],
+    scores: { accountabilityClarity: 42, regulatoryAlignment: 55, incidentResponse: 50, agenticCoverage: 35, practicalEnforceability: 40 },
+    strengths: ['Highlights L3 workflow risk for agentic apps.', 'Forces discussion of cloud vs app ownership for tools.'],
+    gaps: ['No default “financial agent kill switch” pattern across layers.', 'Human-on-loop timing and evidence requirements are vague.', 'Shared blame across framework, cloud, and org stalls remediation.'],
+    recommendations: ['Mandate dual-control workflows for monetary tool actions.', 'Map each tool to an IAM role with spend caps at L4.', 'Add board-level AI agent risk appetite statements in L1.'],
+    alternativeFrameworks: ALT_FRAMEWORKS_DEFAULT
+  },
+  model_bias: {
+    verdict: 'PARTIAL',
+    verdictSummary: 'CoSAI helps separate model, fine-tune, and deployer duties, but bias accountability still fights upstream vs downstream evidence gaps.',
+    layers: [
+      { layer: 'L1 — AI Business & Usage', finding: 'Hiring context triggers employment-law and fairness duties.', status: 'WARN', owner: ' — HR executive' },
+      { layer: 'L2 — AI Information', finding: 'Training and evaluation datasets need lineage; HR rarely owns that data.', status: 'GAP', owner: ' — People analytics' },
+      { layer: 'L3 — AI Application', finding: 'Threshold tuning without disparate-impact testing is an app defect.', status: 'GAP', owner: ' — Product owner' },
+      { layer: 'L4 — AI Platform', finding: 'IaaS host provides compute isolation; not responsible for model fairness.', status: 'OK', owner: ' — Infrastructure' },
+      { layer: 'L5 — AI Model Provider', finding: 'Base model vendor disclaims fine-tuned behavior; deployer must validate.', status: 'WARN', owner: ' — ML engineering' }
+    ],
+    scores: { accountabilityClarity: 52, regulatoryAlignment: 68, incidentResponse: 45, agenticCoverage: 70, practicalEnforceability: 48 },
+    strengths: ['Useful for arguing deployer validation duty at L3.', 'Separates infrastructure from model behavior cleanly.'],
+    gaps: ['No built-in bias testing obligations per layer.', 'Disputes on “root cause” data vs model stall audits.', 'HR “we only set thresholds” weakens L1 governance.'],
+    recommendations: ['Require independent bias evaluation before production at L3.', 'Contractual data cards from fine-tuning vendors into L2.', 'Document model change management RACI across L3–L5.'],
+    alternativeFrameworks: ALT_FRAMEWORKS_DEFAULT
+  },
+  shadow_ai: {
+    verdict: 'GAPS_FOUND',
+    verdictSummary: 'Shadow AI is an L1 policy vacuum first; CoSAI layers help after inventory exists, not before employees adopt consumer tools.',
+    layers: [
+      { layer: 'L1 — AI Business & Usage', finding: 'No acceptable-use policy for generative AI; governance gap at source.', status: 'GAP', owner: ' — CISO / legal' },
+      { layer: 'L2 — AI Information', finding: 'HIPAA processing without BAAs or DPIAs is a direct compliance breach.', status: 'GAP', owner: ' — Privacy office' },
+      { layer: 'L3 — AI Application', finding: 'Consumer chat UIs bypass enterprise DLP and logging.', status: 'GAP', owner: ' — IT operations' },
+      { layer: 'L4 — AI Platform', finding: 'Unmanaged endpoints evade SSO and device posture checks.', status: 'WARN', owner: ' — Identity team' },
+      { layer: 'L5 — AI Model Provider', finding: 'Public model vendors are not HIPAA business associates by default.', status: 'OK', owner: ' — Procurement' }
+    ],
+    scores: { accountabilityClarity: 38, regulatoryAlignment: 40, incidentResponse: 35, agenticCoverage: 78, practicalEnforceability: 42 },
+    strengths: ['Frames unmanaged tools as cross-layer control debt.', 'Good anchor for an enterprise AI acceptable-use program.'],
+    gaps: ['Does not prescribe discovery methods for shadow usage.', 'Vendor BAAs and data residency sit outside layer diagrams.', 'Employee training accountability is thin in the framework text.'],
+    recommendations: ['Deploy sanctioned AI gateways with logging (L3–L4).', 'Publish prohibited-data classes for external LLMs (L2).', 'Run periodic egress and clipboard monitoring aligned to policy (L4).'],
+    alternativeFrameworks: ALT_FRAMEWORKS_DEFAULT
+  },
+  supply_chain: {
+    verdict: 'GAPS_FOUND',
+    verdictSummary: 'Supply-chain compromise of a foundation model stresses L5 transparency and L3 dependency management; CoSAI lacks supply-chain attestation detail.',
+    layers: [
+      { layer: 'L1 — AI Business & Usage', finding: 'Downstream orgs rarely track model provenance as a business continuity risk.', status: 'WARN', owner: ' — Risk committee' },
+      { layer: 'L2 — AI Information', finding: 'Model weights as software artifact need integrity metadata.', status: 'GAP', owner: ' — Security architecture' },
+      { layer: 'L3 — AI Application', finding: 'Hundreds of apps inherit the same poisoned weights without SBOM for models.', status: 'GAP', owner: ' — Engineering' },
+      { layer: 'L4 — AI Platform', finding: 'Hosting platform did not introduce the backdoor; still a distribution channel.', status: 'OK', owner: ' — Platform SRE' },
+      { layer: 'L5 — AI Model Provider', finding: 'Training-time compromise is an L5 integrity gap; model cards omitted it.', status: 'GAP', owner: ' — Open-source maintainer / publisher' }
+    ],
+    scores: { accountabilityClarity: 45, regulatoryAlignment: 50, incidentResponse: 42, agenticCoverage: 80, practicalEnforceability: 38 },
+    strengths: ['Clear story for why L5 integrity matters to L3 consumers.', 'Useful for third-party model onboarding checklists.'],
+    gaps: ['No standard for cryptographic signing of model artifacts.', 'Weak guidance on verifying training pipelines.', 'Downstream liability allocation after OSS compromise is fuzzy.'],
+    recommendations: ['Adopt model SBOMs and signed checkpoints before deploy (L3–L5).', 'Require independent security review for popular forks.', 'Plan coordinated disclosure playbooks across ecosystem (L1–L5).'],
+    alternativeFrameworks: ALT_FRAMEWORKS_DEFAULT
+  }
+};
+
+function getAnalyzeUrl() {
+  if (typeof window !== 'undefined' && window.__COSAI_ANALYZE_URL__) {
+    return String(window.__COSAI_ANALYZE_URL__);
+  }
+  return new URL('/api/analyze', window.location.origin).href;
+}
+
+function setOfflineNote(active) {
+  const el = document.getElementById('offlineNote');
+  if (!el) return;
+  if (active) {
+    el.textContent = 'This run used built-in assessment text (GitHub Pages and other static hosts cannot POST to /api/analyze). For live model output, host an analyze endpoint and set window.__COSAI_ANALYZE_URL__ to its URL before running.';
+    el.classList.add('visible');
+  } else {
+    el.textContent = '';
+    el.classList.remove('visible');
+  }
+}
+
+function parseRemoteAnalyzePayload(data) {
+  if (!data || !Array.isArray(data.content) || data.content.length === 0) {
+    throw new Error('Unexpected response format from server.');
+  }
+  const raw = data.content.map(c => (c && typeof c.text === 'string' ? c.text : '')).join('');
+  const clean = raw.replace(/```json\s*|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+function shortenScenario(s, max) {
+  const t = String(s || '').replace(/\s+/g, ' ').trim();
+  if (t.length <= max) return t;
+  return t.slice(0, max - 1).trim() + '…';
+}
+
+function localFrameworkAnalysis(scenario, presetId) {
+  if (presetId && ANALYSIS_PRESETS[presetId]) {
+    return JSON.parse(JSON.stringify(ANALYSIS_PRESETS[presetId]));
+  }
+  const sn = shortenScenario(scenario, 88);
+  const low = scenario.toLowerCase();
+  const hasAgent = /autonom|agent|human-on-loop|tool\s*use|langchain/i.test(scenario);
+  const hasLeak = /leak|breach|injection|exfil|unauthori|hipaa|gdpr|shadow/i.test(low);
+  const hasSupply = /supply|backdoor|hugging|model card|training/i.test(low);
+  const verdict = hasLeak || hasSupply || hasAgent ? 'GAPS_FOUND' : 'PARTIAL';
+  const ac = hasAgent ? 44 : hasSupply ? 46 : 55;
+  const ir = hasLeak ? 40 : 52;
+  const ag = hasAgent ? 38 : 72;
+  return {
+    verdict,
+    verdictSummary: `For this scenario (“${sn}”), CoSAI layers help map actors, but accountability clarity still depends on contracts and telemetry not shown in the framework diagram alone.`,
+    layers: [
+      { layer: 'L1 — AI Business & Usage', finding: `Business context and risk appetite should anchor decisions for: ${sn}`, status: 'WARN', owner: ' — Executive sponsor' },
+      { layer: 'L2 — AI Information', finding: 'Data classification, lawful use, and retention for model inputs/outputs need explicit owners.', status: hasLeak ? 'GAP' : 'WARN', owner: ' — Data governance' },
+      { layer: 'L3 — AI Application', finding: 'Workflow design, testing, and human oversight for the AI feature sit with the application team.', status: 'WARN', owner: ' — Product / engineering' },
+      { layer: 'L4 — AI Platform', finding: 'Cloud and API guardrails (identity, logging, quotas) must align to the app’s threat model.', status: 'OK', owner: ' — Platform security' },
+      { layer: 'L5 — AI Model Provider', finding: 'Model capabilities, safety claims, and update channels belong to the model supplier relationship.', status: 'WARN', owner: ' — Vendor management' }
+    ],
+    scores: {
+      accountabilityClarity: ac,
+      regulatoryAlignment: hasLeak ? 62 : 55,
+      incidentResponse: ir,
+      agenticCoverage: ag,
+      practicalEnforceability: 50
+    },
+    strengths: ['Five-layer view surfaces multiple accountable parties quickly.', 'Works as a workshop structure for RACI and control mapping.', 'Helps separate application design from platform and model duties.'],
+    gaps: ['Layer text alone does not mandate specific controls or test evidence.', 'Cross-border and sector rules still need legal interpretation (L1–L2).', 'Dynamic agent workflows stress static layer boundaries.'],
+    recommendations: ['Publish a one-page RACI per system referencing L1–L5.', 'Run tabletop exercises with real logs and vendor contacts.', 'Tie procurement security questionnaires explicitly to each layer.'],
+    alternativeFrameworks: ALT_FRAMEWORKS_DEFAULT.map(f => ({ ...f }))
+  };
+}
+
 let selectedId = 'chatbot_pii';
 
 function selectScenario(el) {
@@ -676,6 +848,7 @@ async function runTest() {
   const btn = document.getElementById('runBtn');
   const errorEl = document.getElementById('errorMsg');
   errorEl.classList.remove('visible');
+  setOfflineNote(false);
 
   const { allowed } = checkRL();
   if (!allowed) {
@@ -691,6 +864,8 @@ async function runTest() {
   btn.querySelector('.btn-text').textContent = 'Analyzing…';
   document.getElementById('results').classList.remove('visible');
 
+  const presetId = customText ? null : selectedId;
+
   const prompt = `You are an AI governance expert. Evaluate this scenario against the CoSAI 5-Layer AI Shared Responsibility Framework. Be concise — keep all string values under 25 words each.
 
 SCENARIO: ${scenario}
@@ -704,40 +879,59 @@ Fill in real values for this scenario. verdict must be FUNCTIONAL, PARTIAL, or G
   const timeoutId = setTimeout(() => controller.abort(), 30000);
 
   try {
-    consumeRL();
-    updateRLBadge();
+    const analyzeUrl = getAnalyzeUrl();
+    let result = null;
+    let usedOffline = false;
 
-    const res = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!res.ok) {
+    const tryRemote = async () => {
+      const res = await fetch(analyzeUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
+        signal: controller.signal
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return parseRemoteAnalyzePayload(data);
+      }
+      if (res.status === 404 || res.status === 405 || res.status === 501) {
+        return null;
+      }
       const err = await res.json().catch(() => ({}));
       throw new Error(err.error || `Server error ${res.status}`);
+    };
+
+    try {
+      result = await tryRemote();
+    } catch (e1) {
+      if (e1.name === 'AbortError') throw e1;
+      const isNetwork =
+        (typeof TypeError !== 'undefined' && e1 instanceof TypeError) ||
+        /network|failed to fetch|load failed|networkerror/i.test(String(e1 && e1.message));
+      if (isNetwork) {
+        result = null;
+      } else {
+        throw e1;
+      }
     }
 
-    const data = await res.json();
-    if (!data || !Array.isArray(data.content) || data.content.length === 0) {
-      throw new Error('Unexpected response format from server.');
+    if (result === null) {
+      usedOffline = true;
+      result = localFrameworkAnalysis(scenario, presetId);
     }
-    const raw = data.content.map(c => (c && typeof c.text === 'string' ? c.text : '')).join('');
-    const clean = raw.replace(/```json\s*|```/g, '').trim();
-    const result = JSON.parse(clean);
+
     validateAndRender(result);
-
+    if (usedOffline) setOfflineNote(true);
+    consumeRL();
+    updateRLBadge();
   } catch (e) {
-    clearTimeout(timeoutId);
     const msg = e.name === 'AbortError'
       ? 'Analysis timed out after 30 seconds. Please try again.'
       : (e.message || 'Analysis failed. Please try again.');
     showError(msg);
     console.error(e);
   } finally {
+    clearTimeout(timeoutId);
     btn.classList.remove('loading');
     btn.disabled = false;
     btn.querySelector('.btn-text').textContent = 'Run framework test';
