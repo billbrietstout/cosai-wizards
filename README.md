@@ -1,6 +1,6 @@
 # CoSAI Wizards
 
-Five vanilla-web assessment wizards for practitioners working with the
+Four vanilla-web assessment wizards for practitioners working with the
 **Coalition for Secure AI (CoSAI)** Shared Responsibility Framework and
 adjacent security frameworks (CSA AICM, OWASP LLM Top 10, NIST AI RMF,
 MITRE ATLAS).
@@ -15,9 +15,8 @@ Everything runs in the browser; every wizard self-contains its state in
 |---|--------|------|--------|
 | 1 | **AI Security Controls Assessment** — 5-layer posture check with OWASP LLM Top 10 coverage and PDF export | `/wizards/security-controls/` | v1 |
 | 2 | **AI Security Controls Assessment (CoSAI AICM variant)** — same engine, AICM-aligned control set, PDF export | `/wizards/controls-assessment/` | v1 |
-| 3 | **Enterprise Security Hierarchy (CLI)** — NIST → Directive → SRG → STIG → CCI explorer | `/wizards/hierarchy-cli/` | v1.1 |
-| 4 | **Layer Integration Matrix** — who-owns-what across business / information / application / infrastructure / supply-chain | `/wizards/layer-matrix/` | v1.1 |
-| 5 | **CoSAI SRF Stress Test** — walk a real incident through the five layers and find accountability gaps | `/wizards/srf-stress/` | v1.1 |
+| 3 | **Layer Integration Matrix** — who-owns-what across business / information / application / infrastructure / supply-chain | `/wizards/layer-matrix/` | v1.1 |
+| 4 | **CoSAI SRF Stress Test** — walk a real incident through the five layers and find accountability gaps | `/wizards/srf-stress/` | v1.1 |
 
 Wizards 1–2 are structurally factored: questions and scoring rules live in
 `data.json`, wizard behaviour lives in `wizard.js`, presentation in
