@@ -381,72 +381,87 @@ body {
     </div>
 
     <div id="matrix" class="view active">
+      <p class="view-note">AI responsibility components mapped to the five layers of the <strong>CoSAI AI Shared Responsibility Framework</strong> (Draft V0.7). Cells follow the RACI matrices in §A.1.2 – §A.1.5 of the whitepaper: <em>Primary</em> = accountable owner, <em>Shared</em> = responsible / supports, <em>Inherited</em> = not directly involved or inherited from an upstream layer.</p>
       <div class="legend-row">
-        <div class="leg"><div class="leg-sq" style="background:#185FA5"></div> primary owner</div>
-        <div class="leg"><div class="leg-sq" style="background:#9FE1CB"></div> shared / contributes</div>
-        <div class="leg"><div class="leg-sq" style="background:#D3D1C7"></div> minimal / inherited</div>
+        <div class="leg"><div class="leg-sq" style="background:#185FA5"></div> primary (accountable)</div>
+        <div class="leg"><div class="leg-sq" style="background:#9FE1CB"></div> shared (responsible / supports)</div>
+        <div class="leg"><div class="leg-sq" style="background:#D3D1C7"></div> inherited / not involved</div>
       </div>
       <div class="matrix-grid">
-        <div class="mh">Security domain</div>
-        <div class="mh">Business &amp; usage</div>
-        <div class="mh">Information</div>
-        <div class="mh">Application</div>
-        <div class="mh">Infrastructure</div>
-        <div class="mh">Supply chain</div>
+        <div class="mh">AI responsibility component</div>
+        <div class="mh">L1 · AI Business &amp; Usage</div>
+        <div class="mh">L2 · AI Information</div>
+        <div class="mh">L3 · AI Application</div>
+        <div class="mh">L4 · AI Platform</div>
+        <div class="mh">L5 · AI Model Provider</div>
 
-        <div class="rl"><div class="rdot" style="background:#185FA5"></div>Business / strategy</div>
-        <div class="mc pri">Primary<br><span class="sub">Risk appetite, governance, NIST CSF Govern</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">Data classification policy</span></div>
+        <div class="rl"><div class="rdot" style="background:#185FA5"></div>Governance, risk register, sector regulation</div>
+        <div class="mc pri">Primary<br><span class="sub">AI risk appetite, sector regs (FDA, SR 11-7, EU AI Act); §A.1.1</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Data classification policy issuance</span></div>
         <div class="mc na">Inherited</div>
         <div class="mc na">Inherited</div>
-        <div class="mc sec">Contributes<br><span class="sub">Vendor risk policy</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Vendor evidence per §A.7.4</span></div>
 
-        <div class="rl"><div class="rdot" style="background:#0F6E56"></div>People / identity</div>
-        <div class="mc sec">Contributes<br><span class="sub">User roles, usage policy</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">Data access rights</span></div>
-        <div class="mc pri">Primary<br><span class="sub">AuthN/AuthZ, MFA, RBAC, NIST 800-63</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">PAM, admin accounts</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">Vendor identity, API keys</span></div>
-
-        <div class="rl"><div class="rdot" style="background:#854F0B"></div>Data</div>
-        <div class="mc sec">Contributes<br><span class="sub">Usage data, consent</span></div>
-        <div class="mc pri">Primary<br><span class="sub">Classification, DLP, lineage, NIST 800-53</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">API data handling, PII</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">Encryption at rest</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">Training data provenance</span></div>
-
-        <div class="rl"><div class="rdot" style="background:#993C1D"></div>Applications</div>
-        <div class="mc sec">Contributes<br><span class="sub">UX security, consent flows</span></div>
+        <div class="rl"><div class="rdot" style="background:#0F6E56"></div>User training &amp; acceptable use (incl. shadow AI)</div>
+        <div class="mc pri">Primary<br><span class="sub">AUP, training, shadow-AI detection; §A.1.2.3</span></div>
+        <div class="mc sec">Shared<br><span class="sub">DLP and tool-data governance</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Surface policy in app UI</span></div>
         <div class="mc na">Inherited</div>
-        <div class="mc pri">Primary<br><span class="sub">SDLC, OWASP ASVS, SAST/DAST, NIST SSDF</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">Runtime env, containers</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">OSS deps, SCA, SBOMs</span></div>
-
-        <div class="rl"><div class="rdot" style="background:#993556"></div>Infrastructure</div>
         <div class="mc na">Inherited</div>
-        <div class="mc sec">Contributes<br><span class="sub">Storage hardening</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">App runtime security</span></div>
-        <div class="mc pri">Primary<br><span class="sub">CIS benchmarks, STIGs, patch mgmt, EDR</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">Cloud provider controls</span></div>
 
-        <div class="rl"><div class="rdot" style="background:#3B6D11"></div>Network</div>
+        <div class="rl"><div class="rdot" style="background:#993556"></div>Identity &amp; access management</div>
+        <div class="mc sec">Shared<br><span class="sub">Org defines roles &amp; entitlements</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Per-tenant data access</span></div>
+        <div class="mc sec">Shared<br><span class="sub">App-level RBAC</span></div>
+        <div class="mc pri">Primary<br><span class="sub">IAM primitives, IdP, MFA; §A.1.2.1, §A.1.4.2</span></div>
         <div class="mc na">Inherited</div>
-        <div class="mc sec">Contributes<br><span class="sub">Data in transit</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">API gateway, TLS</span></div>
-        <div class="mc pri">Primary<br><span class="sub">Segmentation, ZTA, DISA SRG, IDS/IPS</span></div>
-        <div class="mc sec">Contributes<br><span class="sub">Vendor network access</span></div>
 
-        <div class="rl row-last"><div class="rdot" style="background:#534AB7"></div>Physical</div>
+        <div class="rl"><div class="rdot" style="background:#854F0B"></div>Content filtering &amp; moderation</div>
+        <div class="mc sec">Shared<br><span class="sub">Defines acceptable outputs (Responsible)</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Output classification</span></div>
+        <div class="mc sec">Shared<br><span class="sub">App-level filters</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Platform safety rails</span></div>
+        <div class="mc pri">Primary<br><span class="sub">Built-in model guardrails (Accountable); §A.1.2.1</span></div>
+
+        <div class="rl"><div class="rdot" style="background:#534AB7"></div>Training data governance, lineage &amp; consent</div>
+        <div class="mc sec">Shared<br><span class="sub">Lawful-basis &amp; consent policy</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Lineage, dataset cards (Data Provider)</span></div>
+        <div class="mc na">Inherited</div>
+        <div class="mc na">Inherited</div>
+        <div class="mc pri">Primary<br><span class="sub">Source verification, bias eval, privacy-preserving training; §A.1.5.1</span></div>
+
+        <div class="rl"><div class="rdot" style="background:#993C1D"></div>Application design, plugins &amp; integration safety</div>
+        <div class="mc na">Inherited</div>
+        <div class="mc sec">Shared<br><span class="sub">Scope of data connections</span></div>
+        <div class="mc pri">Primary<br><span class="sub">App design, AI plugins, safety systems; §A.1.3.1</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Secure API gateway, runtime hardening</span></div>
+        <div class="mc na">Inherited</div>
+
+        <div class="rl"><div class="rdot" style="background:#3B6D11"></div>Agent autonomy, tool use &amp; human override (T1–T5)</div>
+        <div class="mc sec">Shared<br><span class="sub">Override policy &amp; autonomy classification (Accountable); §A.1.3.3</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Agent memory &amp; retrieval scoping; §A.1.2.2</span></div>
+        <div class="mc pri">Primary<br><span class="sub">Override mechanisms, agent telemetry, ATLAS tests; §A.1.3.2</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Rate limit, runtime isolation</span></div>
+        <div class="mc na">Inherited</div>
+
+        <div class="rl"><div class="rdot" style="background:#185FA5"></div>Model serving runtime &amp; AI compute</div>
+        <div class="mc na">Inherited</div>
+        <div class="mc sec">Shared<br><span class="sub">Confidential compute per data class</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Inference integration patterns</span></div>
+        <div class="mc pri">Primary<br><span class="sub">Model serving, GPU / KV-cache isolation, SOC 2; §A.1.4.1</span></div>
+        <div class="mc sec">Shared<br><span class="sub">Model interop standards (Accountable for cross-model)</span></div>
+
+        <div class="rl row-last"><div class="rdot" style="background:#0F6E56"></div>Model safety, cards, SBOM &amp; vulnerability disclosure</div>
+        <div class="mc row-last sec">Shared<br><span class="sub">Vendor due-diligence cadence</span></div>
         <div class="mc row-last na">Inherited</div>
-        <div class="mc row-last na">Inherited</div>
-        <div class="mc row-last na">Inherited</div>
-        <div class="mc row-last pri">Primary<br><span class="sub">DC access, ISO 27001 A.7, CCTV, badging</span></div>
-        <div class="mc row-last sec">Contributes<br><span class="sub">Vendor facility audits</span></div>
+        <div class="mc row-last sec">Shared<br><span class="sub">Consume model cards in design</span></div>
+        <div class="mc row-last sec">Shared<br><span class="sub">Hosts attestations &amp; model registry</span></div>
+        <div class="mc row-last pri">Primary<br><span class="sub">Model cards, SLSA, SBOM-ML, CVE disclosure; §A.1.5.1</span></div>
       </div>
     </div>
 
     <div id="supply" class="view">
-      <p class="view-note">CRISP-ML(Q) / MLOps lifecycle — security controls per phase. Click to expand.</p>
+      <p class="view-note">CRISP-ML(Q) / MLOps lifecycle, with each phase tagged to the <strong>CoSAI AI SRF</strong> layer that holds primary accountability for the controls in that phase. Useful for mapping evidence (per §A.7 of the whitepaper) to lifecycle stage gates. Click a phase to expand.</p>
       <div class="sc-wrap" id="sc-phases"></div>
     </div>
 
@@ -466,27 +481,27 @@ function showView(id, btn) {
 }
 
 const phases = [
-  { num:'01', color:'#185FA5', bg:'#E6F1FB', label:'Business understanding', sub:'Define problem, success metrics, feasibility',
-    security:['AI risk appetite documented','Use case ethics review','Regulatory mapping (GDPR, HIPAA, AI Act)','Stakeholder data agreements'],
-    frameworks:['NIST AI RMF — Govern','ISO/IEC 42001 AI Mgmt','EU AI Act risk tier','NIST CSF Govern'] },
-  { num:'02', color:'#0F6E56', bg:'#E1F5EE', label:'Data understanding', sub:'Collect, explore, assess quality',
+  { num:'01', color:'#185FA5', bg:'#E6F1FB', label:'Business understanding', sub:'Define problem, success metrics, feasibility', srf:'L1 — AI Business & Usage',
+    security:['AI risk appetite documented','Use case ethics review','Regulatory mapping (GDPR, HIPAA, AI Act, SR 11-7, FDA AI/ML)','Stakeholder data agreements'],
+    frameworks:['CoSAI AI SRF §A.1.1','NIST AI RMF — Govern','ISO/IEC 42001 AI Mgmt','EU AI Act risk tier'] },
+  { num:'02', color:'#0F6E56', bg:'#E1F5EE', label:'Data understanding', sub:'Collect, explore, assess quality', srf:'L2 — AI Information · L5 — AI Model Provider',
     security:['Data provenance & lineage tracked','PII/sensitive field inventory','Training data consent verified','Bias & fairness audit'],
-    frameworks:['NIST SP 800-53 SI-12','DAMA DMBOK data quality','ISO/IEC 5259 data quality for AI','OWASP ML Top 10 — data'] },
-  { num:'03', color:'#854F0B', bg:'#FAEEDA', label:'Data preparation', sub:'Clean, transform, feature engineer',
+    frameworks:['CoSAI AI SRF §A.1.5.1 (Training Data Governance)','NIST SP 800-53 SI-12','DAMA DMBOK data quality','ISO/IEC 5259 data quality for AI'] },
+  { num:'03', color:'#854F0B', bg:'#FAEEDA', label:'Data preparation', sub:'Clean, transform, feature engineer', srf:'L2 — AI Information · L5 — AI Model Provider',
     security:['Data poisoning controls','Differential privacy applied','Anonymisation / pseudonymisation','Audit log of transformations'],
-    frameworks:['NIST SP 800-188 de-identification','ISO/IEC 27701 privacy','OWASP ML Top 10 — poisoning','ENISA AI threat landscape'] },
-  { num:'04', color:'#993C1D', bg:'#FAECE7', label:'Modelling', sub:'Select, train, tune algorithms',
+    frameworks:['CoSAI AI SRF §A.1.5.1 (Privacy-Preserving Training)','NIST SP 800-188 de-identification','ISO/IEC 27701 privacy','OWASP ML Top 10 — poisoning'] },
+  { num:'04', color:'#993C1D', bg:'#FAECE7', label:'Modelling', sub:'Select, train, tune algorithms', srf:'L5 — AI Model Provider',
     security:['Model card / transparency doc','Adversarial robustness testing','Hyperparameter access controls','Experiment tracking access logs'],
-    frameworks:['NIST AI RMF — Map & Measure','MITRE ATLAS adversarial ML','Google Model Cards standard','MIT AI Risk Repository'] },
-  { num:'05', color:'#993556', bg:'#FBEAF0', label:'Evaluation', sub:'Validate performance, fairness, safety',
+    frameworks:['CoSAI AI SRF §A.1.5.1 (Model Development Security)','NIST AI RMF — Map & Measure','MITRE ATLAS adversarial ML','Google Model Cards standard'] },
+  { num:'05', color:'#993556', bg:'#FBEAF0', label:'Evaluation', sub:'Validate performance, fairness, safety', srf:'L5 — AI Model Provider · L3 — AI Application (red team)',
     security:['Red team / adversarial eval','Explainability requirements met','Fairness metrics documented','Approval gate before promotion'],
-    frameworks:['NIST AI RMF — Measure','OWASP LLM Top 10','NIST SP 800-226 eval of diff privacy','IEEE 7010 wellbeing impact'] },
-  { num:'06', color:'#3B6D11', bg:'#EAF3DE', label:'Deployment', sub:'Package, release, serve',
-    security:['SBOM generated for model + deps','Container image signed & scanned','Model API auth enforced','Inference environment hardened'],
-    frameworks:['NIST SSDF SP 800-218','SLSA supply chain levels','CIS Benchmarks — containers','DISA STIG — Kubernetes'] },
-  { num:'07', color:'#534AB7', bg:'#EEEDFE', label:'Monitoring & maintenance', sub:'Observe drift, retrain, retire',
-    security:['Data/model drift alerts','Inference anomaly detection','Retrain trigger access control','Model retirement & deletion policy'],
-    frameworks:['NIST AI RMF — Manage','MLflow / Evidently AI monitoring','NIST SP 800-137 continuous monitoring','ISO/IEC 42001 — operation'] }
+    frameworks:['CoSAI AI SRF §A.7 (Evidence — Red Team Reports)','NIST AI RMF — Measure','OWASP LLM Top 10','IEEE 7010 wellbeing impact'] },
+  { num:'06', color:'#3B6D11', bg:'#EAF3DE', label:'Deployment', sub:'Package, release, serve', srf:'L4 — AI Platform · L3 — AI Application',
+    security:['SBOM-ML generated for model + deps (CycloneDX-ML / SPDX)','Container image signed & scanned','Model API auth enforced','Inference environment hardened'],
+    frameworks:['CoSAI AI SRF §A.1.4 (Model Serving)','NIST SSDF SP 800-218','SLSA supply chain levels','CIS Benchmarks — containers'] },
+  { num:'07', color:'#534AB7', bg:'#EEEDFE', label:'Monitoring & maintenance', sub:'Observe drift, retrain, retire', srf:'L4 — AI Platform · L1 — AI Business & Usage (governance review)',
+    security:['Data/model drift alerts','Inference anomaly detection (incl. denial-of-wallet)','Retrain trigger access control','Model retirement & deletion policy'],
+    frameworks:['CoSAI AI SRF §A.4.3 (Operational Maturity)','NIST AI RMF — Manage','NIST SP 800-137 continuous monitoring','ISO/IEC 42001 — operation'] }
 ];
 
 const scWrap = document.getElementById('sc-phases');
@@ -497,7 +512,7 @@ phases.forEach((p, i) => {
     <div class="sc-head" onclick="togglePhase(${i})">
       <div class="sc-num" style="background:${p.bg};color:${p.color}">${p.num}</div>
       <div style="flex:1">
-        <div class="sc-title">${p.label}</div>
+        <div class="sc-title">${p.label} <span style="font-weight:400;color:${p.color};margin-left:6px">· ${p.srf}</span></div>
         <div class="sc-sub">${p.sub}</div>
       </div>
       <div class="sc-chev" id="sc-chev-${i}">▶</div>

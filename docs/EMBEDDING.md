@@ -137,7 +137,7 @@ is a rename, not a rewrite.
 | ---------- | -------------------------------------------------------------------- |
 | `meta`     | Title, subtitle, badge text, PDF filename, `localStorage` key, sources. |
 | `context`  | The pre-assessment context questions (industry, model type, etc).    |
-| `layers`   | The five CoSAI layers with names, titles, intro copy, and colors.    |
+| `layers`   | The five CoSAI AI SRF layers — L1 AI Business & Usage, L2 AI Information, L3 AI Application, L4 AI Platform, L5 AI Model Provider — with names, titles, intro copy, and colors. |
 | `controls` | Per-layer arrays of controls (`id`, `label`, `why`, `aicm`, `phases`, `aml`). |
 | `owasp`    | OWASP Top 10 for LLM Applications cross-references.                  |
 | `scoring`  | Weights and thresholds used to compute the live score.               |

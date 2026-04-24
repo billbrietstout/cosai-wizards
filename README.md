@@ -1,9 +1,26 @@
 # CoSAI Wizards
 
 Four vanilla-web assessment wizards for practitioners working with the
-**Coalition for Secure AI (CoSAI)** Shared Responsibility Framework and
+**[CoSAI AI Shared Responsibility Framework](https://github.com/cosai-oasis/ws2-defenders)**
+(Draft V0.7, 2026, OASIS Open / Coalition for Secure AI Workstream 2) and
 adjacent security frameworks (CSA AICM, OWASP LLM Top 10, NIST AI RMF,
 MITRE ATLAS).
+
+The wizards are built on the whitepaper's five-layer schema:
+
+| Layer | Name | Accountable persona (per §3.1) |
+|---|---|---|
+| **L1** | AI Business & Usage | AI System Users · AI System Governance |
+| **L2** | AI Information | Data Provider |
+| **L3** | AI Application | Application Developer (+ Agentic Platform Provider) |
+| **L4** | AI Platform | Cloud / AI Platform Provider (+ AI Model Serving) |
+| **L5** | AI Model Provider | Model Provider |
+
+The framework is an **accountability** framework — it answers *who* owns
+each component across the AI stack. It complements rather than replaces
+control frameworks: NIST AI RMF defines *what* governance outcomes to
+achieve, ISO/IEC 42001 defines *how* to manage an AI management system,
+and EU AI Act defines *which* regulatory obligations apply by risk tier.
 
 No build step. No database. No tracking. No cookies. No external fonts.
 Everything runs in the browser; every wizard self-contains its state in
@@ -15,7 +32,7 @@ Everything runs in the browser; every wizard self-contains its state in
 |---|--------|------|--------|
 | 1 | **AI Security Controls Assessment** — 5-layer posture check with OWASP LLM Top 10 coverage and PDF export | `/wizards/security-controls/` | v1 |
 | 2 | **AI Security Controls Assessment (CoSAI AICM variant)** — same engine, AICM-aligned control set, PDF export | `/wizards/controls-assessment/` | v1 |
-| 3 | **Layer Integration Matrix** — who-owns-what across business / information / application / infrastructure / supply-chain | `/wizards/layer-matrix/` | v1.1 |
+| 3 | **Layer Integration Matrix** — RACI across the five SRF layers (AI Business & Usage / AI Information / AI Application / AI Platform / AI Model Provider) plus CRISP-ML(Q) lifecycle and AI-specific coverage gaps | `/wizards/layer-matrix/` | v1.1 |
 | 4 | **CoSAI SRF Stress Test** — walk a real incident through the five layers and find accountability gaps | `/wizards/srf-stress/` | v1.1 |
 
 Wizards 1–2 are structurally factored: questions and scoring rules live in
