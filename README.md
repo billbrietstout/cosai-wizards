@@ -13,11 +13,11 @@ Everything runs in the browser; every wizard self-contains its state in
 
 | # | Wizard | Path | Status |
 |---|--------|------|--------|
-| 1 | **AI Security Controls Assessment** — 5-layer posture check with OWASP LLM Top 10 coverage and PDF export | `/wizards/security-controls/` | v1 |
-| 2 | **AI Security Controls Assessment (CoSAI AICM variant)** — same engine, AICM-aligned control set, PDF export | `/wizards/controls-assessment/` | v1 |
-| 3 | **Enterprise Security Hierarchy (CLI)** — NIST → Directive → SRG → STIG → CCI explorer | `/wizards/hierarchy-cli/` | v1.1 |
-| 4 | **Layer Integration Matrix** — who-owns-what across business / information / application / infrastructure / supply-chain | `/wizards/layer-matrix/` | v1.1 |
-| 5 | **CoSAI SRF Stress Test** — walk a real incident through the five layers and find accountability gaps | `/wizards/srf-stress/` | v1.1 |
+| 1 | **AI Security Controls Assessment**: 5-layer posture check with OWASP LLM Top 10 coverage and PDF export | `/wizards/security-controls/` | v1 |
+| 2 | **AI Security Controls Assessment (CoSAI AICM variant)**: same engine, AICM-aligned control set, PDF export | `/wizards/controls-assessment/` | v1 |
+| 3 | **Layer Integration Matrix**: seven enterprise-security domains crosswalked onto the CoSAI SRF five layers (AI Business & Usage → Information → Application → Platform → Model Provider) with RACI cells and §A.1.1 gap overlay | `/wizards/layer-matrix/` | v1.2 |
+| 4 | **CoSAI SRF Stress Test**: walk a real incident through the five layers and find accountability gaps | `/wizards/srf-stress/` | v1.1 |
+| 5 | **AI Policy Pyramid**, a five-tier governance map (Law → Standards → CoSAI SRF anchor → Threat catalogs → Engineering artefacts) with six worked AI use cases traced end-to-end with authoritative citations | `/wizards/policy-pyramid/` | v1.3 |
 
 Wizards 1–2 are structurally factored: questions and scoring rules live in
 `data.json`, wizard behaviour lives in `wizard.js`, presentation in
@@ -54,7 +54,7 @@ some browsers may restrict `fetch()` of `data.json` under `file://`.
 | Accessible | Keyboard navigation, visible focus rings, ARIA on radio groups, `prefers-reduced-motion`, 4.5:1 contrast. |
 | Printable | `@media print` rules with page breaks between sections. |
 | Persistable | Per-wizard state in `localStorage` with **Export JSON / Import JSON** buttons. |
-| Embeddable | Drop-in standalone, `<iframe>`, or ES-module import — see [`docs/EMBEDDING.md`](./docs/EMBEDDING.md). |
+| Embeddable | Drop-in standalone, `<iframe>`, or ES-module import: see [`docs/EMBEDDING.md`](./docs/EMBEDDING.md). |
 
 ## Donation intent
 
@@ -75,6 +75,6 @@ Origin sign-off and, once CoSAI's CLA is available, will migrate to it. See
 
 ## Governance
 
-  * [`CONTRIBUTING.md`](./CONTRIBUTING.md) — DCO, development workflow, CLA placeholder
-  * [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) — Contributor Covenant 2.1
-  * [`SECURITY.md`](./SECURITY.md) — responsible disclosure
+  * [`CONTRIBUTING.md`](./CONTRIBUTING.md): DCO, development workflow, CLA placeholder
+  * [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md): Contributor Covenant 2.1
+  * [`SECURITY.md`](./SECURITY.md): responsible disclosure
