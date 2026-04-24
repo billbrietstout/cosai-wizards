@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Regulation Discovery Wizard — CoSAI Wizards</title>
+    <meta
+      name="description"
+      content="4-step CoSAI AI regulation discovery wizard. Identify which regulations apply to your planned AI system, mapped to the five CoSAI AI SRF layers. Vanilla web, no backend, no tracking."
+    />
+    <link rel="stylesheet" href="../../shared/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="../../shared/vendor/jspdf.umd.min.js"></script>
+    <script defer src="wizard.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header" role="banner">
+      <div class="header-inner">
+        <svg class="header-shield" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
+          <path d="M20 3L5 9v10c0 9 6.5 17.4 15 19.4C29.5 36.4 36 28 36 19V9L20 3z" fill="#2d5be3" opacity=".3" />
+          <path d="M20 6L8 11v8c0 7.4 5.2 14.3 12 16.4C26.8 33.3 32 26.4 32 19v-8L20 6z" stroke="#2d5be3" stroke-width="1.5" fill="none" />
+          <path d="M13 20l4 4 10-10" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div>
+          <div class="header-title" data-title>AI Regulation Discovery Wizard</div>
+          <div class="header-sub" data-subtitle>Identify which regulations apply — mapped to the CoSAI AI SRF five layers</div>
+        </div>
+        <div class="header-badge" data-badge>DISCOVERY</div>
+        <a class="header-home" href="../../">← All wizards</a>
+      </div>
+    </header>
+
+    <div id="boot-error" class="boot-error" role="alert" hidden>
+      Could not load <code>data.json</code>. If you opened this page via <code>file://</code>, some
+      browsers block local <code>fetch()</code>. Serve the directory over HTTP
+      (<code>python3 -m http.server</code>) and reload.
+    </div>
+
+    <main id="main" class="layout">
+      <div class="wizard">
+        <div class="state-bar" role="group" aria-label="Wizard state">
+          <span class="state-bar__label" id="privacy-note">Your answers stay in this browser.</span>
+          <button id="btn-export" class="btn btn--ghost" type="button">Export JSON</button>
+          <button id="btn-import" class="btn btn--ghost" type="button">Import JSON</button>
+          <input id="file-import" type="file" accept="application/json,.json" />
+          <button id="btn-reset" class="btn btn--ghost" type="button">Reset</button>
+        </div>
+
+        <div class="intro-block" id="intro-block">
+          <p class="intro-text" id="intro-text"></p>
+        </div>
+
+        <!-- Step progress rail -->
+        <div class="step-rail" role="group" aria-label="Wizard progress">
+          <div class="step-rail__bars" id="step-bars">
+            <button type="button" class="step-bar" data-step="1" aria-label="Step 1: Scope"></button>
+            <button type="button" class="step-bar" data-step="2" aria-label="Step 2: System"></button>
+            <button type="button" class="step-bar" data-step="3" aria-label="Step 3: Impact"></button>
+            <button type="button" class="step-bar" data-step="4" aria-label="Step 4: Results"></button>
+          </div>
+          <p class="step-rail__label" id="step-label">Step 1 of 4 — Scope</p>
+        </div>
+
+        <!-- Validation errors -->
+        <div id="validation-box" class="validation-box" role="alert" hidden>
+          <div class="validation-box__content">
+            <strong>Please complete before running:</strong>
+            <ul id="validation-list"></ul>
+          </div>
+          <button type="button" id="validation-close" class="validation-box__close" aria-label="Dismiss">×</button>
+        </div>
+
+        <!-- Step 1: Scope -->
+        <section class="step-card" id="step-1" aria-labelledby="step-1-title">
+          <h2 id="step-1-title" class="step-title">Step 1 — Scope &amp; Context</h2>
+          <p class="step-intro">
+            Start with where you operate and which sector you serve. This narrows which regulations
+            may apply before we ask about your specific system.
+          </p>
+
+          <div class="field">
+            <label class="field-label">
+              Which verticals does your organisation operate in?
+              <span class="tooltip" data-tip="Sectors you serve. Some regulations apply only to specific verticals (e.g. HIPAA for healthcare, FDA for medical devices, SR 11-7 for US banking).">(?)</span>
+            </label>
+            <div class="chip-grid" id="verticals-chips"></div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="deployment">
+              Where will it be deployed?
+              <span class="tooltip" data-tip="EU market: placed on the EU market or put into service in the EU. US only / UK only: single-jurisdiction. Global: worldwide. Internal only: within your organisation.">(?)</span>
+            </label>
+            <select id="deployment" class="select">
+              <option value="">— Select deployment —</option>
+            </select>
+          </div>
+
+          <div class="eu-box">
+            <label class="checkbox">
+              <input type="checkbox" id="eu-not-applicable" />
+              <span><strong>EU AI Act does not apply</strong> — we are outside EU scope</span>
+            </label>
+            <p class="hint">If you are certain the EU AI Act doesn't apply to your organisation or this system, tick above to skip the EU-specific questions.</p>
+          </div>
+
+          <div class="eu-fields" id="eu-fields">
+            <div class="callout">
+              <strong>#S1 Scope</strong> — The EU AI Act applies if you place AI on the EU market, put
+              it into service in the EU, are established in the EU, or if your AI's output is used in
+              the EU.
+            </div>
+            <div class="field">
+              <label class="checkbox">
+                <input type="checkbox" id="eu-established" />
+                <span>Organisation established or located in the EU (scope #S1)
+                  <span class="tooltip" data-tip="If your organisation has a legal presence in any EU member state, the EU AI Act may apply even if the system is deployed elsewhere.">(?)</span>
+                </span>
+              </label>
+            </div>
+
+            <div class="callout">
+              <strong>#R2 Exclusions</strong> — Some systems are excluded (military, R&amp;D-only,
+              certain open-source components, personal non-professional use). If one applies the Act
+              generally does not apply.
+            </div>
+            <div class="field">
+              <label class="field-label" for="eu-exclusion">
+                Does your system fall under any exclusions?
+                <span class="tooltip" data-tip="Military: defence-only. R&D only: not yet on market. Open source: under a free/libre licence (note: GPAI and prohibited-practice rules can still apply). Personal: non-professional individual use.">(?)</span>
+              </label>
+              <select id="eu-exclusion" class="select"></select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Step 2: System -->
+        <section class="step-card" id="step-2" hidden aria-labelledby="step-2-title">
+          <h2 id="step-2-title" class="step-title">Step 2 — System Description</h2>
+          <p class="step-intro">Describe the AI system itself: what it is, what it does, and how it operates.</p>
+
+          <div class="field">
+            <label class="field-label" for="asset-type">
+              What type of AI system?
+              <span class="tooltip" data-tip="Model: a single AI model (foundation / fine-tuned). Agent: an autonomous tool-using agent. Application: a user-facing app (chatbot, recommender). Workflow: a multi-step pipeline (data → model → output).">(?)</span>
+            </label>
+            <select id="asset-type" class="select"></select>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="description">
+              What does it do? <span class="field-hint">(max 200 chars)</span>
+              <span class="tooltip" data-tip="A brief description helps identify applicable regulations. Include the use case, who it serves, and how it works.">(?)</span>
+            </label>
+            <textarea id="description" rows="2" maxlength="200" class="textarea" placeholder="e.g. Customer-service chatbot for order status and returns"></textarea>
+            <div class="counter"><span id="desc-count">0</span>/200</div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="business-function">
+              Which business function?
+              <span class="tooltip" data-tip="The primary organisational area using this AI. Affects which regulations apply (e.g. HR triggers employment-discrimination rules; Finance triggers MRM).">(?)</span>
+            </label>
+            <select id="business-function" class="select"></select>
+          </div>
+
+          <div class="eu-fields" id="eu-fields-2">
+            <div class="callout">
+              <strong>#E1 Entity type</strong> — The EU AI Act assigns different obligations depending
+              on your role. You can be more than one (e.g. both Provider and Deployer). Pick the one
+              that best fits, or "Not applicable" if the Act doesn't apply.
+            </div>
+            <div class="field">
+              <label class="field-label" for="eu-entity">
+                EU AI Act entity type (flowchart #E1)
+                <span class="tooltip" data-tip="Provider: develops and places on market. Deployer: uses under your authority. Distributor/Importer: supply-chain roles. Product manufacturer: AI in your product. Authorised representative: designated for non-EU providers.">(?)</span>
+              </label>
+              <select id="eu-entity" class="select"></select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="operating-model">
+              Operating model?
+              <span class="tooltip" data-tip="AI-SaaS: managed AI app (e.g. ChatGPT). AI-PaaS: managed platform (e.g. Bedrock). Agent-PaaS: agent platform. IaaS: self-hosted. Mixed: multi-model. Affects which layers you're accountable for.">(?)</span>
+            </label>
+            <select id="operating-model" class="select"></select>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="autonomy-level">
+              Autonomy level?
+              <span class="tooltip" data-tip="From L0 (information only) to L5 (full autonomy). Higher autonomy increases human-oversight obligations and typically raises risk.">(?)</span>
+            </label>
+            <select id="autonomy-level" class="select"></select>
+          </div>
+        </section>
+
+        <!-- Step 3: Impact & Risk -->
+        <section class="step-card" id="step-3" hidden aria-labelledby="step-3-title">
+          <h2 id="step-3-title" class="step-title">Step 3 — Impact &amp; Risk</h2>
+          <p class="step-intro">Describe how the system affects people, what data it uses, and your initial risk assessment.</p>
+
+          <div class="field field--row">
+            <label class="checkbox">
+              <input type="checkbox" id="decisions-affecting-people" />
+              <span>Will it make or influence decisions affecting people?
+                <span class="tooltip" data-tip="E.g. hiring, credit, benefits, access to services. Triggers high-risk classification under the EU AI Act and employment-discrimination statutes.">(?)</span>
+              </span>
+            </label>
+            <label class="checkbox">
+              <input type="checkbox" id="interacts-with-end-users" />
+              <span>Will it interact directly with end users?
+                <span class="tooltip" data-tip="E.g. chatbots, virtual assistants, recommendation UIs. Often triggers transparency obligations (EU AI Act Art. 50).">(?)</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="field">
+            <label class="field-label">
+              What data will it process?
+              <span class="tooltip" data-tip="PII: personally identifiable. Financial / Health / Biometric: sensitive categories. Employment: job-related. Children: triggers enhanced protections. Public: open. Proprietary: internal.">(?)</span>
+            </label>
+            <div class="chip-grid" id="data-types-chips"></div>
+          </div>
+
+          <div class="eu-fields" id="eu-fields-3">
+            <div class="field">
+              <label class="field-label" for="eu-residents-data">
+                Does it process data about EU residents?
+                <span class="tooltip" data-tip="Yes: GDPR applies. Unknown: treat as likely. No: only non-EU data. This is independent of deployment region.">(?)</span>
+              </label>
+              <select id="eu-residents-data" class="select">
+                <option value="">— Select —</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+            </div>
+
+            <div class="callout">
+              <strong>#R4 Art. 50 Transparency</strong> — Limited-risk AI must inform users when they
+              interact with AI. Art. 50 covers: deep-fakes, synthetic content, emotion / biometric
+              categorisation, and AI interacting with natural persons.
+            </div>
+            <div class="field">
+              <label class="field-label">
+                Transparency triggers (#R4 — Art. 50)
+                <span class="tooltip" data-tip="Tick all that apply. Each triggers a distinct disclosure obligation.">(?)</span>
+              </label>
+              <div class="chip-grid chip-grid--stack" id="transparency-chips"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="expected-risk-level">
+              Expected risk level?
+              <span class="tooltip" data-tip="Your initial assessment before the engine runs. Low: minimal harm. Medium: limited, reversible. High: significant impact. Critical: severe harm, safety-of-life.">(?)</span>
+            </label>
+            <select id="expected-risk-level" class="select"></select>
+          </div>
+
+          <div class="field">
+            <label class="checkbox">
+              <input type="checkbox" id="vulnerable-populations" />
+              <span>Will vulnerable populations be affected?
+                <span class="tooltip" data-tip="Children, elderly, persons with disabilities, or others at greater risk. May require extra safeguards and monitoring.">(?)</span>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Step 4: Results -->
+        <section class="step-card" id="step-4" hidden aria-labelledby="step-4-title">
+          <h2 id="step-4-title" class="step-title">Step 4 — Results</h2>
+
+          <div class="summary-card" id="summary-card">
+            <h3>Your inputs</h3>
+            <dl class="summary-grid" id="summary-grid"></dl>
+            <p class="hint">Go back to any previous step to change answers, then re-run discovery.</p>
+          </div>
+
+          <div class="run-row">
+            <button type="button" id="btn-run" class="btn btn--primary">Run discovery</button>
+            <button type="button" id="btn-pdf" class="btn btn--ghost" disabled>Download PDF</button>
+          </div>
+
+          <div id="results" class="results" hidden>
+            <div class="score-row">
+              <div class="score-card">
+                <span class="score-label">Risk score</span>
+                <span class="score-val" id="risk-score">—</span>
+                <span class="score-sub" id="risk-interp">—</span>
+              </div>
+              <div class="score-card">
+                <span class="score-label">Estimated maturity required</span>
+                <span class="score-val" id="maturity-level">—</span>
+                <span class="score-sub">CoSAI SRF maturity target</span>
+              </div>
+              <div class="score-card">
+                <span class="score-label">Applicable regulations</span>
+                <span class="score-val" id="reg-count">—</span>
+                <span class="score-sub"><span id="mandatory-count">0</span> mandatory · <span id="likely-count">0</span> likely</span>
+              </div>
+            </div>
+
+            <section class="results-section">
+              <h3>Applicable regulations</h3>
+              <ul class="reg-list" id="reg-list"></ul>
+            </section>
+
+            <section class="results-section">
+              <h3>Top controls by SRF layer</h3>
+              <p class="hint">Priority controls derived from the regulations above, grouped by the CoSAI AI SRF layer that holds primary accountability.</p>
+              <div class="layer-controls" id="layer-controls"></div>
+            </section>
+          </div>
+        </section>
+
+        <div class="nav-row">
+          <button type="button" id="btn-back" class="btn btn--ghost" disabled>Back</button>
+          <button type="button" id="btn-next" class="btn btn--primary">Next</button>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

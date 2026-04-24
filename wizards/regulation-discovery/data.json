@@ -1,0 +1,406 @@
+{
+  "meta": {
+    "id": "regulation-discovery",
+    "title": "AI Regulation Discovery Wizard",
+    "subtitle": "Identify which regulations apply to your AI system — mapped to the CoSAI AI SRF five layers",
+    "badge": "DISCOVERY",
+    "pdfFilename": "CoSAI-AI-Regulation-Discovery.pdf",
+    "storageKey": "cosai-wizard:regulation-discovery:v1",
+    "version": 1,
+    "sources": [
+      "CoSAI AI Shared Responsibility Framework, Draft V0.7 (2026)",
+      "EU AI Act (Regulation 2024/1689)",
+      "GDPR (Regulation 2016/679)",
+      "NIST AI RMF 1.0 (AI 100-1, 2023)",
+      "ISO/IEC 42001:2023",
+      "CSA AICM v1.0.3",
+      "OWASP Top 10 for LLM Applications 2025",
+      "Federal Reserve SR 11-7 (2011)",
+      "FDA AI/ML Software as a Medical Device Action Plan",
+      "MITRE ATLAS"
+    ]
+  },
+  "verticals": [
+    { "value": "GENERAL",             "label": "General / Cross-sector" },
+    { "value": "HEALTHCARE",          "label": "Healthcare" },
+    { "value": "FINANCIAL_SERVICES",  "label": "Financial services" },
+    { "value": "INSURANCE",           "label": "Insurance" },
+    { "value": "HR_EMPLOYMENT",       "label": "HR / employment" },
+    { "value": "EDUCATION",           "label": "Education" },
+    { "value": "PUBLIC_SECTOR",       "label": "Public sector" },
+    { "value": "LAW_ENFORCEMENT",     "label": "Law enforcement / justice" },
+    { "value": "CRITICAL_INFRA",      "label": "Critical infrastructure" },
+    { "value": "RETAIL_ECOM",         "label": "Retail / e-commerce" },
+    { "value": "TELECOM_MEDIA",       "label": "Telecom / media" },
+    { "value": "AUTOMOTIVE_MOBILITY", "label": "Automotive / mobility" }
+  ],
+  "assetTypes": [
+    { "value": "MODEL",       "label": "Model (foundation / fine-tuned)" },
+    { "value": "AGENT",       "label": "Agent (autonomous tool-using)" },
+    { "value": "APPLICATION", "label": "Application (user-facing)" },
+    { "value": "PIPELINE",    "label": "Workflow / pipeline" }
+  ],
+  "businessFunctions": [
+    { "value": "HR",                "label": "HR / hiring" },
+    { "value": "FINANCE",           "label": "Finance / credit / underwriting" },
+    { "value": "OPERATIONS",        "label": "Operations" },
+    { "value": "CUSTOMER_SERVICE",  "label": "Customer service" },
+    { "value": "HEALTHCARE",        "label": "Clinical / healthcare" },
+    { "value": "LEGAL",             "label": "Legal / compliance" },
+    { "value": "SECURITY",          "label": "Security / fraud" },
+    { "value": "MARKETING",         "label": "Marketing / growth" },
+    { "value": "OTHER",             "label": "Other" }
+  ],
+  "deployments": [
+    { "value": "EU_MARKET",    "label": "EU market (placed on EU market or used in EU)" },
+    { "value": "US_ONLY",      "label": "US only" },
+    { "value": "UK_ONLY",      "label": "UK only" },
+    { "value": "GLOBAL",       "label": "Global" },
+    { "value": "INTERNAL_ONLY","label": "Internal only (your organisation)" }
+  ],
+  "operatingModels": [
+    { "value": "AI_SAAS",    "label": "AI-SaaS (managed app — ChatGPT, Copilot, Claude)" },
+    { "value": "AI_PAAS",    "label": "AI-PaaS (managed platform — Bedrock, Vertex AI, Azure AI)" },
+    { "value": "AGENT_PAAS", "label": "Agent-PaaS (agentic platform — LangChain Enterprise, CrewAI)" },
+    { "value": "IAAS",       "label": "IaaS (self-hosted model, full stack control)" },
+    { "value": "MIXED",      "label": "Mixed / multi-model" }
+  ],
+  "autonomyLevels": [
+    { "value": "L0", "label": "L0 — No automation (information only, e.g. search, Q&A)" },
+    { "value": "L1", "label": "L1 — Human-initiated (atomic steps, e.g. code completion)" },
+    { "value": "L2", "label": "L2 — Human-approved (executes after approval, e.g. document drafting)" },
+    { "value": "L3", "label": "L3 — Human-supervised (executes within guardrails, e.g. automated testing)" },
+    { "value": "L4", "label": "L4 — Human-on-loop (autonomous in domain, exceptions only, e.g. scheduled reports)" },
+    { "value": "L5", "label": "L5 — Full autonomy (cross-domain decisions, e.g. research agents)" }
+  ],
+  "dataTypes": [
+    { "value": "PII",         "label": "PII (personal data)" },
+    { "value": "HEALTH",      "label": "Health / medical" },
+    { "value": "FINANCIAL",   "label": "Financial / payment" },
+    { "value": "BIOMETRIC",   "label": "Biometric" },
+    { "value": "EMPLOYMENT",  "label": "Employment / HR" },
+    { "value": "CHILDREN",    "label": "Children's data" },
+    { "value": "PUBLIC",      "label": "Public / open data" },
+    { "value": "PROPRIETARY", "label": "Proprietary / confidential" }
+  ],
+  "riskLevels": [
+    { "value": "LOW",      "label": "Low — minimal or no harm potential" },
+    { "value": "MEDIUM",   "label": "Medium — limited harm, reversible" },
+    { "value": "HIGH",     "label": "High — significant impact on people or operations" },
+    { "value": "CRITICAL", "label": "Critical — severe harm, safety-of-life or systemic" }
+  ],
+  "euEntityTypes": [
+    { "value": "PROVIDER",                  "label": "Provider (develops and places on market)" },
+    { "value": "DEPLOYER",                  "label": "Deployer (uses under your authority)" },
+    { "value": "DISTRIBUTOR",               "label": "Distributor" },
+    { "value": "IMPORTER",                  "label": "Importer" },
+    { "value": "PRODUCT_MANUFACTURER",      "label": "Product manufacturer (AI in your product)" },
+    { "value": "AUTHORISED_REPRESENTATIVE", "label": "Authorised representative" }
+  ],
+  "euExclusions": [
+    { "value": "none",         "label": "None of these" },
+    { "value": "military",     "label": "Military / national security purposes only" },
+    { "value": "rd_only",      "label": "R&D only (not yet placed on market)" },
+    { "value": "open_source",  "label": "Free/open-source component only (non-exempt cases still apply)" },
+    { "value": "personal_use", "label": "Personal, non-professional use" }
+  ],
+  "euTransparencyTypes": [
+    { "value": "deep_fake",         "label": "Deep-fake / manipulated image, audio, or video (Art. 50(4))" },
+    { "value": "synthetic_content", "label": "Synthetic content marked as AI-generated (Art. 50(2))" },
+    { "value": "emotion_biometric", "label": "Emotion recognition or biometric categorisation (Art. 50(3))" },
+    { "value": "natural_person",    "label": "Interacts directly with natural persons (Art. 50(1))" }
+  ],
+  "layers": {
+    "L1": { "name": "AI Business & Usage",  "color": "#15803d", "bg": "#f0fdf4", "border": "#bbf7d0" },
+    "L2": { "name": "AI Information",       "color": "#1d4ed8", "bg": "#eff6ff", "border": "#bfdbfe" },
+    "L3": { "name": "AI Application",       "color": "#c2410c", "bg": "#fff7ed", "border": "#fed7aa" },
+    "L4": { "name": "AI Platform",          "color": "#6d28d9", "bg": "#faf5ff", "border": "#e9d5ff" },
+    "L5": { "name": "AI Model Provider",    "color": "#0e7490", "bg": "#ecfeff", "border": "#a5f3fc" }
+  },
+  "regulations": [
+    {
+      "code": "EU_AI_ACT_HIGH_RISK",
+      "name": "EU AI Act — High-Risk System (Annex III)",
+      "jurisdiction": "EU",
+      "category": "REGULATION",
+      "why": "Consequential decisions about people in regulated domains (employment, credit, education, essential services, law enforcement, critical infrastructure) are classified as high-risk under Annex III.",
+      "primarySRFLayer": "L1",
+      "citations": ["EU AI Act Art. 6", "Annex III"],
+      "controls": ["RISK_MGMT_SYSTEM", "DATA_GOV", "TECH_DOC", "RECORD_KEEPING", "HUMAN_OVERSIGHT", "POST_MARKET_MONITORING", "CONFORMITY_ASSESSMENT"]
+    },
+    {
+      "code": "EU_AI_ACT_ART50",
+      "name": "EU AI Act — Art. 50 Transparency (Limited-Risk)",
+      "jurisdiction": "EU",
+      "category": "REGULATION",
+      "why": "Chatbots, synthetic media, deep-fakes, and emotion/biometric categorisation must disclose AI involvement to users.",
+      "primarySRFLayer": "L3",
+      "citations": ["EU AI Act Art. 50"],
+      "controls": ["USER_DISCLOSURE", "SYNTHETIC_CONTENT_LABEL", "DEEPFAKE_LABEL"]
+    },
+    {
+      "code": "EU_AI_ACT_GPAI",
+      "name": "EU AI Act — General-Purpose AI Obligations",
+      "jurisdiction": "EU",
+      "category": "REGULATION",
+      "why": "Providers of general-purpose AI models placed on the EU market must maintain technical documentation, copyright policy, and training-data summaries.",
+      "primarySRFLayer": "L5",
+      "citations": ["EU AI Act Arts. 53–55"],
+      "controls": ["GPAI_TECH_DOC", "TRAINING_DATA_SUMMARY", "COPYRIGHT_POLICY"]
+    },
+    {
+      "code": "GDPR",
+      "name": "GDPR",
+      "jurisdiction": "EU",
+      "category": "REGULATION",
+      "why": "Processing of EU residents' personal data triggers lawfulness, DPIA, Art. 22 automated-decision rights, and data-subject-request duties.",
+      "primarySRFLayer": "L2",
+      "citations": ["GDPR Arts. 5, 22, 35"],
+      "controls": ["LAWFUL_BASIS", "DPIA", "ART22_DISCLOSURE", "DATA_MINIMISATION", "DSR_PROCESS"]
+    },
+    {
+      "code": "UK_GDPR",
+      "name": "UK GDPR & Data Protection Act 2018",
+      "jurisdiction": "UK",
+      "category": "REGULATION",
+      "why": "Personal data of UK residents is governed by the retained UK GDPR; the ICO publishes AI-specific guidance on explainability and fairness.",
+      "primarySRFLayer": "L2",
+      "citations": ["UK GDPR", "DPA 2018"],
+      "controls": ["LAWFUL_BASIS", "DPIA", "ICO_AI_GUIDANCE"]
+    },
+    {
+      "code": "NIST_AI_RMF",
+      "name": "NIST AI Risk Management Framework 1.0",
+      "jurisdiction": "US-GUIDANCE",
+      "category": "FRAMEWORK",
+      "why": "Voluntary but widely-adopted AI risk framework (GOVERN, MAP, MEASURE, MANAGE). Strongly recommended for any AI system.",
+      "primarySRFLayer": "L1",
+      "citations": ["NIST AI 100-1"],
+      "controls": ["AI_RMF_GOVERN", "AI_RMF_MAP", "AI_RMF_MEASURE", "AI_RMF_MANAGE"]
+    },
+    {
+      "code": "ISO_42001",
+      "name": "ISO/IEC 42001 — AI Management System",
+      "jurisdiction": "INTERNATIONAL",
+      "category": "STANDARD",
+      "why": "Certifiable AI management-system standard; provides clause structure aligning with ISO 27001 and complementing CoSAI SRF accountability.",
+      "primarySRFLayer": "L1",
+      "citations": ["ISO/IEC 42001:2023"],
+      "controls": ["AIMS_POLICY", "AIMS_RISK_ASSESSMENT", "AIMS_OPERATIONS"]
+    },
+    {
+      "code": "COSAI_SRF",
+      "name": "CoSAI AI Shared Responsibility Framework",
+      "jurisdiction": "INTERNATIONAL",
+      "category": "FRAMEWORK",
+      "why": "The accountability framework this wizard is built on — assigns RACI across L1–L5 with per-layer evidence requirements. Recommended for every AI system.",
+      "primarySRFLayer": "L1",
+      "citations": ["CoSAI AI SRF Draft V0.7 (2026)"],
+      "controls": ["SRF_LAYER_RACI", "SRF_EVIDENCE"]
+    },
+    {
+      "code": "CSA_AICM",
+      "name": "CSA AI Controls Matrix (AICM) v1.0.3",
+      "jurisdiction": "INTERNATIONAL",
+      "category": "FRAMEWORK",
+      "why": "Cloud Security Alliance's AI-specific control catalogue; a practical control set that maps onto the SRF layers.",
+      "primarySRFLayer": "L3",
+      "citations": ["CSA AICM v1.0.3"],
+      "controls": ["AICM_CONTROLS"]
+    },
+    {
+      "code": "OWASP_LLM_TOP10",
+      "name": "OWASP Top 10 for LLM Applications (2025)",
+      "jurisdiction": "INTERNATIONAL",
+      "category": "FRAMEWORK",
+      "why": "Industry-standard threat list for LLM applications — prompt injection, insecure output handling, excessive agency, supply-chain issues.",
+      "primarySRFLayer": "L3",
+      "citations": ["OWASP LLM Top 10 — 2025"],
+      "controls": ["OWASP_LLM01_PROMPT_INJECTION", "OWASP_LLM08_EXCESSIVE_AGENCY"]
+    },
+    {
+      "code": "MITRE_ATLAS",
+      "name": "MITRE ATLAS",
+      "jurisdiction": "INTERNATIONAL",
+      "category": "FRAMEWORK",
+      "why": "Adversarial ML threat knowledge base; required reading for red-team scoping of any AI system.",
+      "primarySRFLayer": "L3",
+      "citations": ["MITRE ATLAS"],
+      "controls": ["ATLAS_RED_TEAM"]
+    },
+    {
+      "code": "SR_11_7",
+      "name": "Federal Reserve SR 11-7 — Model Risk Management",
+      "jurisdiction": "US",
+      "category": "REGULATION",
+      "why": "US banking regulators require robust model-risk management: independent validation, documentation, and governance for models used in critical decisions.",
+      "primarySRFLayer": "L1",
+      "citations": ["FRB/OCC SR 11-7"],
+      "controls": ["MRM_VALIDATION", "MRM_INVENTORY", "MRM_DOC"]
+    },
+    {
+      "code": "NYDFS_PART_500",
+      "name": "NY DFS Part 500 (Cybersecurity)",
+      "jurisdiction": "US-NY",
+      "category": "REGULATION",
+      "why": "Financial-services entities regulated by NY DFS must maintain a cybersecurity programme that increasingly covers AI supply-chain and third-party risk.",
+      "primarySRFLayer": "L4",
+      "citations": ["23 NYCRR 500"],
+      "controls": ["DFS_CISO", "DFS_THIRD_PARTY", "DFS_INCIDENT"]
+    },
+    {
+      "code": "FDA_AI_ML",
+      "name": "FDA AI/ML-Based Software as a Medical Device Guidance",
+      "jurisdiction": "US",
+      "category": "REGULATION",
+      "why": "AI/ML systems that meet the definition of a medical device require FDA clearance and lifecycle change-control plans.",
+      "primarySRFLayer": "L5",
+      "citations": ["FDA AI/ML SaMD Action Plan", "Predetermined Change Control Plan guidance"],
+      "controls": ["FDA_SAMD", "FDA_PCCP", "FDA_GMLP"]
+    },
+    {
+      "code": "HIPAA",
+      "name": "HIPAA Privacy & Security Rules",
+      "jurisdiction": "US",
+      "category": "REGULATION",
+      "why": "Use of Protected Health Information (PHI) with AI requires BAAs with model and platform vendors and the HIPAA Security Rule safeguards.",
+      "primarySRFLayer": "L2",
+      "citations": ["45 CFR 160/164"],
+      "controls": ["HIPAA_BAA", "HIPAA_SECURITY_RULE", "HIPAA_MIN_NECESSARY"]
+    },
+    {
+      "code": "PCI_DSS",
+      "name": "PCI DSS v4.0",
+      "jurisdiction": "INTERNATIONAL",
+      "category": "STANDARD",
+      "why": "Any AI system that stores, processes, or transmits cardholder data is in PCI DSS scope.",
+      "primarySRFLayer": "L4",
+      "citations": ["PCI DSS v4.0"],
+      "controls": ["PCI_SEGMENTATION", "PCI_ENCRYPTION", "PCI_LOGGING"]
+    },
+    {
+      "code": "ISO_27001",
+      "name": "ISO/IEC 27001:2022 — Information Security Management",
+      "jurisdiction": "INTERNATIONAL",
+      "category": "STANDARD",
+      "why": "Foundational ISMS standard; provides the container ISO/IEC 42001 extends, and is typically expected by enterprise buyers.",
+      "primarySRFLayer": "L4",
+      "citations": ["ISO/IEC 27001:2022"],
+      "controls": ["ISMS_STATEMENT", "ISMS_RISK", "ISMS_ANNEX_A"]
+    },
+    {
+      "code": "SOC2",
+      "name": "SOC 2 Type II",
+      "jurisdiction": "US-GUIDANCE",
+      "category": "ATTESTATION",
+      "why": "Cloud and SaaS vendors are typically required to attest to SOC 2 Trust Services Criteria (Security at minimum).",
+      "primarySRFLayer": "L4",
+      "citations": ["AICPA TSC 2017"],
+      "controls": ["SOC2_SECURITY", "SOC2_CHANGE_MGMT"]
+    },
+    {
+      "code": "COLORADO_AI_ACT",
+      "name": "Colorado AI Act (SB 205, 2026)",
+      "jurisdiction": "US-CO",
+      "category": "REGULATION",
+      "why": "Colorado's consumer-facing AI Act imposes impact-assessment and notice duties on developers and deployers of high-risk AI systems making consequential decisions.",
+      "primarySRFLayer": "L1",
+      "citations": ["Colo. Rev. Stat. §6-1-1701"],
+      "controls": ["CO_IMPACT_ASSESSMENT", "CO_CONSUMER_NOTICE"]
+    },
+    {
+      "code": "UK_ATRS",
+      "name": "UK Algorithmic Transparency Recording Standard",
+      "jurisdiction": "UK",
+      "category": "FRAMEWORK",
+      "why": "UK public-sector bodies are expected to publish records describing algorithmic tools that impact the public.",
+      "primarySRFLayer": "L1",
+      "citations": ["CDDO ATRS v2.0"],
+      "controls": ["ATRS_RECORD"]
+    }
+  ],
+  "controlTemplates": {
+    "RISK_MGMT_SYSTEM":          { "title": "AI risk-management system",                        "layer": "L1" },
+    "DATA_GOV":                  { "title": "Data governance & quality programme",              "layer": "L2" },
+    "TECH_DOC":                  { "title": "Technical documentation set",                      "layer": "L3" },
+    "RECORD_KEEPING":            { "title": "Automatic logs & audit trail",                     "layer": "L4" },
+    "HUMAN_OVERSIGHT":           { "title": "Human oversight & override (T1–T5)",               "layer": "L3" },
+    "POST_MARKET_MONITORING":    { "title": "Post-market performance monitoring",               "layer": "L4" },
+    "CONFORMITY_ASSESSMENT":     { "title": "Conformity assessment & CE marking",               "layer": "L1" },
+    "USER_DISCLOSURE":           { "title": "User-facing 'you are interacting with AI' notice", "layer": "L3" },
+    "SYNTHETIC_CONTENT_LABEL":   { "title": "Synthetic-content / C2PA labelling",               "layer": "L3" },
+    "DEEPFAKE_LABEL":            { "title": "Deep-fake disclosure label",                       "layer": "L3" },
+    "GPAI_TECH_DOC":             { "title": "GPAI technical documentation (Annex XI)",          "layer": "L5" },
+    "TRAINING_DATA_SUMMARY":     { "title": "Training-data summary publication",                "layer": "L5" },
+    "COPYRIGHT_POLICY":          { "title": "Copyright-compliance policy",                      "layer": "L5" },
+    "LAWFUL_BASIS":              { "title": "Lawful basis & purpose-limitation register",       "layer": "L2" },
+    "DPIA":                      { "title": "Data protection impact assessment",                "layer": "L1" },
+    "ART22_DISCLOSURE":          { "title": "Art. 22 automated-decision disclosure & appeal",   "layer": "L1" },
+    "DATA_MINIMISATION":         { "title": "Data-minimisation controls (retention, scope)",    "layer": "L2" },
+    "DSR_PROCESS":               { "title": "Data-subject-request handling process",            "layer": "L2" },
+    "ICO_AI_GUIDANCE":           { "title": "ICO AI-fairness / explainability checklist",       "layer": "L1" },
+    "AI_RMF_GOVERN":             { "title": "NIST AI RMF — GOVERN functions",                   "layer": "L1" },
+    "AI_RMF_MAP":                { "title": "NIST AI RMF — MAP functions",                      "layer": "L1" },
+    "AI_RMF_MEASURE":            { "title": "NIST AI RMF — MEASURE functions",                  "layer": "L3" },
+    "AI_RMF_MANAGE":             { "title": "NIST AI RMF — MANAGE functions",                   "layer": "L1" },
+    "AIMS_POLICY":               { "title": "ISO 42001 AI management-system policy",            "layer": "L1" },
+    "AIMS_RISK_ASSESSMENT":      { "title": "ISO 42001 AI risk assessment",                     "layer": "L1" },
+    "AIMS_OPERATIONS":           { "title": "ISO 42001 operational planning & control",         "layer": "L1" },
+    "SRF_LAYER_RACI":            { "title": "Per-layer RACI for this system",                   "layer": "L1" },
+    "SRF_EVIDENCE":              { "title": "Evidence requirements per SRF §A.7",               "layer": "L1" },
+    "AICM_CONTROLS":             { "title": "Adopt CSA AICM control subset",                    "layer": "L3" },
+    "OWASP_LLM01_PROMPT_INJECTION": { "title": "Prompt-injection defences (LLM01)",             "layer": "L3" },
+    "OWASP_LLM08_EXCESSIVE_AGENCY": { "title": "Excessive-agency mitigations (LLM08)",          "layer": "L3" },
+    "ATLAS_RED_TEAM":            { "title": "Red-team exercise against MITRE ATLAS techniques", "layer": "L3" },
+    "MRM_VALIDATION":            { "title": "Independent model validation",                     "layer": "L5" },
+    "MRM_INVENTORY":             { "title": "Enterprise model inventory",                       "layer": "L1" },
+    "MRM_DOC":                   { "title": "Model documentation (model cards)",                "layer": "L5" },
+    "DFS_CISO":                  { "title": "CISO reporting & cyber programme (Part 500)",      "layer": "L4" },
+    "DFS_THIRD_PARTY":           { "title": "Third-party & AI-vendor risk process",             "layer": "L5" },
+    "DFS_INCIDENT":              { "title": "72-hour incident notification",                    "layer": "L4" },
+    "FDA_SAMD":                  { "title": "SaMD classification & submission",                 "layer": "L1" },
+    "FDA_PCCP":                  { "title": "Predetermined Change Control Plan",                "layer": "L5" },
+    "FDA_GMLP":                  { "title": "Good Machine Learning Practice (GMLP)",            "layer": "L5" },
+    "HIPAA_BAA":                 { "title": "BAA with every AI vendor touching PHI",            "layer": "L5" },
+    "HIPAA_SECURITY_RULE":       { "title": "HIPAA Security Rule safeguards",                   "layer": "L4" },
+    "HIPAA_MIN_NECESSARY":       { "title": "Minimum-necessary access controls",                "layer": "L2" },
+    "PCI_SEGMENTATION":          { "title": "CDE segmentation from AI training / inference",    "layer": "L4" },
+    "PCI_ENCRYPTION":            { "title": "Cardholder-data encryption in AI pipelines",       "layer": "L2" },
+    "PCI_LOGGING":               { "title": "PCI-scope audit logging",                          "layer": "L4" },
+    "ISMS_STATEMENT":            { "title": "ISO 27001 Statement of Applicability",             "layer": "L1" },
+    "ISMS_RISK":                 { "title": "ISMS risk-treatment plan",                         "layer": "L1" },
+    "ISMS_ANNEX_A":              { "title": "ISO 27001 Annex A controls",                       "layer": "L4" },
+    "SOC2_SECURITY":             { "title": "SOC 2 — Security TSC",                             "layer": "L4" },
+    "SOC2_CHANGE_MGMT":          { "title": "SOC 2 — Change management for models",             "layer": "L4" },
+    "CO_IMPACT_ASSESSMENT":      { "title": "Colorado AI Act impact assessment",                "layer": "L1" },
+    "CO_CONSUMER_NOTICE":        { "title": "Colorado AI Act consumer notice",                  "layer": "L3" },
+    "ATRS_RECORD":               { "title": "Publish UK ATRS record",                           "layer": "L1" }
+  },
+  "scoring": {
+    "base": 15,
+    "weights": {
+      "verticalHighRisk": 12,
+      "decisionsAffectingPeople": 14,
+      "vulnerablePopulations": 10,
+      "autonomyL4L5": 14,
+      "sensitiveData": 8,
+      "sensitiveDataChildren": 6,
+      "euScope": 6,
+      "expectedCritical": 20,
+      "expectedHigh": 12,
+      "expectedMedium": 6,
+      "gpai": 8
+    },
+    "maturityThresholds": [
+      { "max": 25,  "level": 1 },
+      { "max": 45,  "level": 2 },
+      { "max": 65,  "level": 3 },
+      { "max": 85,  "level": 4 },
+      { "max": 100, "level": 5 }
+    ]
+  },
+  "copy": {
+    "intro": "Answer a few questions to identify which regulations and frameworks apply to your planned AI system. Everything runs in your browser — nothing is transmitted. Results map cleanly to the five layers of the CoSAI AI Shared Responsibility Framework.",
+    "privacy": "All data stays in this browser. Nothing is sent to any server. Your answers are kept in localStorage so you can return to them; use Clear / Export to manage them."
+  }
+}
