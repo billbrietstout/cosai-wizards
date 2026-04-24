@@ -120,6 +120,37 @@
   color: var(--slate-500);
   font-size: 0.85rem;
 }
+.toolbar__toggle {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-left: auto;
+  padding: 7px 10px;
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+.toolbar__toggle input {
+  margin-top: 2px;
+  accent-color: var(--cosai-blue);
+}
+.toolbar__toggle span {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.toolbar__toggle strong {
+  font-size: 0.78rem;
+  color: var(--slate-800);
+  line-height: 1.2;
+}
+.toolbar__toggle small {
+  font-size: 0.68rem;
+  color: var(--slate-500);
+  line-height: 1.2;
+}
 .toolbar__buttons {
   display: flex;
   gap: 8px;

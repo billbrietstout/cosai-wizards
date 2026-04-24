@@ -66,7 +66,7 @@
         <!-- Validation errors -->
         <div id="validation-box" class="validation-box" role="alert" hidden>
           <div class="validation-box__content">
-            <strong>Please complete before running:</strong>
+            <strong id="validation-title">Please complete before continuing:</strong>
             <ul id="validation-list"></ul>
           </div>
           <button type="button" id="validation-close" class="validation-box__close" aria-label="Dismiss">×</button>
@@ -103,10 +103,10 @@
               <input type="checkbox" id="eu-not-applicable" />
               <span><strong>EU AI Act does not apply</strong> — we are outside EU scope</span>
             </label>
-            <p class="hint">If you are certain the EU AI Act doesn't apply to your organisation or this system, tick above to skip the EU-specific questions.</p>
+            <p class="hint">If you are certain the EU AI Act doesn't apply to your organisation or this system, tick above to skip EU AI Act questions. You will still answer whether EU residents' data is processed for GDPR screening.</p>
           </div>
 
-          <div class="eu-fields" id="eu-fields">
+          <div class="eu-fields eu-ai-fields" id="eu-fields">
             <div class="callout">
               <strong>#S1 Scope</strong> — The EU AI Act applies if you place AI on the EU market, put
               it into service in the EU, are established in the EU, or if your AI's output is used in
@@ -166,7 +166,7 @@
             <select id="business-function" class="select"></select>
           </div>
 
-          <div class="eu-fields" id="eu-fields-2">
+          <div class="eu-fields eu-ai-fields" id="eu-fields-2">
             <div class="callout">
               <strong>#E1 Entity type</strong> — The EU AI Act assigns different obligations depending
               on your role. You can be more than one (e.g. both Provider and Deployer). Pick the one
@@ -240,12 +240,12 @@
               </select>
             </div>
 
-            <div class="callout">
+            <div class="callout eu-ai-fields">
               <strong>#R4 Art. 50 Transparency</strong> — Limited-risk AI must inform users when they
               interact with AI. Art. 50 covers: deep-fakes, synthetic content, emotion / biometric
               categorisation, and AI interacting with natural persons.
             </div>
-            <div class="field">
+            <div class="field eu-ai-fields">
               <label class="field-label">
                 Transparency triggers (#R4 — Art. 50)
                 <span class="tooltip" data-tip="Tick all that apply. Each triggers a distinct disclosure obligation.">(?)</span>

@@ -401,6 +401,6 @@
   },
   "copy": {
     "intro": "Answer a few questions to identify which regulations and frameworks apply to your planned AI system. Everything runs in your browser — nothing is transmitted. Results map cleanly to the five layers of the CoSAI AI Shared Responsibility Framework.",
-    "privacy": "All data stays in this browser. Nothing is sent to any server. Your answers are kept in localStorage so you can return to them; use Clear / Export to manage them."
+    "privacy": "All data stays in this browser. Nothing is sent to any server. Your answers are kept in localStorage so you can return to them; use Reset / Export to manage them."
   }
 }

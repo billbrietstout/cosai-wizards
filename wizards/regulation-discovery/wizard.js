@@ -201,9 +201,15 @@
       goToStep(Math.max(1, state.step - 1));
     });
     document.getElementById('btn-next').addEventListener('click', () => {
+      const missing = missingForStep(state.step);
+      if (missing.length) {
+        showValidation(missing, 'Please complete before continuing:');
+        return;
+      }
+      hideValidation();
       const next = Math.min(STEP_COUNT, state.step + 1);
-      goToStep(next);
       if (next > state.maxStep) state.maxStep = next;
+      goToStep(next);
       render();
     });
 
@@ -220,6 +226,9 @@
       document.getElementById('validation-box').hidden = true;
     });
 
+    document.addEventListener('input', hideValidation);
+    document.addEventListener('change', hideValidation);
+
     // Step 1 inputs
     document.getElementById('deployment').addEventListener('change', (e) => {
       state.inputs.deployment = e.target.value;
@@ -231,7 +240,6 @@
         state.inputs.euEstablished = false;
         state.inputs.euExclusion = '';
         state.inputs.euEntity = 'NOT_APPLICABLE';
-        state.inputs.euResidentsData = 'No';
         state.inputs.euTransparencyTypes = [];
         reflectInputs();
       }
@@ -311,6 +319,7 @@
         const idx = current.indexOf(val);
         if (idx >= 0) current.splice(idx, 1);
       }
+      hideValidation();
       persist();
     });
 
@@ -331,6 +340,7 @@
 
   function goToStep(n) {
     state.step = n;
+    hideValidation();
     render();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -360,8 +370,11 @@
 
     // EU-dependent field groups
     const disabled = state.inputs.euNotApplicable;
-    document.querySelectorAll('.eu-fields').forEach((el) => {
+    document.querySelectorAll('.eu-ai-fields').forEach((el) => {
       el.classList.toggle('is-disabled', disabled);
+      el.querySelectorAll('input, select, textarea, button').forEach((control) => {
+        control.disabled = disabled;
+      });
     });
 
     // Summary when on step 4
@@ -635,16 +648,10 @@
 
   function runDiscovery() {
     const i = state.inputs;
-    const missing = [];
-    if (!i.assetType) missing.push('AI system type');
-    if (!i.businessFunction) missing.push('Business function');
-    if (!i.deployment) missing.push('Deployment');
-    if (!i.autonomyLevel) missing.push('Autonomy level');
-    if (!i.euNotApplicable && !i.euResidentsData) missing.push('EU residents data');
-    if (!i.expectedRiskLevel) missing.push('Expected risk level');
+    const missing = missingForAllSteps();
 
     if (missing.length) {
-      showValidation(missing);
+      showValidation(missing, 'Please complete before running:');
       return;
     }
     hideValidation();
@@ -664,14 +671,47 @@
     document.getElementById('btn-pdf').disabled = false;
   }
 
-  function showValidation(items) {
+  function missingForStep(step) {
+    const i = state.inputs;
+    if (step === 1) {
+      const missing = [];
+      if (!i.deployment) missing.push('Deployment');
+      return missing;
+    }
+    if (step === 2) {
+      const missing = [];
+      if (!i.assetType) missing.push('AI system type');
+      if (!i.businessFunction) missing.push('Business function');
+      if (!i.operatingModel) missing.push('Operating model');
+      if (!i.autonomyLevel) missing.push('Autonomy level');
+      return missing;
+    }
+    if (step === 3) {
+      const missing = [];
+      if (!i.euResidentsData) missing.push('EU residents data');
+      if (!i.expectedRiskLevel) missing.push('Expected risk level');
+      return missing;
+    }
+    return [];
+  }
+
+  function missingForAllSteps() {
+    return [1, 2, 3].reduce((items, step) => items.concat(missingForStep(step)), []);
+  }
+
+  function showValidation(items, title) {
     const box = document.getElementById('validation-box');
+    const heading = document.getElementById('validation-title');
     const list = document.getElementById('validation-list');
+    if (heading && title) heading.textContent = title;
     list.innerHTML = items.map((x) => `<li>${escapeHtml(x)}</li>`).join('');
     box.hidden = false;
   }
   function hideValidation() {
-    document.getElementById('validation-box').hidden = true;
+    const box = document.getElementById('validation-box');
+    const list = document.getElementById('validation-list');
+    if (box) box.hidden = true;
+    if (list) list.innerHTML = '';
   }
 
   function renderResults(result) {

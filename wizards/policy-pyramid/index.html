@@ -60,6 +60,13 @@
 
         <div class="toolbar" role="toolbar" aria-label="Pyramid actions">
           <p class="toolbar__count" id="entry-count">No governance entries yet</p>
+          <label class="toolbar__toggle" title="When enabled, adopting a library entry also adds linked parent and child entries.">
+            <input id="auto-cascade" type="checkbox" />
+            <span>
+              <strong>Auto-cascade</strong>
+              <small>Add linked parents and children</small>
+            </span>
+          </label>
           <div class="toolbar__buttons">
             <button id="btn-add-custom" class="btn btn--ghost" type="button">+ Add custom</button>
             <button id="btn-open-library" class="btn btn--primary" type="button">Browse library</button>

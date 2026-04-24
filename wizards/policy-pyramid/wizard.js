@@ -23,7 +23,7 @@
   let layerMeta = new Map();
   let driverMeta = new Map();
 
-  /** @type {{entries: Entry[], collapsed: string[], libraryFilter: string, deleteConfirm: string|null}} */
+  /** @type {{entries: Entry[], collapsed: string[], libraryFilter: string, deleteConfirm: string|null, autoCascade: boolean}} */
   const state = emptyState();
 
   /**
@@ -50,6 +50,7 @@
       collapsed: [...LEVEL_ORDER],
       libraryFilter: 'ALL',
       deleteConfirm: null,
+      autoCascade: false,
     };
   }
 
@@ -177,6 +178,11 @@
 
     document.getElementById('btn-add-custom').addEventListener('click', openCustomModal);
     document.getElementById('btn-open-library').addEventListener('click', openLibrary);
+    document.getElementById('auto-cascade').addEventListener('change', (e) => {
+      state.autoCascade = e.target.checked;
+      saveToStorage();
+      renderLibrary();
+    });
 
     const emptyAdd = document.querySelector('[data-empty-add-custom]');
     if (emptyAdd) emptyAdd.addEventListener('click', openCustomModal);
@@ -272,6 +278,8 @@
     }
     document.getElementById('empty-state').hidden = total !== 0;
     document.getElementById('pyramid-sections').hidden = total === 0;
+    const autoCascade = document.getElementById('auto-cascade');
+    if (autoCascade) autoCascade.checked = !!state.autoCascade;
   }
 
   function renderTiers() {
@@ -433,9 +441,14 @@
       const hasActiveParent = parents.some((p) => p.active);
       const cls = `lib-card${hasActiveParent && !adopted ? ' is-parent-active' : ''}`;
 
+      const cascadeIds = state.autoCascade ? collectCascadeTemplateIds(t.id) : [t.id];
+      const cascadeAdds = cascadeIds.filter((id) => !adoptedTemplateIds.has(id)).length;
+      const adoptLabel = state.autoCascade && cascadeAdds > 1
+        ? `Adopt cascade (${cascadeAdds})`
+        : 'Adopt';
       const action = adopted
         ? `<span class="lib-card__adopted" title="Already in your pyramid">✓ Added</span>`
-        : `<button class="btn btn--primary btn--sm" type="button" data-adopt="${esc(t.id)}">Adopt</button>`;
+        : `<button class="btn btn--primary btn--sm" type="button" data-adopt="${esc(t.id)}">${esc(adoptLabel)}</button>`;
 
       const parentChips = parents.length
         ? `<div class="lib-card__parents">${parents
@@ -501,10 +514,29 @@
   }
 
   function adoptTemplate(templateId) {
-    const t = templateById.get(templateId);
-    if (!t) return;
-    if (state.entries.some((e) => e.templateId === templateId)) return; // already adopted
-    const entry = {
+    if (!templateById.has(templateId)) return;
+    const templateIds = state.autoCascade ? collectCascadeTemplateIds(templateId) : [templateId];
+    const created = [];
+    templateIds.forEach((id) => {
+      const t = templateById.get(id);
+      if (!t) return;
+      if (state.entries.some((e) => e.templateId === id)) return; // already adopted
+      const entry = entryFromTemplate(t);
+      state.entries.push(entry);
+      created.push(entry);
+      if (state.collapsed.includes(t.level)) {
+        state.collapsed.splice(state.collapsed.indexOf(t.level), 1);
+      }
+    });
+    if (!created.length) return;
+    saveToStorage();
+    renderAll();
+    const target = created.find((e) => e.templateId === templateId) || created[created.length - 1];
+    setTimeout(() => scrollToEntry(target.id, true), 50);
+  }
+
+  function entryFromTemplate(t) {
+    return {
       id: 'e_' + uid(),
       level: t.level,
       title: t.title,
@@ -520,13 +552,37 @@
       isCustom: false,
       createdAt: Date.now(),
     };
-    state.entries.push(entry);
-    if (state.collapsed.includes(t.level)) {
-      state.collapsed.splice(state.collapsed.indexOf(t.level), 1);
-    }
-    saveToStorage();
-    renderAll();
-    setTimeout(() => scrollToEntry(entry.id, true), 50);
+  }
+
+  function collectCascadeTemplateIds(seedId) {
+    const selected = new Set();
+    const visitParents = (id) => {
+      const t = templateById.get(id);
+      if (!t || selected.has(id)) return;
+      selected.add(id);
+      (t.parentIds || []).forEach(visitParents);
+    };
+    const visitChildren = (id) => {
+      DATA.templates
+        .filter((t) => Array.isArray(t.parentIds) && t.parentIds.includes(id))
+        .forEach((child) => {
+          if (selected.has(child.id)) return;
+          selected.add(child.id);
+          visitChildren(child.id);
+        });
+    };
+    visitParents(seedId);
+    visitChildren(seedId);
+    return Array.from(selected).sort(compareTemplatesByPyramidOrder);
+  }
+
+  function compareTemplatesByPyramidOrder(a, b) {
+    const ta = templateById.get(a);
+    const tb = templateById.get(b);
+    if (!ta || !tb) return 0;
+    const levelDelta = LEVEL_ORDER.indexOf(ta.level) - LEVEL_ORDER.indexOf(tb.level);
+    if (levelDelta !== 0) return levelDelta;
+    return (ta.sortOrder || 0) - (tb.sortOrder || 0) || ta.title.localeCompare(tb.title);
   }
 
   function deleteEntry(entryId) {
@@ -605,6 +661,7 @@
           version: DATA.meta.version,
           entries: state.entries,
           collapsed: state.collapsed,
+          autoCascade: state.autoCascade,
         })
       );
     } catch (e) {
@@ -621,6 +678,7 @@
       if (!obj || !Array.isArray(obj.entries)) return;
       state.entries = obj.entries.filter(isValidEntry);
       if (Array.isArray(obj.collapsed)) state.collapsed = obj.collapsed.slice();
+      state.autoCascade = obj.autoCascade === true;
     } catch (e) {
       console.warn('policy-pyramid: storage parse failed', e);
     }
@@ -645,6 +703,7 @@
       },
       entries: state.entries,
       collapsed: state.collapsed,
+      autoCascade: state.autoCascade,
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {
       type: 'application/json',
@@ -678,6 +737,7 @@
         }
         state.entries = obj.entries.filter(isValidEntry);
         if (Array.isArray(obj.collapsed)) state.collapsed = obj.collapsed.slice();
+        state.autoCascade = obj.autoCascade === true;
         saveToStorage();
         renderAll();
       } catch (e) {
