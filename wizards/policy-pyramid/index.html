@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Policy Pyramid — CoSAI Wizards</title>
+    <meta
+      name="description"
+      content="Build your AI governance hierarchy across the CoSAI AI SRF five layers — principles, policies, standards, guidelines, and baselines. Vanilla web, no backend, no tracking."
+    />
+    <link rel="stylesheet" href="../../shared/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="../../shared/vendor/jspdf.umd.min.js"></script>
+    <script defer src="wizard.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header" role="banner">
+      <div class="header-inner">
+        <svg class="header-shield" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
+          <path d="M20 3L5 9v10c0 9 6.5 17.4 15 19.4C29.5 36.4 36 28 36 19V9L20 3z" fill="#2d5be3" opacity=".3" />
+          <path d="M20 6L8 11v8c0 7.4 5.2 14.3 12 16.4C26.8 33.3 32 26.4 32 19v-8L20 6z" stroke="#2d5be3" stroke-width="1.5" fill="none" />
+          <path d="M13 20l4 4 10-10" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div>
+          <div class="header-title" data-title>AI Policy Pyramid</div>
+          <div class="header-sub" data-subtitle>Principles · Policies · Standards · Guidelines · Baselines — across the CoSAI AI SRF five layers</div>
+        </div>
+        <div class="header-badge" data-badge>GOVERNANCE</div>
+        <a class="header-home" href="../../">← All wizards</a>
+      </div>
+    </header>
+
+    <div id="boot-error" class="boot-error" role="alert" hidden>
+      Could not load <code>data.json</code>. If you opened this page via <code>file://</code>, some
+      browsers block local <code>fetch()</code>. Serve the directory over HTTP
+      (<code>python3 -m http.server</code>) and reload.
+    </div>
+
+    <main id="main" class="layout">
+      <div class="wizard">
+        <div class="state-bar" role="group" aria-label="Pyramid state">
+          <span class="state-bar__label" id="privacy-note">Your pyramid stays in this browser.</span>
+          <button id="btn-export" class="btn btn--ghost" type="button">Export JSON</button>
+          <button id="btn-import" class="btn btn--ghost" type="button">Import JSON</button>
+          <input id="file-import" type="file" accept="application/json,.json" />
+          <button id="btn-pdf" class="btn btn--ghost" type="button">Download PDF</button>
+          <button id="btn-reset" class="btn btn--ghost" type="button">Reset</button>
+        </div>
+
+        <section class="intro-block" aria-labelledby="intro-heading">
+          <h1 id="intro-heading" class="intro-block__title">AI Policy Pyramid</h1>
+          <p class="intro-block__lede" data-intro>
+            Your AI governance hierarchy in one place — principles, policies, standards, guidelines,
+            and baselines, each tagged to the CoSAI AI SRF layer that owns it. Adopt entries from
+            the library, add your own, and trace the cascade from values down to evidence.
+          </p>
+        </section>
+
+        <div class="toolbar" role="toolbar" aria-label="Pyramid actions">
+          <p class="toolbar__count" id="entry-count">No governance entries yet</p>
+          <div class="toolbar__buttons">
+            <button id="btn-add-custom" class="btn btn--ghost" type="button">+ Add custom</button>
+            <button id="btn-open-library" class="btn btn--primary" type="button">Browse library</button>
+          </div>
+        </div>
+
+        <div id="empty-state" class="empty-state" hidden>
+          <div class="empty-state__icon" aria-hidden="true">📚</div>
+          <h3 class="empty-state__title">Your pyramid is empty</h3>
+          <p class="empty-state__desc" data-empty>
+            Adopt entries from the library or add a custom one to get started.
+          </p>
+          <div class="empty-state__actions">
+            <button class="btn btn--ghost" type="button" data-empty-add-custom>Add custom entry</button>
+            <button class="btn btn--primary" type="button" data-empty-browse>Browse library</button>
+          </div>
+        </div>
+
+        <div id="pyramid-sections" class="pyramid"></div>
+
+        <p class="footnote">
+          The Policy Pyramid expresses the standard governance cascade — values become rules
+          become requirements become practices become evidence. Drivers (regulation, customer
+          demand, company interest) and SRF layer ownership are tracked on every entry so an
+          auditor can answer two questions at once: <em>why does this exist?</em> and
+          <em>who owns making it real?</em>
+        </p>
+      </div>
+    </main>
+
+    <!-- ─── Library drawer ──────────────────────────────────────────────── -->
+    <div id="library-overlay" class="overlay" hidden></div>
+    <aside id="library-drawer" class="drawer" hidden aria-labelledby="library-title" role="dialog" aria-modal="true">
+      <div class="drawer__head">
+        <h2 id="library-title" class="drawer__title">Policy library</h2>
+        <button id="btn-close-library" class="drawer__close" type="button" aria-label="Close library">×</button>
+      </div>
+      <div class="drawer__filters" id="library-filters"></div>
+      <div class="drawer__body" id="library-list"></div>
+    </aside>
+
+    <!-- ─── Custom-entry modal ──────────────────────────────────────────── -->
+    <div id="custom-overlay" class="overlay" hidden></div>
+    <div id="custom-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="custom-title">
+      <div class="modal__head">
+        <h2 id="custom-title" class="modal__title">Add custom entry</h2>
+        <button id="btn-close-custom" class="modal__close" type="button" aria-label="Close">×</button>
+      </div>
+      <div class="modal__body">
+        <div class="field">
+          <label class="field__label" for="cust-title">Title</label>
+          <input id="cust-title" type="text" maxlength="200" class="field__input" placeholder="e.g. Internal model approval policy" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field__label" for="cust-level">Pyramid level</label>
+            <select id="cust-level" class="field__input"></select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="cust-driver">Driver</label>
+            <select id="cust-driver" class="field__input"></select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field__label" for="cust-layer">Primary SRF layer</label>
+            <select id="cust-layer" class="field__input"></select>
+          </div>
+          <div class="field">
+            <label class="field__label" for="cust-source">Source / reference <span class="field__hint">(optional)</span></label>
+            <input id="cust-source" type="text" maxlength="500" class="field__input" placeholder="e.g. ISO 42001 §6.1.4" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="field__label" for="cust-body">Statement</label>
+          <textarea id="cust-body" rows="6" maxlength="4000" class="field__input" placeholder="Describe the principle, policy, standard, guideline, or baseline requirement…"></textarea>
+          <p class="field__counter"><span id="cust-body-count">0</span>/4000</p>
+        </div>
+        <p id="cust-error" class="field__error" hidden></p>
+      </div>
+      <div class="modal__foot">
+        <button id="btn-cancel-custom" class="btn btn--ghost" type="button">Cancel</button>
+        <button id="btn-save-custom" class="btn btn--primary" type="button">Add to pyramid</button>
+      </div>
+    </div>
+  </body>
+</html>
