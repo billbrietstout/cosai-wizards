@@ -64,9 +64,9 @@ jobs:
             http://localhost:8080/ \
             http://localhost:8080/wizards/security-controls/ \
             http://localhost:8080/wizards/controls-assessment/ \
-            http://localhost:8080/wizards/hierarchy-cli/ \
             http://localhost:8080/wizards/layer-matrix/ \
-            http://localhost:8080/wizards/srf-stress/; do
+            http://localhost:8080/wizards/srf-stress/ \
+            http://localhost:8080/wizards/policy-pyramid/; do
             echo "::group::pa11y $url"
             npx pa11y --config .pa11yci.json "$url"
             echo "::endgroup::"
@@ -93,9 +93,9 @@ jobs:
             --url=http://localhost:8080/ \
             --url=http://localhost:8080/wizards/security-controls/ \
             --url=http://localhost:8080/wizards/controls-assessment/ \
-            --url=http://localhost:8080/wizards/hierarchy-cli/ \
             --url=http://localhost:8080/wizards/layer-matrix/ \
             --url=http://localhost:8080/wizards/srf-stress/ \
+            --url=http://localhost:8080/wizards/policy-pyramid/ \
             --numberOfRuns=1 \
             --settings.chromeFlags="--no-sandbox --disable-dev-shm-usage"
           npx lhci upload --target=temporary-public-storage

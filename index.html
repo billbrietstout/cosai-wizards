@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CoSAI Wizards — open-source AI security assessment tools</title>
+    <title>CoSAI Wizards: open-source AI security assessment tools</title>
     <meta
       name="description"
       content="Five vanilla-web assessment wizards for the CoSAI Shared Responsibility Framework, CSA AICM, OWASP LLM Top 10, NIST AI RMF, and MITRE ATLAS. Apache-2.0, no tracking, no build step."
@@ -223,30 +223,19 @@
 
       <h2>v1.1 · Reference explorers</h2>
       <div class="cards">
-        <a class="card" href="wizards/hierarchy-cli/">
-          <div class="card__badge">Reference</div>
-          <div class="card__title">Enterprise Security Hierarchy</div>
-          <div class="card__desc">
-            Policy → Directive → SRG → STIG → CCI for each of seven enterprise layers, with
-            authoritative source links (NIST, DISA, CIS, OWASP, CISA).
-          </div>
-          <div class="card__foot">
-            <code>wizards/hierarchy-cli/</code>
-            <span>Filter · Expand</span>
-          </div>
-        </a>
-
         <a class="card" href="wizards/layer-matrix/">
-          <div class="card__badge">Reference</div>
+          <div class="card__badge">CoSAI SRF aligned</div>
           <div class="card__title">Layer Integration Matrix</div>
           <div class="card__desc">
-            Cross-cut view of who owns which security domain across business, information,
-            application, infrastructure, and supply-chain layers — plus coverage-gap
-            overlay.
+            Seven enterprise-security domains crosswalked onto the CoSAI five-layer
+            Shared Responsibility Framework: AI Business &amp; Usage, AI Information,
+            AI Application, AI Platform, AI Model Provider: with RACI cells
+            (Accountable · Responsible · Support · Not Involved) and an overlay of the
+            §A.1.1 gaps closed by the SRF.
           </div>
           <div class="card__foot">
             <code>wizards/layer-matrix/</code>
-            <span>Matrix · Gaps</span>
+            <span>RACI · Gaps</span>
           </div>
         </a>
 
@@ -260,6 +249,24 @@
           <div class="card__foot">
             <code>wizards/srf-stress/</code>
             <span>Scenarios · Layers</span>
+          </div>
+        </a>
+      </div>
+
+      <h2>v1.3 · Governance landscape</h2>
+      <div class="cards">
+        <a class="card" href="wizards/policy-pyramid/">
+          <div class="card__badge">CoSAI SRF anchored</div>
+          <div class="card__title">AI Policy Pyramid</div>
+          <div class="card__desc">
+            Five-tier map of the AI governance landscape (Law &amp; regulation → Standards →
+            CoSAI SRF anchor → Threat catalogs → Engineering artefacts) with six worked use
+            cases (LLM chat, agentic, classical ML, RAG, foundation-model provider, medical AI)
+            traced end-to-end with authoritative citations.
+          </div>
+          <div class="card__foot">
+            <code>wizards/policy-pyramid/</code>
+            <span>Tiers · Use cases</span>
           </div>
         </a>
       </div>

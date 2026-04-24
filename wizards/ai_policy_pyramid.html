@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Policy Pyramid Governance Workspace</title>
+<meta name="description" content="Standalone governance workspace with policy library, cascade mapping, and local persistence.">
+<style>
+:root{--bg:#f8fafc;--surface:#fff;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--brand:#ea580c;--brandd:#c2410c;--ok:#059669;--danger:#b91c1c}
+*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.top{position:sticky;top:0;z-index:20;background:#0f172a;color:#fff;border-bottom:1px solid rgba(255,255,255,.1)}
+.topin{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;gap:12px;align-items:center}
+.top h1{font-size:18px;margin:0}.sub{font-size:12px;color:#cbd5e1}.toolbar{margin-left:auto;display:flex;gap:8px}
+button{font:inherit}
+.btn{border:1px solid var(--line);background:#fff;color:#334155;border-radius:8px;padding:8px 12px;cursor:pointer}
+.btn:hover{background:#f8fafc}.btn.primary{background:var(--brand);border-color:var(--brandd);color:#fff}.btn.primary:hover{filter:brightness(1.03)}
+.btn.ghost{background:transparent;color:#cbd5e1;border-color:rgba(255,255,255,.2)} .btn.ghost:hover{background:rgba(255,255,255,.08)}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 70px}
+.head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.stats{font-size:14px;color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:10px}
+.sec{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.sech{width:100%;border:0;background:#fff;text-align:left;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.l{display:flex;gap:10px;align-items:center}.chev{font-size:12px;color:#64748b}
+.ttl{font-weight:700;font-size:14px}.desc{font-size:12px;color:#64748b}
+.cnt{font-size:12px;background:#f1f5f9;border:1px solid #cbd5e1;border-radius:999px;padding:2px 8px}
+.secb{padding:12px 14px;border-top:1px solid var(--line)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.card{border:1px solid #dbeafe;background:#f8fafc;border-radius:10px;padding:10px}
+.ct{font-size:14px;font-weight:700;margin:0 0 6px}.cb{font-size:12px;color:#475569;margin:0 0 8px;white-space:pre-wrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.chip{font-size:11px;border:1px solid #cbd5e1;border-radius:999px;padding:2px 8px;background:#fff;color:#334155}
+.chip.miss{border-style:dashed;opacity:.6}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px}
+.danger{border-color:#fecaca;color:var(--danger);background:#fff5f5}
+.empty{font-size:13px;color:#94a3b8;padding:8px}
+.small{font-size:12px;color:#64748b}
+.map{border-top:1px dashed #cbd5e1;margin-top:8px;padding-top:8px}
+.map label{display:block;font-size:11px;color:#64748b;margin-bottom:6px}
+.mapchips{display:flex;flex-wrap:wrap;gap:6px}
+.mapchips .chip{padding:0 8px 2px 6px}
+.mapchips input{vertical-align:middle;margin-right:4px}
+.overlay{position:fixed;inset:0;background:rgba(2,6,23,.35);z-index:40;display:none}.overlay.on{display:block}
+.drawer{position:fixed;top:0;right:-500px;width:min(500px,100vw);height:100%;background:#fff;z-index:50;border-left:1px solid var(--line);transition:right .2s}
+.drawer.on{right:0}.dh{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.db{padding:12px 14px;display:flex;flex-direction:column;gap:10px;height:calc(100% - 54px);overflow:auto}
+.tabs{display:flex;gap:6px;overflow:auto}
+.tab{border:1px solid var(--line);background:#fff;color:#475569;border-radius:999px;padding:4px 10px;font-size:12px;white-space:nowrap}
+.tab.on{background:var(--brand);border-color:var(--brandd);color:#fff}
+.tpl{border:1px solid var(--line);border-radius:10px;padding:10px}.tpl p{font-size:12px;color:#64748b;margin:6px 0}
+.modal{position:fixed;inset:0;display:none;place-items:center;z-index:60}.modal.on{display:grid}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;width:min(760px,94vw);max-height:88vh;overflow:auto}
+.ph{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.pb{padding:14px;display:grid;gap:10px}.g2{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+label{display:block;font-size:12px;color:#475569;margin-bottom:4px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit}
+textarea{min-height:120px;resize:vertical}
+.pf{padding:12px 14px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin"><div><h1>Policy Pyramid</h1><div class="sub">Standalone governance workspace</div></div><div class="toolbar"><button class="btn ghost" id="exportBtn">Export JSON</button><button class="btn ghost" id="resetBtn">Reset</button></div></div></header>
+<main class="wrap">
+  <div class="head">
+    <div><div class="stats" id="stats"></div><div class="small">Same interaction model as /governance, local persistence only.</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="verticalSel" class="btn"><option value="">General</option><option value="HEALTHCARE">Healthcare</option><option value="FINANCIAL">Financial</option><option value="PUBLIC_SECTOR">Public sector</option></select>
+      <select id="residencySel" class="btn"><option value="">No residency filter</option><option value="EU">EU</option><option value="US">US</option></select>
+      <button class="btn" id="customBtn">Import custom entry</button>
+      <button class="btn primary" id="libraryBtn">Add from library</button>
+    </div>
+  </div>
+  <section class="stack" id="stack"></section>
+</main>
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer"><div class="dh"><strong>Policy Library</strong><button class="btn" id="drawerClose">Close</button></div><div class="db"><div class="tabs" id="tabs"></div><div id="tplList"></div></div></aside>
+<div class="modal" id="modal"><div class="panel"><div class="ph"><strong>Import custom entry</strong><button class="btn" id="modalClose">Close</button></div><div class="pb">
+  <div><label>Title</label><input id="fTitle" maxlength="200"></div>
+  <div class="g2"><div><label>Level</label><select id="fLevel"></select></div><div><label>Driver</label><select id="fDriver"><option value="REGULATION">Regulation</option><option value="CUSTOMER_DEMAND">Customer demand</option><option value="COMPANY_INTEREST">Company interest</option></select></div></div>
+  <div><label>Source (optional)</label><input id="fSource" maxlength="500"></div>
+  <div><label>Statement</label><textarea id="fBody" maxlength="4000"></textarea></div>
+</div><div class="pf"><button class="btn" id="cancelImport">Cancel</button><button class="btn primary" id="saveImport">Add entry</button></div></div></div>
+<script>
+(() => {
+  const STORAGE="governance-standalone-v4";
+  const LEVELS=["PRINCIPLE","POLICY","STANDARD","GUIDELINE","BASELINE"];
+  const META={PRINCIPLE:{label:"Principles",desc:"Core values and ethical commitments"},POLICY:{label:"Policies",desc:"Mandatory rules from regulation and leadership"},STANDARD:{label:"Standards",desc:"Measurable implementation requirements"},GUIDELINE:{label:"Guidelines",desc:"Recommended good practice"},BASELINE:{label:"Baselines",desc:"Minimum evidence and control floor"}};
+  let SEEDED_TEMPLATES=[];
+  const FALLBACK_TEMPLATES=[
+    {id:"pt-p1-dignity",level:"PRINCIPLE",title:"Human Dignity & Rights",statement:"Develop and deploy AI that respects human dignity and fundamental rights.",driverType:"COMPANY_INTEREST",parentIds:[],verticalKeys:[]},
+    {id:"pt-p2-transparency",level:"PRINCIPLE",title:"Transparency & Explainability",statement:"Provide meaningful explanation and oversight for impactful AI decisions.",driverType:"COMPANY_INTEREST",parentIds:[],verticalKeys:[]},
+    {id:"pt-p3-fairness",level:"PRINCIPLE",title:"Fairness & Non-Discrimination",statement:"Identify and mitigate bias; prevent unlawful discrimination.",driverType:"COMPANY_INTEREST",parentIds:[],verticalKeys:[]},
+    {id:"pt-pol4-nist-govern",level:"POLICY",title:"AI Risk Governance Policy",statement:"Operate AI risk governance aligned with NIST AI RMF GOVERN.",driverType:"REGULATION",parentIds:["pt-p2-transparency"],verticalKeys:[]},
+    {id:"pt-pol8-gdpr-ai",level:"POLICY",title:"AI & GDPR Obligations",statement:"Comply with GDPR obligations for AI processing and automated decisions.",driverType:"REGULATION",parentIds:["pt-p1-dignity"],verticalKeys:[]},
+    {id:"pt-std6-bias-testing",level:"STANDARD",title:"Bias & Fairness Testing Standard",statement:"Require pre-deployment fairness testing and remediation where needed.",driverType:"CUSTOMER_DEMAND",parentIds:["pt-pol4-nist-govern"],verticalKeys:[]},
+    {id:"pt-std7-explainability",level:"STANDARD",title:"Explainability Documentation Standard",statement:"Maintain explainability documentation for consequential decisions.",driverType:"CUSTOMER_DEMAND",parentIds:["pt-pol4-nist-govern"],verticalKeys:[]},
+    {id:"pt-gl4-ethics-review",level:"GUIDELINE",title:"Quarterly AI Ethics Reviews",statement:"Run recurring cross-functional ethics reviews of AI use.",driverType:"COMPANY_INTEREST",parentIds:["pt-std6-bias-testing"],verticalKeys:[]},
+    {id:"pt-gl8-user-notice",level:"GUIDELINE",title:"Disclose AI Use to Affected Individuals",statement:"Provide clear notice when AI materially affects user outcomes.",driverType:"COMPANY_INTEREST",parentIds:["pt-std7-explainability"],verticalKeys:[]},
+    {id:"pt-bl2-logging",level:"BASELINE",title:"Logging & Monitoring on Production AI",statement:"Enable structured logs and monitoring for production AI.",driverType:"COMPANY_INTEREST",parentIds:["pt-std7-explainability"],verticalKeys:[]},
+    {id:"pt-bl3-ir",level:"BASELINE",title:"AI Incident Response Plan",statement:"Maintain and test an AI incident response plan annually.",driverType:"COMPANY_INTEREST",parentIds:["pt-std7-explainability"],verticalKeys:[]}
+  ];
+  const $=(id)=>document.getElementById(id), uid=()=>`e_${Math.random().toString(36).slice(2,10)}`, idx=(l)=>LEVELS.indexOf(l), prev=(l)=>LEVELS[idx(l)-1]||null;
+  const state={entries:[],collapsed:new Set(),libraryLevel:"ALL",vertical:"",residency:""};
+  function templates(){
+    return SEEDED_TEMPLATES.filter((t)=>!state.vertical || !t.verticalKeys || t.verticalKeys.length===0 || t.verticalKeys.includes(state.vertical));
+  }
+  async function loadSeededTemplates(){
+    try{
+      const res=await fetch("./policy-library-full.json",{cache:"no-store"});
+      if(!res.ok) throw new Error("template fetch failed");
+      SEEDED_TEMPLATES=await res.json();
+    }catch{
+      SEEDED_TEMPLATES=FALLBACK_TEMPLATES;
+    }
+  }
+  function load(){try{const s=JSON.parse(localStorage.getItem(STORAGE)||"{}");state.entries=Array.isArray(s.entries)?s.entries:[];state.collapsed=new Set(Array.isArray(s.collapsed)?s.collapsed:[]);const lv=s.libraryLevel||"ALL";state.libraryLevel=(lv==="ALL"||LEVELS.includes(lv))?lv:"ALL";state.vertical=s.vertical||"";state.residency=s.residency||"";}catch{}}
+  function save(){try{localStorage.setItem(STORAGE,JSON.stringify({entries:state.entries,collapsed:[...state.collapsed],libraryLevel:state.libraryLevel,vertical:state.vertical,residency:state.residency}))}catch{}}
+  const byLevel=(l)=>state.entries.filter(e=>e.pyramidLevel===l), eff=(e)=>e.templateId||e.sourceKey||e.id, tById=(id)=>templates().find(t=>t.id===id)||null;
+  function ensureTemplateEntry(t){
+    if(state.entries.some(e=>e.templateId===t.id))return false;
+    state.entries.push({id:uid(),pyramidLevel:t.level,driverType:t.driverType,title:t.title,body:t.statement,isCustom:false,sourceKey:t.id,templateId:t.id,parentRefs:[...(t.parentIds||[])]});
+    return true;
+  }
+  function addTemplateCascade(rootId){
+    const rows=templates();
+    const childrenByParent=new Map();
+    rows.forEach((r)=>{(r.parentIds||[]).forEach((pid)=>{if(!childrenByParent.has(pid))childrenByParent.set(pid,[]);childrenByParent.get(pid).push(r);});});
+    const q=[rootId],seen=new Set([rootId]);
+    while(q.length){
+      const cur=q.shift();
+      const kids=childrenByParent.get(cur)||[];
+      kids.forEach((k)=>{
+        ensureTemplateEntry(k);
+        if(!seen.has(k.id)){seen.add(k.id);q.push(k.id);}
+      });
+    }
+  }
+  function addTemplate(t,opts={cascade:false,prompt:true}){
+    const addedRoot=ensureTemplateEntry(t);
+    if(opts.cascade){
+      addTemplateCascade(t.id);
+      save();render();
+      return;
+    }
+    if(opts.prompt){
+      const direct=(templates().filter((x)=>(x.parentIds||[]).includes(t.id))).filter((x)=>!state.entries.some((e)=>e.templateId===x.id));
+      if(direct.length){
+        const preview=direct.slice(0,4).map((x)=>`- ${x.title}`).join("\n");
+        const extra=direct.length>4?`\n- +${direct.length-4} more`:"";
+        const ok=window.confirm(`Add suggested downstream items now?\n\n${preview}${extra}`);
+        if(ok)addTemplateCascade(t.id);
+      }
+    }
+    if(addedRoot || opts.prompt){save();render();}
+  }
+  function removeEntry(id){const r=state.entries.find(e=>e.id===id);if(!r)return;const rid=eff(r);state.entries=state.entries.filter(e=>e.id!==id).map(e=>({...e,parentRefs:(e.parentRefs||[]).filter(x=>x!==rid)}));save();render()}
+  function updateParentRef(entryId,parentId,checked){const e=state.entries.find(x=>x.id===entryId);if(!e)return;const refs=new Set(e.parentRefs||[]);checked?refs.add(parentId):refs.delete(parentId);e.parentRefs=[...refs];save();renderStack()}
+  function scrollTo(id){const el=document.getElementById(`entry_${id}`);if(!el)return;el.scrollIntoView({behavior:"smooth",block:"center"});el.style.outline="2px solid #fb923c";setTimeout(()=>el.style.outline="",1200)}
+  function renderStats(){const lv=LEVELS.filter(l=>byLevel(l).length>0).length;$("stats").textContent=state.entries.length?`${state.entries.length} entries across ${lv} levels`:"No governance entries yet"}
+  function renderStack(){
+    const host=$("stack");
+    host.innerHTML="";
+    LEVELS.forEach(level=>{
+      const list=byLevel(level),sec=document.createElement("section");
+      sec.className="sec";
+      const open=!state.collapsed.has(level);
+      sec.innerHTML=`<button class="sech"><span class="l"><span class="chev">${open?"▾":"▸"}</span><span><div class="ttl">${META[level].label}</div><div class="desc">${META[level].desc}</div></span></span><span class="cnt">${list.length}</span></button>`;
+      const body=document.createElement("div");
+      body.className="secb";
+      body.style.display=open?"block":"none";
+      if(!list.length){
+        body.innerHTML=`<div class="empty">No ${META[level].label.toLowerCase()} yet. Use Add from library.</div>`;
+      } else {
+        const cards=document.createElement("div");
+        cards.className="cards";
+        list.forEach(e=>{
+          const card=document.createElement("article");
+          card.className="card";
+          card.id=`entry_${e.id}`;
+          const tmpl=e.templateId?tById(e.templateId):null;
+          const known=(e.parentRefs||[]).map(pid=>state.entries.find(x=>eff(x)===pid)).filter(Boolean);
+          const missing=(tmpl?.parentIds||[]).filter(pid=>!state.entries.find(x=>eff(x)===pid)).map(pid=>tById(pid)).filter(Boolean);
+          const down=state.entries.filter(x=>(x.parentRefs||[]).includes(eff(e)));
+          card.innerHTML=`<h3 class="ct"></h3><p class="cb"></p><div class="chips"></div><div class="row"><span class="small">${e.driverType}</span><button class="btn danger">Delete</button></div>`;
+          card.querySelector(".ct").textContent=e.title;
+          card.querySelector(".cb").textContent=e.body;
+          card.querySelector(".danger").addEventListener("click",()=>removeEntry(e.id));
+          const chips=card.querySelector(".chips");
+          if(known.length){
+            const tag=document.createElement("span"); tag.className="chip"; tag.textContent="Driven by"; chips.appendChild(tag);
+            known.forEach(p=>{const b=document.createElement("button"); b.className="chip"; b.textContent=`↑ ${p.title}`; b.addEventListener("click",()=>scrollTo(p.id)); chips.appendChild(b);});
+          }
+          missing.forEach(p=>{const s=document.createElement("span"); s.className="chip miss"; s.textContent=`↑ ${p.title}`; chips.appendChild(s);});
+          if(down.length){
+            const tag2=document.createElement("span"); tag2.className="chip"; tag2.textContent="Drives"; chips.appendChild(tag2);
+            down.forEach(d=>{const b=document.createElement("button"); b.className="chip"; b.textContent=`↓ ${d.title}`; b.addEventListener("click",()=>scrollTo(d.id)); chips.appendChild(b);});
+          }
+          const pl=prev(level);
+          if(pl){
+            const prevEntries=byLevel(pl), map=document.createElement("div");
+            map.className="map";
+            map.innerHTML="<label>Linked to previous-level items (relationship graph)</label>";
+            const box=document.createElement("div"); box.className="mapchips";
+            if(!prevEntries.length){
+              box.innerHTML=`<span class="small">No ${META[pl].label.toLowerCase()} available yet.</span>`;
+            } else {
+              prevEntries.forEach(p=>{
+                const chip=document.createElement("label"); chip.className="chip";
+                const cb=document.createElement("input"); cb.type="checkbox";
+                cb.checked=(e.parentRefs||[]).includes(eff(p));
+                cb.addEventListener("change",()=>updateParentRef(e.id,eff(p),cb.checked));
+                chip.appendChild(cb); chip.appendChild(document.createTextNode(p.title)); box.appendChild(chip);
+              });
+            }
+            map.appendChild(box);
+            if(missing.length){
+              const addMissing=document.createElement("div");
+              addMissing.style.marginTop="8px";
+              addMissing.innerHTML='<span class="small">Missing upstream templates: </span>';
+              missing.forEach((m)=>{
+                const b=document.createElement("button");
+                b.className="btn";
+                b.style.margin="4px 6px 0 0";
+                b.textContent=`Add ${m.title}`;
+                b.addEventListener("click",()=>addTemplate(m,{cascade:false,prompt:false}));
+                addMissing.appendChild(b);
+              });
+              map.appendChild(addMissing);
+            }
+            card.appendChild(map);
+          }
+          cards.appendChild(card);
+        });
+        body.appendChild(cards);
+      }
+      sec.appendChild(body);
+      sec.querySelector(".sech").addEventListener("click",()=>{state.collapsed.has(level)?state.collapsed.delete(level):state.collapsed.add(level);save();renderStack();});
+      host.appendChild(sec);
+    });
+  }
+  function renderDrawer(){const rows=templates(),tabs=$("tabs");tabs.innerHTML="";["ALL",...LEVELS].forEach(l=>{const b=document.createElement("button");b.className=`tab${state.libraryLevel===l?" on":""}`;b.textContent=l==="ALL"?"All":META[l].label;b.addEventListener("click",()=>{state.libraryLevel=l;save();renderDrawer()});tabs.appendChild(b)});const adopted=new Set(state.entries.map(e=>e.templateId||e.sourceKey));const list=$("tplList");list.innerHTML="";rows.filter(t=>state.libraryLevel==="ALL"||t.level===state.libraryLevel).forEach(t=>{const added=adopted.has(t.id),d=document.createElement("div");d.className="tpl";d.innerHTML=`<div class="row"><strong>${t.title}</strong>${added?'<span class="small" style="color:var(--ok)">Added</span>':""}</div><p>${t.statement}</p><div class="row"><span class="small">${META[t.level].label}</span><div style="display:flex;gap:6px"><button class="btn ${added?"":"primary"}" data-act="adopt">${added?"Already added":"Adopt"}</button><button class="btn" data-act="cascade">Add with cascade</button></div></div>`;const adoptBtn=d.querySelector('[data-act="adopt"]');const cascadeBtn=d.querySelector('[data-act="cascade"]');if(added){adoptBtn.disabled=true;}else{adoptBtn.addEventListener("click",()=>addTemplate(t,{cascade:false,prompt:true}));}cascadeBtn.addEventListener("click",()=>addTemplate(t,{cascade:true,prompt:false}));if(t.parentIds?.length){const c=document.createElement("div");c.className="chips";t.parentIds.forEach(pid=>{const pt=tById(pid);if(!pt)return;const s=document.createElement("span");s.className=`chip${adopted.has(pid)?"":" miss"}`;s.textContent=`↑ ${pt.title}`;c.appendChild(s)});d.appendChild(c)}list.appendChild(d)})}
+  function render(){renderStats();renderStack();renderDrawer()}
+  const openDrawer=(on)=>{$("overlay").classList.toggle("on",on);$("drawer").classList.toggle("on",on)},openModal=(on)=>{$("overlay").classList.toggle("on",on);$("modal").classList.toggle("on",on)};
+  function initForm(){const fl=$("fLevel");LEVELS.forEach(l=>{const o=document.createElement("option");o.value=l;o.textContent=META[l].label;fl.appendChild(o)});fl.value="POLICY";$("verticalSel").value=state.vertical||"";$("residencySel").value=state.residency||""}
+  function addCustom(){const title=$("fTitle").value.trim(),body=$("fBody").value.trim();if(!title||!body)return alert("Title and statement are required.");state.entries.push({id:uid(),pyramidLevel:$("fLevel").value,driverType:$("fDriver").value,title,body,isCustom:true,sourceKey:$("fSource").value.trim()||null,templateId:null,parentRefs:[]});["fTitle","fSource","fBody"].forEach(id=>$(id).value="");save();openModal(false);render()}
+  $("libraryBtn").addEventListener("click",()=>openDrawer(true));$("drawerClose").addEventListener("click",()=>openDrawer(false));$("customBtn").addEventListener("click",()=>openModal(true));$("modalClose").addEventListener("click",()=>openModal(false));$("cancelImport").addEventListener("click",()=>openModal(false));$("saveImport").addEventListener("click",addCustom);$("overlay").addEventListener("click",()=>{openDrawer(false);openModal(false)});
+  $("verticalSel").addEventListener("change",()=>{state.vertical=$("verticalSel").value;save();render()});$("residencySel").addEventListener("change",()=>{state.residency=$("residencySel").value;save();render()});
+  $("exportBtn").addEventListener("click",()=>{const payload={schema:"governance-standalone.v3",generatedAt:new Date().toISOString(),context:{vertical:state.vertical||null,residency:state.residency||null},entries:state.entries};const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`governance-entries-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href)});
+  $("resetBtn").addEventListener("click",()=>{if(!confirm("Reset all local governance entries?"))return;state.entries=[];state.collapsed=new Set();save();render()});
+  (async()=>{load();await loadSeededTemplates();initForm();render();})();
+})();
+</script>
+</body>
+</html>
