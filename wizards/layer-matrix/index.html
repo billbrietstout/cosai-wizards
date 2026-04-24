@@ -122,14 +122,21 @@ body {
 .view { display: none; }
 .view.active { display: block; }
 
-/* ─── MATRIX ─── */
-.matrix-grid {
-  display: grid;
-  grid-template-columns: 148px repeat(5, 1fr);
-  gap: 0;
+/* ─── MATRIX (layers as rows, components as columns) ─── */
+.matrix-scroll {
   border: 0.5px solid var(--color-border-secondary);
   border-radius: var(--border-radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--color-background-primary);
+  -webkit-overflow-scrolling: touch;
+}
+
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 172px repeat(9, minmax(150px, 1fr));
+  gap: 0;
+  min-width: 1520px;
   background: var(--color-background-primary);
 }
 
@@ -141,10 +148,25 @@ body {
   color: var(--color-text-secondary);
   border-bottom: 0.5px solid var(--color-border-tertiary);
   border-right: 0.5px solid var(--color-border-tertiary);
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .mh:last-child { border-right: none; }
 
+.mh.corner { position: sticky; left: 0; z-index: 3; }
+
+.mh-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* Layer-label cell on the left of each row (sticky) */
 .rl {
   padding: 9px 10px;
   font-size: 11px;
@@ -153,20 +175,20 @@ body {
   border-bottom: 0.5px solid var(--color-border-tertiary);
   border-right: 0.5px solid var(--color-border-tertiary);
   background: var(--color-background-secondary);
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
+  position: sticky;
+  left: 0;
+  z-index: 2;
 }
 
-.rl:last-child { border-bottom: none; }
-
-.rdot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  flex-shrink: 0;
-  margin-top: 2px;
+.rl-id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
 }
+
+.rl-name { font-size: 11.5px; }
 
 .mc {
   padding: 8px 10px;
@@ -175,7 +197,6 @@ body {
   border-bottom: 0.5px solid var(--color-border-tertiary);
   border-right: 0.5px solid var(--color-border-tertiary);
   line-height: 1.5;
-  vertical-align: top;
   background: var(--color-background-primary);
 }
 
@@ -387,76 +408,9 @@ body {
         <div class="leg"><div class="leg-sq" style="background:#9FE1CB"></div> shared (responsible / supports)</div>
         <div class="leg"><div class="leg-sq" style="background:#D3D1C7"></div> inherited / not involved</div>
       </div>
-      <div class="matrix-grid">
-        <div class="mh">AI responsibility component</div>
-        <div class="mh">L1 · AI Business &amp; Usage</div>
-        <div class="mh">L2 · AI Information</div>
-        <div class="mh">L3 · AI Application</div>
-        <div class="mh">L4 · AI Platform</div>
-        <div class="mh">L5 · AI Model Provider</div>
-
-        <div class="rl"><div class="rdot" style="background:#185FA5"></div>Governance, risk register, sector regulation</div>
-        <div class="mc pri">Primary<br><span class="sub">AI risk appetite, sector regs (FDA, SR 11-7, EU AI Act); §A.1.1</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Data classification policy issuance</span></div>
-        <div class="mc na">Inherited</div>
-        <div class="mc na">Inherited</div>
-        <div class="mc sec">Shared<br><span class="sub">Vendor evidence per §A.7.4</span></div>
-
-        <div class="rl"><div class="rdot" style="background:#0F6E56"></div>User training &amp; acceptable use (incl. shadow AI)</div>
-        <div class="mc pri">Primary<br><span class="sub">AUP, training, shadow-AI detection; §A.1.2.3</span></div>
-        <div class="mc sec">Shared<br><span class="sub">DLP and tool-data governance</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Surface policy in app UI</span></div>
-        <div class="mc na">Inherited</div>
-        <div class="mc na">Inherited</div>
-
-        <div class="rl"><div class="rdot" style="background:#993556"></div>Identity &amp; access management</div>
-        <div class="mc sec">Shared<br><span class="sub">Org defines roles &amp; entitlements</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Per-tenant data access</span></div>
-        <div class="mc sec">Shared<br><span class="sub">App-level RBAC</span></div>
-        <div class="mc pri">Primary<br><span class="sub">IAM primitives, IdP, MFA; §A.1.2.1, §A.1.4.2</span></div>
-        <div class="mc na">Inherited</div>
-
-        <div class="rl"><div class="rdot" style="background:#854F0B"></div>Content filtering &amp; moderation</div>
-        <div class="mc sec">Shared<br><span class="sub">Defines acceptable outputs (Responsible)</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Output classification</span></div>
-        <div class="mc sec">Shared<br><span class="sub">App-level filters</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Platform safety rails</span></div>
-        <div class="mc pri">Primary<br><span class="sub">Built-in model guardrails (Accountable); §A.1.2.1</span></div>
-
-        <div class="rl"><div class="rdot" style="background:#534AB7"></div>Training data governance, lineage &amp; consent</div>
-        <div class="mc sec">Shared<br><span class="sub">Lawful-basis &amp; consent policy</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Lineage, dataset cards (Data Provider)</span></div>
-        <div class="mc na">Inherited</div>
-        <div class="mc na">Inherited</div>
-        <div class="mc pri">Primary<br><span class="sub">Source verification, bias eval, privacy-preserving training; §A.1.5.1</span></div>
-
-        <div class="rl"><div class="rdot" style="background:#993C1D"></div>Application design, plugins &amp; integration safety</div>
-        <div class="mc na">Inherited</div>
-        <div class="mc sec">Shared<br><span class="sub">Scope of data connections</span></div>
-        <div class="mc pri">Primary<br><span class="sub">App design, AI plugins, safety systems; §A.1.3.1</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Secure API gateway, runtime hardening</span></div>
-        <div class="mc na">Inherited</div>
-
-        <div class="rl"><div class="rdot" style="background:#3B6D11"></div>Agent autonomy, tool use &amp; human override (T1–T5)</div>
-        <div class="mc sec">Shared<br><span class="sub">Override policy &amp; autonomy classification (Accountable); §A.1.3.3</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Agent memory &amp; retrieval scoping; §A.1.2.2</span></div>
-        <div class="mc pri">Primary<br><span class="sub">Override mechanisms, agent telemetry, ATLAS tests; §A.1.3.2</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Rate limit, runtime isolation</span></div>
-        <div class="mc na">Inherited</div>
-
-        <div class="rl"><div class="rdot" style="background:#185FA5"></div>Model serving runtime &amp; AI compute</div>
-        <div class="mc na">Inherited</div>
-        <div class="mc sec">Shared<br><span class="sub">Confidential compute per data class</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Inference integration patterns</span></div>
-        <div class="mc pri">Primary<br><span class="sub">Model serving, GPU / KV-cache isolation, SOC 2; §A.1.4.1</span></div>
-        <div class="mc sec">Shared<br><span class="sub">Model interop standards (Accountable for cross-model)</span></div>
-
-        <div class="rl row-last"><div class="rdot" style="background:#0F6E56"></div>Model safety, cards, SBOM &amp; vulnerability disclosure</div>
-        <div class="mc row-last sec">Shared<br><span class="sub">Vendor due-diligence cadence</span></div>
-        <div class="mc row-last na">Inherited</div>
-        <div class="mc row-last sec">Shared<br><span class="sub">Consume model cards in design</span></div>
-        <div class="mc row-last sec">Shared<br><span class="sub">Hosts attestations &amp; model registry</span></div>
-        <div class="mc row-last pri">Primary<br><span class="sub">Model cards, SLSA, SBOM-ML, CVE disclosure; §A.1.5.1</span></div>
+      <p class="view-note" style="margin-top:-4px;margin-bottom:10px;font-size:10.5px;color:var(--color-text-tertiary)">Scroll horizontally to see all nine responsibility components. The layer-label column is pinned.</p>
+      <div class="matrix-scroll">
+        <div class="matrix-grid" id="matrix-grid"></div>
       </div>
     </div>
 
@@ -479,6 +433,119 @@ function showView(id, btn) {
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
 }
+
+/* ── RACI matrix: layers are rows, components are columns ── */
+const layers = [
+  { id: 'L1', label: 'AI Business & Usage' },
+  { id: 'L2', label: 'AI Information' },
+  { id: 'L3', label: 'AI Application' },
+  { id: 'L4', label: 'AI Platform' },
+  { id: 'L5', label: 'AI Model Provider' },
+];
+
+const components = [
+  { label: 'Governance, risk register, sector regulation',            color: '#185FA5' },
+  { label: 'User training & acceptable use (incl. shadow AI)',        color: '#0F6E56' },
+  { label: 'Identity & access management',                            color: '#993556' },
+  { label: 'Content filtering & moderation',                          color: '#854F0B' },
+  { label: 'Training data governance, lineage & consent',             color: '#534AB7' },
+  { label: 'Application design, plugins & integration safety',        color: '#993C1D' },
+  { label: 'Agent autonomy, tool use & human override (T1–T5)',       color: '#3B6D11' },
+  { label: 'Model serving runtime & AI compute',                      color: '#185FA5' },
+  { label: 'Model safety, cards, SBOM & vulnerability disclosure',    color: '#0F6E56' },
+];
+
+/* cells[layerIdx][componentIdx] = { type: 'pri'|'sec'|'na', sub?: '...' } */
+const cells = [
+  /* L1 — AI Business & Usage */
+  [
+    { type: 'pri', sub: 'AI risk appetite, sector regs (FDA, SR 11-7, EU AI Act); §A.1.1' },
+    { type: 'pri', sub: 'AUP, training, shadow-AI detection; §A.1.2.3' },
+    { type: 'sec', sub: 'Org defines roles & entitlements' },
+    { type: 'sec', sub: 'Defines acceptable outputs (Responsible)' },
+    { type: 'sec', sub: 'Lawful-basis & consent policy' },
+    { type: 'na' },
+    { type: 'sec', sub: 'Override policy & autonomy classification (Accountable); §A.1.3.3' },
+    { type: 'na' },
+    { type: 'sec', sub: 'Vendor due-diligence cadence' },
+  ],
+  /* L2 — AI Information */
+  [
+    { type: 'sec', sub: 'Data classification policy issuance' },
+    { type: 'sec', sub: 'DLP and tool-data governance' },
+    { type: 'sec', sub: 'Per-tenant data access' },
+    { type: 'sec', sub: 'Output classification' },
+    { type: 'sec', sub: 'Lineage, dataset cards (Data Provider)' },
+    { type: 'sec', sub: 'Scope of data connections' },
+    { type: 'sec', sub: 'Agent memory & retrieval scoping; §A.1.2.2' },
+    { type: 'sec', sub: 'Confidential compute per data class' },
+    { type: 'na' },
+  ],
+  /* L3 — AI Application */
+  [
+    { type: 'na' },
+    { type: 'sec', sub: 'Surface policy in app UI' },
+    { type: 'sec', sub: 'App-level RBAC' },
+    { type: 'sec', sub: 'App-level filters' },
+    { type: 'na' },
+    { type: 'pri', sub: 'App design, AI plugins, safety systems; §A.1.3.1' },
+    { type: 'pri', sub: 'Override mechanisms, agent telemetry, ATLAS tests; §A.1.3.2' },
+    { type: 'sec', sub: 'Inference integration patterns' },
+    { type: 'sec', sub: 'Consume model cards in design' },
+  ],
+  /* L4 — AI Platform */
+  [
+    { type: 'na' },
+    { type: 'na' },
+    { type: 'pri', sub: 'IAM primitives, IdP, MFA; §A.1.2.1, §A.1.4.2' },
+    { type: 'sec', sub: 'Platform safety rails' },
+    { type: 'na' },
+    { type: 'sec', sub: 'Secure API gateway, runtime hardening' },
+    { type: 'sec', sub: 'Rate limit, runtime isolation' },
+    { type: 'pri', sub: 'Model serving, GPU / KV-cache isolation, SOC 2; §A.1.4.1' },
+    { type: 'sec', sub: 'Hosts attestations & model registry' },
+  ],
+  /* L5 — AI Model Provider */
+  [
+    { type: 'sec', sub: 'Vendor evidence per §A.7.4' },
+    { type: 'na' },
+    { type: 'na' },
+    { type: 'pri', sub: 'Built-in model guardrails (Accountable); §A.1.2.1' },
+    { type: 'pri', sub: 'Source verification, bias eval, privacy-preserving training; §A.1.5.1' },
+    { type: 'na' },
+    { type: 'na' },
+    { type: 'sec', sub: 'Model interop standards (Accountable for cross-model)' },
+    { type: 'pri', sub: 'Model cards, SLSA, SBOM-ML, CVE disclosure; §A.1.5.1' },
+  ],
+];
+
+const TYPE_LABEL = { pri: 'Primary', sec: 'Shared', na: 'Inherited' };
+
+function renderMatrix() {
+  const grid = document.getElementById('matrix-grid');
+  if (!grid) return;
+  const parts = [];
+  parts.push('<div class="mh corner">CoSAI SRF layer</div>');
+  components.forEach(c => {
+    parts.push(
+      `<div class="mh"><div class="mh-dot" style="background:${c.color}"></div><div>${c.label}</div></div>`
+    );
+  });
+  layers.forEach((layer, li) => {
+    const isLast = li === layers.length - 1;
+    const rowLast = isLast ? ' row-last' : '';
+    parts.push(
+      `<div class="rl${rowLast}"><div class="rl-id">${layer.id}</div><div class="rl-name">${layer.label}</div></div>`
+    );
+    cells[li].forEach(cell => {
+      const sub = cell.sub ? `<br><span class="sub">${cell.sub}</span>` : '';
+      parts.push(`<div class="mc ${cell.type}${rowLast}">${TYPE_LABEL[cell.type]}${sub}</div>`);
+    });
+  });
+  grid.innerHTML = parts.join('');
+}
+
+renderMatrix();
 
 const phases = [
   { num:'01', color:'#185FA5', bg:'#E6F1FB', label:'Business understanding', sub:'Define problem, success metrics, feasibility', srf:'L1 — AI Business & Usage',
