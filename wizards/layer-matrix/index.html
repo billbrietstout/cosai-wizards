@@ -131,6 +131,10 @@ body {
   background: var(--color-background-primary);
   -webkit-overflow-scrolling: touch;
 }
+.matrix-scroll:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
 
 .matrix-grid {
   display: grid;
@@ -409,7 +413,7 @@ body {
         <div class="leg"><div class="leg-sq" style="background:#D3D1C7"></div> inherited / not involved</div>
       </div>
       <p class="view-note" style="margin-top:-4px;margin-bottom:10px;font-size:10.5px;color:var(--color-text-tertiary)">Scroll horizontally to see all nine responsibility components. The layer-label column is pinned.</p>
-      <div class="matrix-scroll">
+      <div class="matrix-scroll" tabindex="0" role="region" aria-label="Scrollable layer integration matrix">
         <div class="matrix-grid" id="matrix-grid"></div>
       </div>
     </div>
