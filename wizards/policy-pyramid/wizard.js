@@ -465,7 +465,7 @@
           <div class="lib-card__head">
             <div style="flex:1;min-width:0">
               <div class="lib-card__pills">
-                <span class="lib-card__level l-${t.level}">${esc(levelMeta.get(t.level).label.replace(/s$/, ''))}</span>
+                <span class="lib-card__level l-${t.level}">${esc(t.level)}</span>
                 ${t.mandatory ? '<span class="entry__chip entry__chip--required">Required</span>' : ''}
                 ${hasActiveParent && !adopted ? '<span class="entry__chip" style="color:#15803d;background:#f0fdf4;border-color:#bbf7d0">Parent active</span>' : ''}
               </div>
