@@ -301,7 +301,7 @@ body {
   background: var(--color-border-secondary);
 }
 
-/* ─── FRAMEWORK GAPS (SRF-first layout) ─── */
+/* ─── SRF CLARITY VIEW (layer value props) ─── */
 .gaps-intro {
   font-size: 11px;
   color: var(--color-text-secondary);
@@ -484,7 +484,7 @@ body {
     <div class="tab-row">
       <button class="tab active" onclick="showView('matrix', this)">integration matrix</button>
       <button class="tab" onclick="showView('supply', this)">supply chain lifecycle</button>
-      <button class="tab" onclick="showView('gaps', this)">framework mapping gaps</button>
+      <button class="tab" onclick="showView('gaps', this)">what the SRF clarifies</button>
     </div>
 
     <div id="matrix" class="view active">
@@ -506,13 +506,13 @@ body {
     </div>
 
     <div id="gaps" class="view">
-      <p class="gaps-intro">Start from the <strong>five accountable zones</strong> the CoSAI SRF separates <strong>by design</strong>, then see where <strong>mainstream IT/GRC catalogs</strong> stay generic on AI-specific risk. The <strong>left rail</strong> restates what each layer owns; each card names a risk family and <strong>why typical catalogs underspecify it</strong>.</p>
+      <p class="gaps-intro">The <strong>CoSAI AI Shared Responsibility Framework</strong> (Draft V0.7) is an <strong>accountability</strong> model: it names <strong>who owns</strong> each part of the AI stack so obligations from NIST AI RMF, ISO/IEC 42001, the EU AI Act, and your internal control sets can land on <strong>one primary party per concern</strong>. The draft positions the SRF as a <strong>governance manual for decomposition</strong>—enterprise layers express invariant dependencies while operating models shift who supplies each layer. The outline below summarizes <strong>what each layer clarifies</strong>; the cards give <strong>illustrative AI concerns</strong> that become <strong>assignable and evidential</strong> once you adopt that structure.</p>
       <ol class="gaps-srf-outline">
-        <li><strong>L1 — Business &amp; Usage.</strong> Who may use AI for what, under which risk acceptance, policy, and regulatory obligations—including lifecycle decisions such as approval, tiering, and retirement.</li>
-        <li><strong>L2 — Information.</strong> What data trains and feeds models, with what rights, lineage, and integrity—including <strong>training data</strong>, <strong>answer-time source stores</strong> (often structured as RAG knowledge bases), <strong>embeddings</strong>, and <strong>retrieval boundaries</strong>—not only generic data-at-rest protection.</li>
-        <li><strong>L3 — Application.</strong> How AI capability is exposed through software: surfaces, APIs, tools, agents, prompts, and human override—behavior around the model.</li>
-        <li><strong>L4 — Platform.</strong> How inference runs as a shared service: tenancy, isolation, quotas, operational hardening, and abuse at runtime scale.</li>
-        <li><strong>L5 — Model provider.</strong> What the model artifact is, how it was produced, and how vendor or fine-tuned variants change over time—ML supply-chain accountability.</li>
+        <li><strong>L1 — Business &amp; Usage.</strong> <strong>Strategic accountability:</strong> permitted AI use, risk acceptance, regulatory posture, and lifecycle governance decisions—so requirements <strong>cascade</strong> from business intent to the layers below, matching the draft’s “governance from the Business layer.”</li>
+        <li><strong>L2 — Information.</strong> <strong>Data-as-model-fuel:</strong> provenance, rights, training data, answer-time source stores (including RAG knowledge bases), embeddings, and retrieval boundaries—extending information governance to what models actually ingest and emit.</li>
+        <li><strong>L3 — Application.</strong> <strong>Integration accountability:</strong> how capability meets users and APIs—surfaces, tools, agents, prompts, validation, and human override—where application developers discharge the controls referenced around prompt injection and guardrails in the draft.</li>
+        <li><strong>L4 — Platform.</strong> <strong>Shared runtime accountability:</strong> serving, tenancy, isolation, quotas, monitoring, and operational hardening at scale—including containing blast radius across tenants as in the draft’s layered incident example.</li>
+        <li><strong>L5 — Model provider.</strong> <strong>Artifact &amp; supply-chain accountability:</strong> training provenance, the shipped model, cards and transparency, third-party and fine-tuned change—so model builders and vendors have a clear lane alongside NIST/ISO <em>what</em> to achieve.</li>
       </ol>
       <div id="gaps-list"></div>
     </div>
@@ -701,17 +701,17 @@ const gapLayerBlocks = [
     color: '#185FA5',
     bg: '#E6F1FB',
     principle:
-      'Accountability starts with the decision to deploy AI. The SRF assigns risk appetite, permitted use, regulatory mapping, and model lifecycle governance decisions here—before implementation detail.',
+      'The draft places business intent first: risk appetite, permitted AI use, and regulatory posture <strong>cascade</strong> from here—so every downstream control can trace to an accountable business decision, in line with “governance activities mandated” at the layer that sets policy.',
     items: [
       {
         title: 'AI model governance',
-        catalogGap:
-          'Typical GRC catalogs fold model lifecycle into generic IT or vendor management; they rarely name approval, risk tier, and retirement as explicit control families.'
+        clarity:
+          '<strong>L1</strong> creates a home for <strong>model lifecycle governance</strong>—approval, risk tiering, retirement—so AI management and GRM outcomes align with <strong>named owners</strong> before engineering work, rather than living only in generic IT project lists.',
       },
       {
         title: 'Regulatory compliance (EU AI Act, GDPR Art. 22, NIST AI RMF, sectoral)',
-        catalogGap:
-          'Standard privacy and security taxonomies seldom map AI-specific obligations (e.g. risk tier, automated decision-making) to one primary layer in a RACI-style matrix.'
+        clarity:
+          '<strong>L1</strong> concentrates <strong>sector and AI-specific mandates</strong> (EU AI Act tiers, automated decision-making, HIPAA, SR 11-7, etc.) where the draft expects <strong>regulatory decomposition</strong>—making it straightforward to show <strong>which accountable party</strong> maps to each obligation.',
       },
     ],
   },
@@ -720,22 +720,22 @@ const gapLayerBlocks = [
     color: '#0F6E56',
     bg: '#E1F5EE',
     principle:
-      'Data is model fuel and model output. The SRF uses this layer for provenance, lawful use, training and retrieval source data (including RAG knowledge bases), embeddings, and retrieval paths—not only confidentiality and transit.',
+      'Data is model fuel and model output. The SRF extends information governance to <strong>training sets, retrieval stores, embeddings, and query paths</strong>—the objects models actually consume and emit—alongside classic confidentiality.',
     items: [
       {
         title: 'Training data provenance & consent',
-        catalogGap:
-          'Conventional information-security control sets emphasize confidentiality and transit; origin, lawful basis, and scrape provenance are usually underspecified as first-class requirements.'
+        clarity:
+          '<strong>L2</strong> elevates <strong>provenance, lawful basis, consent, and lineage</strong> as peer concerns to transit and storage—reflecting <strong>Data Provider</strong>-style accountability in the draft so evidence can attach to the layer that owns the data relationship.',
       },
       {
         title: 'RAG knowledge-base integrity & retrieval-time exfiltration',
-        catalogGap:
-          'Generic data-store controls don’t capture inference-time querying, poisoning, or side-channel leakage paths that are specific to retrieval-augmented setups.'
+        clarity:
+          '<strong>L2</strong> treats <strong>retrieval knowledge bases</strong> as part of the information domain, so integrity, isolation, and inference-time access are <strong>owned where the data is architected</strong>—setting clean handoffs to application and platform guardrails.',
       },
       {
         title: 'Embedding inversion & memorization leakage',
-        catalogGap:
-          'Standard data-protection playbooks rarely address membership inference, inversion, and memorization surfaced via embeddings or weights.'
+        clarity:
+          '<strong>L2</strong> gives <strong>embeddings and data-derived representations</strong> a defined lane, keeping memorization, inversion, and related risks with the <strong>information stewards</strong> who govern training and retrieval—not only the generic “security” label.',
       },
     ],
   },
@@ -744,17 +744,17 @@ const gapLayerBlocks = [
     color: '#993C1D',
     bg: '#FAECE7',
     principle:
-      'Software mediates capability. This layer owns how users and systems interact with models: plugins, agents, tool chains, prompts, and enforceable human override.',
+      'Application developers integrate models into products. The draft assigns <strong>guardrails, input validation, output handling, tool use, and human override</strong> here—the layer where <strong>behavior around the model</strong> becomes operational.',
     items: [
       {
         title: 'Adversarial ML — prompt injection, jailbreaks, poisoning',
-        catalogGap:
-          'Application-security libraries centered on code and CWE-style flaws omit model-input surfaces: prompts, indirect injection, and training-time poisoning as named control areas.'
+        clarity:
+          '<strong>L3</strong> names the <strong>application integrator</strong> as owner of chatbot/app guardrails and input paths, while <strong>L4</strong> contains blast radius and <strong>L5</strong> documents model limitations—turning the draft’s prompt-injection walkthrough into <strong>layered</strong>, non-circular accountability.',
       },
       {
         title: 'Agent / tool-use abuse (excessive agency)',
-        catalogGap:
-          'Most AppSec patterns assume a human initiates privileged actions; catalogs seldom define controls for autonomous tool chains, browsing, or multi-step API abuse.'
+        clarity:
+          'For <strong>agentic systems</strong>, the SRF maps <strong>tool execution, sandboxing, and safety</strong> to Application and Platform personas with clear primary/support roles—so autonomous chains gain <strong>named owners</strong> for limits, logging, and recovery.',
       },
     ],
   },
@@ -763,17 +763,17 @@ const gapLayerBlocks = [
     color: '#993556',
     bg: '#FBEAF0',
     principle:
-      'Inference is a shared utility. The SRF assigns multi-tenant hosting, isolation, metering, and runtime abuse (including economic abuse) to the platform layer.',
+      'Inference runs as a shared service. The draft’s platform layer carries <strong>multi-tenant hosting, isolation, metering, and monitoring</strong>—the same place <strong>operational containment</strong> lives in the example incident narrative.',
     items: [
       {
         title: 'Inference environment isolation',
-        catalogGap:
-          'Platform baselines (CIS, STIG-style hardening) target general servers; they rarely enumerate multi-tenant inference, GPU tenancy, or prompt-cache isolation as control outcomes.'
+        clarity:
+          '<strong>L4</strong> is where <strong>runtime isolation</strong> (containers, accelerators, caches, tenant boundaries) gains a <strong>primary owner</strong>, complementing CIS-style baselines with <strong>AI-serving outcomes</strong> the whitepaper ties to blast-radius control.',
       },
       {
         title: 'Denial-of-wallet & inference cost attacks',
-        catalogGap:
-          'Classical availability controls don’t treat metered inference spend as an attack surface; economic abuse sits outside typical DoS control language.'
+        clarity:
+          '<strong>L4</strong> naturally owns <strong>metering, quotas, spend signals, and gateway abuse handling</strong>—operational economics sit beside rate and tenancy controls so finance and SRE can evidence <strong>platform-level</strong> protections.',
       },
     ],
   },
@@ -782,17 +782,17 @@ const gapLayerBlocks = [
     color: '#3B6D11',
     bg: '#EAF3DE',
     principle:
-      'The model is an artifact with a supply chain. This layer covers training provenance, weights and adapters, disclosure, and how third-party or fine-tuned releases change risk.',
+      'The model is an artifact with a supply chain. The SRF centers <strong>training provenance, shipped weights/adapters, transparency, and change notification</strong> here—parallel to the draft’s expectation that <strong>model cards and known weaknesses</strong> are owned by the provider role.',
     items: [
       {
         title: 'Model & dataset SBOMs',
-        catalogGap:
-          'Software SBOM practice is mature in many catalogs; parallel requirements for models and training datasets are still thinly specified in mainstream libraries.'
+        clarity:
+          '<strong>L5</strong> anchors <strong>model and dataset transparency</strong> (cards, provenance, SPDX / CycloneDX-ML–style artifacts) on the party that <strong>builds or ships</strong> the model—so supply-chain evidence lines up with the same layer that answers for <strong>base-model behavior</strong>.',
       },
       {
         title: 'Third-party model vendor & fine-tune lineage',
-        catalogGap:
-          'Third-party risk templates assume versioned software packages; they underspecify base-model swaps, LoRAs/adapters, and opaque training mixes as change events.'
+        clarity:
+          '<strong>L5</strong> gives <strong>base-model swaps, adapters, and training composition changes</strong> a <strong>single supply-chain home</strong>, matching the draft’s focus on <strong>vendor complexity</strong> and measurable handoffs between foundation, fine-tune, and deployer.',
       },
     ],
   },
@@ -810,7 +810,7 @@ gapLayerBlocks.forEach((block) => {
         <div class="gap-dot" style="background:${block.color}"></div>
         <div class="gap-title">${it.title}</div>
       </div>
-      <div class="gap-catalog"><span class="gap-lbl">Why mainstream catalogs underspecify</span>${it.catalogGap}</div>
+      <div class="gap-catalog"><span class="gap-lbl">What the SRF clarifies</span>${it.clarity}</div>
     </div>`
     )
     .join('');
@@ -818,7 +818,7 @@ gapLayerBlocks.forEach((block) => {
   wrap.innerHTML = `
     <div class="gap-layer-rail">
       <div class="gap-home" style="background:${block.bg};color:${block.color};border:0.5px solid ${block.color}40">${block.home}</div>
-      <p class="gap-principle"><span class="gap-principle-label">What the SRF assigns here</span>${block.principle}</p>
+      <p class="gap-principle"><span class="gap-principle-label">SRF role</span>${block.principle}</p>
     </div>
     <div class="gap-layer-items">${itemsHtml}</div>`;
   gapsList.appendChild(wrap);
