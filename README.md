@@ -32,7 +32,7 @@ Everything runs in the browser; every wizard self-contains its state in
 |---|--------|------|--------|
 | 1 | **AI Security Controls Assessment** — 5-layer posture check with OWASP LLM Top 10 coverage and PDF export | `/wizards/security-controls/` | v1 |
 | 2 | **AI Security Controls Assessment (CoSAI AICM variant)** — same engine, AICM-aligned control set, PDF export | `/wizards/controls-assessment/` | v1 |
-| 3 | **Layer Integration Matrix** — RACI across the five SRF layers (AI Business & Usage / AI Information / AI Application / AI Platform / AI Model Provider) plus CRISP-ML(Q) lifecycle and AI-specific coverage gaps | `/wizards/layer-matrix/` | v1.1 |
+| 3 | **Layer Integration Matrix** — RACI across the five SRF layers (AI Business & Usage / AI Information / AI Application / AI Platform / AI Model Provider) plus CRISP-ML(Q) lifecycle and **framework mapping gaps** (where mainstream control taxonomies thin out for AI) | `/wizards/layer-matrix/` | v1.1 |
 | 4 | **CoSAI SRF Stress Test** — walk a real incident through the five layers and find accountability gaps | `/wizards/srf-stress/` | v1.1 |
 | 5 | **AI Regulation Discovery Wizard** — 4-step scoping flow that identifies which regulations apply (EU AI Act, GDPR, NIST AI RMF, ISO 42001, SR 11-7, FDA AI/ML, HIPAA, PCI DSS, SOC 2, Colorado AI Act, UK ATRS, …) and surfaces priority controls grouped by SRF layer, with PDF export | `/wizards/regulation-discovery/` | v1 |
 | 6 | **AI Policy Pyramid** — interactive 5-tier governance hierarchy (Principles → Policies → Standards → Guidelines → Baselines) with a curated template library, per-entry SRF layer + driver tagging, parent/child cascade view, custom-entry import, JSON i/o, and PDF export | `/wizards/policy-pyramid/` | v1 |
