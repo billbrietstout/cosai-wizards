@@ -1,0 +1,16 @@
+# Local Gitleaks config for cosai-wizards (used by gitleaks-action when present).
+#
+# SARIF: generic-api-key on wizards/ai_policy_pyramid.html line 105 matched the
+# substring `.verticalKeys || t.verticalKeys.length===0` (false positive). That
+# HTML prototype was removed in favor of wizards/policy-pyramid/, but detect
+# still scans history unless the path is allowlisted.
+
+title = "cosai-wizards gitleaks"
+
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+  '''wizards/ai_policy_pyramid.html''',
+]
