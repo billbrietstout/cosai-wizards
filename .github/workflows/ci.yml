@@ -39,6 +39,7 @@ jobs:
             --accept 200,204,206,301,302,403,429
             --exclude-path wizards-raw
             --exclude-path shared/vendor
+            --exclude-path node_modules
             "**/*.html"
             "**/*.md"
           fail: true

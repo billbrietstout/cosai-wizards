@@ -210,17 +210,27 @@
     text-transform: uppercase;
     margin-bottom: 10px;
   }
+  .input-hint {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #475569;
+    margin-bottom: 10px;
+    max-width: 72ch;
+  }
   textarea {
     width: 100%;
-    background: #ffffff;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #ffffff;
     border: 1px solid var(--border);
     border-radius: 8px;
     color: #0f172a;
+    caret-color: #0f172a;
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     font-size: 14px;
-    font-weight: 300;
+    font-weight: 400;
     padding: 12px 14px;
-    resize: vertical;
+    resize: none;
     min-height: 90px;
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
@@ -231,7 +241,6 @@
     box-shadow: 0 0 0 3px rgba(31,74,245,0.08);
     background: white;
   }
-  textarea::placeholder { color: #334155; opacity: 1; }
 
   .run-row {
     display: flex;
@@ -574,8 +583,13 @@
   </div>
 
   <div class="input-box">
-    <label>02 — Or describe your own scenario</label>
-    <textarea id="customScenario" rows="3" placeholder="e.g. A generative AI medical diagnosis tool running on Azure gives a patient an incorrect treatment recommendation due to hallucination. The hospital, the platform provider, and the model vendor all disclaim responsibility..."></textarea>
+    <label for="customScenario">02 — Or describe your own scenario</label>
+    <p id="customScenario-hint" class="input-hint">
+      Example: A generative AI medical diagnosis tool running on Azure gives a patient an incorrect
+      treatment recommendation due to hallucination. The hospital, the platform provider, and the model
+      vendor all disclaim responsibility…
+    </p>
+    <textarea id="customScenario" rows="3" aria-describedby="customScenario-hint"></textarea>
     <div class="run-row">
       <button class="run-btn" id="runBtn" onclick="runTest()">
         <div class="spinner"></div>
