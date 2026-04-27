@@ -8,7 +8,7 @@
     "storageKey": "cosai-wizard:regulation-discovery:v1",
     "version": 1,
     "sources": [
-      "CoSAI AI Shared Responsibility Framework, Draft V0.7 (2026)",
+      "CoSAI AI Shared Responsibility Framework, V0.7 (2026)",
       "EU AI Act (Regulation 2024/1689)",
       "GDPR (Regulation 2016/679)",
       "NIST AI RMF 1.0 (AI 100-1, 2023)",
@@ -195,7 +195,7 @@
       "category": "FRAMEWORK",
       "why": "The accountability framework this wizard is built on — assigns RACI across L1–L5 with per-layer evidence requirements. Recommended for every AI system.",
       "primarySRFLayer": "L1",
-      "citations": ["CoSAI AI SRF Draft V0.7 (2026)"],
+      "citations": ["CoSAI AI SRF V0.7 (2026)"],
       "controls": ["SRF_LAYER_RACI", "SRF_EVIDENCE"]
     },
     {
