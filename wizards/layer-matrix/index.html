@@ -301,21 +301,100 @@ body {
   background: var(--color-border-secondary);
 }
 
-/* ─── GAPS ─── */
+/* ─── FRAMEWORK GAPS (SRF-first layout) ─── */
+.gaps-intro {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+  line-height: 1.55;
+}
+
+.gaps-srf-outline {
+  margin: 0 0 16px;
+  padding: 12px 14px 12px 28px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-secondary);
+  font-size: 10.5px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.gaps-srf-outline li { margin-bottom: 6px; }
+.gaps-srf-outline li:last-child { margin-bottom: 0; }
+.gaps-srf-outline strong { color: var(--color-text-primary); font-weight: 600; }
+
+.gap-layer-block {
+  display: grid;
+  grid-template-columns: minmax(152px, 192px) 1fr;
+  gap: 12px 16px;
+  margin-bottom: 14px;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .gap-layer-block {
+    grid-template-columns: 1fr;
+  }
+  .gap-layer-rail {
+    position: static !important;
+  }
+}
+
+.gap-layer-rail {
+  position: sticky;
+  top: 8px;
+  padding: 12px 12px;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+}
+
+.gap-home {
+  font-size: 10px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.gap-principle {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.gap-principle-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  margin-bottom: 4px;
+}
+
+.gap-layer-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .gap-item {
   border: 0.5px solid var(--color-border-secondary);
   border-radius: var(--border-radius-md);
-  margin-bottom: 8px;
   overflow: hidden;
   background: var(--color-background-primary);
 }
 
-.gap-head {
+.gap-item-head {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 14px;
-  background: var(--color-background-secondary);
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px 0;
 }
 
 .gap-dot {
@@ -323,22 +402,35 @@ body {
   height: 8px;
   border-radius: 2px;
   flex-shrink: 0;
+  margin-top: 3px;
 }
 
-.gap-text { flex: 1; }
-.gap-title { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
-.gap-why   { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
-
-.gap-home {
-  font-size: 10px;
-  padding: 2px 9px;
-  border-radius: 3px;
-  white-space: nowrap;
+.gap-title {
+  font-size: 12px;
   font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.35;
+}
+
+.gap-catalog {
+  padding: 6px 12px 10px 28px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.gap-catalog .gap-lbl {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  margin-bottom: 3px;
 }
 
 .gap-body {
-  padding: 10px 14px;
+  padding: 10px 12px;
   font-size: 11px;
   color: var(--color-text-secondary);
   line-height: 1.5;
@@ -424,7 +516,14 @@ body {
     </div>
 
     <div id="gaps" class="view">
-      <p class="view-note">These are <strong>mapping and taxonomy gaps</strong>, not findings about your organization: mainstream IT, AppSec, and GRC control libraries usually <em>don’t spell out or cleanly own</em> several AI-native risks. The pill is the <strong>CoSAI SRF layer</strong> where it is clearest to <strong>anchor added or sharpened controls</strong> when you integrate AI into your matrix. “Suggested control extension” points cite well-known frameworks as <strong>sources of requirement language and tests</strong>—so you borrow wording and evidence expectations, not a second discovery pass over catalogs you likely already use.</p>
+      <p class="gaps-intro">Work backwards from <strong>five accountable zones</strong> the CoSAI SRF separates on purpose—then see where <strong>mainstream IT/GRC catalogs</strong> still speak in generic terms. The <strong>left rail</strong> restates what each layer is for; each card names a risk family, where catalogs go thin, and a <strong>suggested control extension</strong> (borrowed wording from mature frameworks).</p>
+      <ol class="gaps-srf-outline">
+        <li><strong>L1 — Business &amp; Usage.</strong> Who may use AI for what, under which risk acceptance, policy, and regulatory obligations—including lifecycle decisions such as approval, tiering, and retirement.</li>
+        <li><strong>L2 — Information.</strong> What data trains and feeds models, with what rights, lineage, and integrity—including corpora, embeddings, and retrieval—not only generic data-at-rest protection.</li>
+        <li><strong>L3 — Application.</strong> How AI capability is exposed through software: surfaces, APIs, tools, agents, prompts, and human override—behavior around the model.</li>
+        <li><strong>L4 — Platform.</strong> How inference runs as a shared service: tenancy, isolation, quotas, operational hardening, and abuse at runtime scale.</li>
+        <li><strong>L5 — Model provider.</strong> What the model artifact is, how it was produced, and how vendor or fine-tuned variants change over time—ML supply-chain accountability.</li>
+      </ol>
       <div id="gaps-list"></div>
     </div>
   </div>
@@ -606,35 +705,156 @@ function togglePhase(i) {
   document.getElementById('sc-chev-' + i).classList.toggle('open');
 }
 
-const gaps = [
-  { gap:'AI model governance', why:'Typical GRC catalogs fold model lifecycle into generic IT or vendor management; they rarely name approval, risk tier, and retirement as explicit control families.', home:'L1 — AI Business & Usage', color:'#185FA5', bg:'#E6F1FB', action:'Add control objectives here: model cards, ethics review gates, risk-tier classification—use NIST AI RMF Govern and ISO/IEC 42001 as authoritative wording where helpful.' },
-  { gap:'Regulatory compliance (EU AI Act, GDPR Art. 22, NIST AI RMF, sectoral)', why:'Standard privacy and security taxonomies seldom map AI-specific obligations (e.g. risk tier, automated decision-making) to one primary layer in a RACI-style matrix.', home:'L1 — AI Business & Usage', color:'#185FA5', bg:'#E6F1FB', action:'Add an overlay control set: per-use-case register for EU AI Act tier, Art. 22–style disclosures, plus sector overlays (HIPAA, SR 11-7, PCI)—your evidence model, expressed in framework terms you already track.' },
-  { gap:'Training data provenance & consent', why:'Conventional information-security control sets emphasize confidentiality and transit; origin, lawful basis, and scrape provenance are usually underspecified as first-class requirements.', home:'L2 — AI Information', color:'#0F6E56', bg:'#E1F5EE', action:'Extend this layer with lineage evidence, consent records, and dataset cards; align requirement text to DAMA DMBOK, ISO/IEC 5259, and NIST SP 800-188 rather than inventing new taxonomy from scratch.' },
-  { gap:'RAG corpus integrity & retrieval-time exfiltration', why:'Generic data-store controls don’t capture inference-time querying, poisoning, or side-channel leakage paths that are specific to RAG architectures.', home:'L2 — AI Information', color:'#0F6E56', bg:'#E1F5EE', action:'Spell out additional controls: corpus as a signed, isolated store; per-tenant retrieval boundaries; audit logs; tests for embedding and document leakage—extending—not replacing—data-protection catalogs.' },
-  { gap:'Embedding inversion & memorization leakage', why:'Standard data-protection playbooks rarely address membership inference, inversion, and memorization surfaced via embeddings or weights.', home:'L2 — AI Information', color:'#0F6E56', bg:'#E1F5EE', action:'Add threat-model and test requirements (inversion, memorization, embedding API exposure); tighten fine-tuning and release practices (e.g. differential privacy) as explicit control statements under this layer.' },
-  { gap:'Adversarial ML — prompt injection, jailbreaks, poisoning', why:'Application-security libraries centered on code and CWE-style flaws omit model-input surfaces: prompts, indirect injection, and training-time poisoning as named control areas.', home:'L3 — AI Application', color:'#993C1D', bg:'#FAECE7', action:'Import ATLAS tactics and OWASP LLM Top 10 as application-layer test and design requirements; operationalize with red teaming plus automated probes—mapping into your existing AppSec program.' },
-  { gap:'Agent / tool-use abuse (excessive agency)', why:'Most AppSec patterns assume a human initiates privileged actions; catalogs seldom define controls for autonomous tool chains, browsing, or multi-step API abuse.', home:'L3 — AI Application', color:'#993C1D', bg:'#FAECE7', action:'Add controls for tool allowlists, irreversible-action approvals, and attributed session logs; include abuse-case tests (e.g. ATLAS-style tool misuse)—extensions on top of standard privileged-access thinking.' },
-  { gap:'Inference environment isolation', why:'Platform baselines (CIS, STIG-style hardening) target general servers; they rarely enumerate multi-tenant inference, GPU tenancy, or prompt-cache isolation as control outcomes.', home:'L4 — AI Platform', color:'#993556', bg:'#FBEAF0', action:'Augment platform hardening with inference-specific benchmarks: container/K8s profiles tuned for serving, GPU and KV-cache isolation between principals, gateway rate limits—still anchored in familiar platform frameworks.' },
-  { gap:'Denial-of-wallet & inference cost attacks', why:'Classical availability controls don’t treat metered inference spend as an attack surface; economic abuse sits outside typical DoS control language.', home:'L4 — AI Platform', color:'#993556', bg:'#FBEAF0', action:'Define cost- and quota-based abuse controls: per-principal limits, spend velocity alerts, budget caps, gateway anomaly patterns—new objectives in the same platform layer as rate limiting and tenancy.' },
-  { gap:'Model & dataset SBOMs', why:'Software SBOM practice is mature in many catalogs; parallel requirements for models and training datasets are still thinly specified in mainstream libraries.', home:'L5 — AI Model Provider', color:'#3B6D11', bg:'#EAF3DE', action:'Add ML BOM artifacts at lifecycle gates (e.g. CRISP-ML(Q) deploy phase); use CycloneDX-ML / SPDX as exchange formats so evidence lines up with supply-chain controls you already run for software.' },
-  { gap:'Third-party model vendor & fine-tune lineage', why:'Third-party risk templates assume versioned software packages; they underspecify base-model swaps, LoRAs/adapters, and opaque training mixes as change events.', home:'L5 — AI Model Provider', color:'#3B6D11', bg:'#EAF3DE', action:'Extend vendor diligence: role-specific questionnaires (model, inference, labeling), contractual notice on base-model and data-composition changes—same procurement lane, sharper AI-specific clauses.' },
+const gapLayerBlocks = [
+  {
+    home: 'L1 — AI Business & Usage',
+    color: '#185FA5',
+    bg: '#E6F1FB',
+    principle:
+      'Accountability starts with the decision to deploy AI. The SRF assigns risk appetite, permitted use, regulatory mapping, and model lifecycle governance decisions here—before implementation detail.',
+    items: [
+      {
+        title: 'AI model governance',
+        catalogGap:
+          'Typical GRC catalogs fold model lifecycle into generic IT or vendor management; they rarely name approval, risk tier, and retirement as explicit control families.',
+        extension:
+          'Add control objectives here: model cards, ethics review gates, risk-tier classification—use NIST AI RMF Govern and ISO/IEC 42001 as authoritative wording where helpful.',
+      },
+      {
+        title: 'Regulatory compliance (EU AI Act, GDPR Art. 22, NIST AI RMF, sectoral)',
+        catalogGap:
+          'Standard privacy and security taxonomies seldom map AI-specific obligations (e.g. risk tier, automated decision-making) to one primary layer in a RACI-style matrix.',
+        extension:
+          'Add an overlay control set: per-use-case register for EU AI Act tier, Art. 22–style disclosures, plus sector overlays (HIPAA, SR 11-7, PCI)—your evidence model, expressed in framework terms you already track.',
+      },
+    ],
+  },
+  {
+    home: 'L2 — AI Information',
+    color: '#0F6E56',
+    bg: '#E1F5EE',
+    principle:
+      'Data is model fuel and model output. The SRF uses this layer for provenance, lawful use, corpora, embeddings, and retrieval paths—not only confidentiality and transit.',
+    items: [
+      {
+        title: 'Training data provenance & consent',
+        catalogGap:
+          'Conventional information-security control sets emphasize confidentiality and transit; origin, lawful basis, and scrape provenance are usually underspecified as first-class requirements.',
+        extension:
+          'Extend this layer with lineage evidence, consent records, and dataset cards; align requirement text to DAMA DMBOK, ISO/IEC 5259, and NIST SP 800-188 rather than inventing new taxonomy from scratch.',
+      },
+      {
+        title: 'RAG corpus integrity & retrieval-time exfiltration',
+        catalogGap:
+          'Generic data-store controls don’t capture inference-time querying, poisoning, or side-channel leakage paths that are specific to RAG architectures.',
+        extension:
+          'Spell out additional controls: corpus as a signed, isolated store; per-tenant retrieval boundaries; audit logs; tests for embedding and document leakage—extending—not replacing—data-protection catalogs.',
+      },
+      {
+        title: 'Embedding inversion & memorization leakage',
+        catalogGap:
+          'Standard data-protection playbooks rarely address membership inference, inversion, and memorization surfaced via embeddings or weights.',
+        extension:
+          'Add threat-model and test requirements (inversion, memorization, embedding API exposure); tighten fine-tuning and release practices (e.g. differential privacy) as explicit control statements under this layer.',
+      },
+    ],
+  },
+  {
+    home: 'L3 — AI Application',
+    color: '#993C1D',
+    bg: '#FAECE7',
+    principle:
+      'Software mediates capability. This layer owns how users and systems interact with models: plugins, agents, tool chains, prompts, and enforceable human override.',
+    items: [
+      {
+        title: 'Adversarial ML — prompt injection, jailbreaks, poisoning',
+        catalogGap:
+          'Application-security libraries centered on code and CWE-style flaws omit model-input surfaces: prompts, indirect injection, and training-time poisoning as named control areas.',
+        extension:
+          'Import ATLAS tactics and OWASP LLM Top 10 as application-layer test and design requirements; operationalize with red teaming plus automated probes—mapping into your existing AppSec program.',
+      },
+      {
+        title: 'Agent / tool-use abuse (excessive agency)',
+        catalogGap:
+          'Most AppSec patterns assume a human initiates privileged actions; catalogs seldom define controls for autonomous tool chains, browsing, or multi-step API abuse.',
+        extension:
+          'Add controls for tool allowlists, irreversible-action approvals, and attributed session logs; include abuse-case tests (e.g. ATLAS-style tool misuse)—extensions on top of standard privileged-access thinking.',
+      },
+    ],
+  },
+  {
+    home: 'L4 — AI Platform',
+    color: '#993556',
+    bg: '#FBEAF0',
+    principle:
+      'Inference is a shared utility. The SRF assigns multi-tenant hosting, isolation, metering, and runtime abuse (including economic abuse) to the platform layer.',
+    items: [
+      {
+        title: 'Inference environment isolation',
+        catalogGap:
+          'Platform baselines (CIS, STIG-style hardening) target general servers; they rarely enumerate multi-tenant inference, GPU tenancy, or prompt-cache isolation as control outcomes.',
+        extension:
+          'Augment platform hardening with inference-specific benchmarks: container/K8s profiles tuned for serving, GPU and KV-cache isolation between principals, gateway rate limits—still anchored in familiar platform frameworks.',
+      },
+      {
+        title: 'Denial-of-wallet & inference cost attacks',
+        catalogGap:
+          'Classical availability controls don’t treat metered inference spend as an attack surface; economic abuse sits outside typical DoS control language.',
+        extension:
+          'Define cost- and quota-based abuse controls: per-principal limits, spend velocity alerts, budget caps, gateway anomaly patterns—new objectives in the same platform layer as rate limiting and tenancy.',
+      },
+    ],
+  },
+  {
+    home: 'L5 — AI Model Provider',
+    color: '#3B6D11',
+    bg: '#EAF3DE',
+    principle:
+      'The model is an artifact with a supply chain. This layer covers training provenance, weights and adapters, disclosure, and how third-party or fine-tuned releases change risk.',
+    items: [
+      {
+        title: 'Model & dataset SBOMs',
+        catalogGap:
+          'Software SBOM practice is mature in many catalogs; parallel requirements for models and training datasets are still thinly specified in mainstream libraries.',
+        extension:
+          'Add ML BOM artifacts at lifecycle gates (e.g. CRISP-ML(Q) deploy phase); use CycloneDX-ML / SPDX as exchange formats so evidence lines up with supply-chain controls you already run for software.',
+      },
+      {
+        title: 'Third-party model vendor & fine-tune lineage',
+        catalogGap:
+          'Third-party risk templates assume versioned software packages; they underspecify base-model swaps, LoRAs/adapters, and opaque training mixes as change events.',
+        extension:
+          'Extend vendor diligence: role-specific questionnaires (model, inference, labeling), contractual notice on base-model and data-composition changes—same procurement lane, sharper AI-specific clauses.',
+      },
+    ],
+  },
 ];
 
 const gapsList = document.getElementById('gaps-list');
-gaps.forEach(g => {
-  const d = document.createElement('div');
-  d.className = 'gap-item';
-  d.innerHTML = `
-    <div class="gap-head">
-      <div class="gap-dot" style="background:${g.color}"></div>
-      <div class="gap-text">
-        <div class="gap-title">${g.gap}</div>
-        <div class="gap-why">${g.why}</div>
+gapLayerBlocks.forEach((block) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'gap-layer-block';
+  const itemsHtml = block.items
+    .map(
+      (it) => `
+    <div class="gap-item">
+      <div class="gap-item-head">
+        <div class="gap-dot" style="background:${block.color}"></div>
+        <div class="gap-title">${it.title}</div>
       </div>
-      <div class="gap-home" style="background:${g.bg};color:${g.color};border:0.5px solid ${g.color}30">${g.home}</div>
+      <div class="gap-catalog"><span class="gap-lbl">Catalog thin spot</span>${it.catalogGap}</div>
+      <div class="gap-body"><strong>Suggested control extension: </strong>${it.extension}</div>
+    </div>`
+    )
+    .join('');
+
+  wrap.innerHTML = `
+    <div class="gap-layer-rail">
+      <div class="gap-home" style="background:${block.bg};color:${block.color};border:0.5px solid ${block.color}40">${block.home}</div>
+      <p class="gap-principle"><span class="gap-principle-label">What the SRF assigns here</span>${block.principle}</p>
     </div>
-    <div class="gap-body"><strong>Suggested control extension: </strong>${g.action}</div>`;
-  gapsList.appendChild(d);
+    <div class="gap-layer-items">${itemsHtml}</div>`;
+  gapsList.appendChild(wrap);
 });
 </script>
 </body>
