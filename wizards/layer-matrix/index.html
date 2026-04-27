@@ -506,7 +506,7 @@ body {
     </div>
 
     <div id="gaps" class="view">
-      <p class="gaps-intro">Start from the <strong>five accountable zones</strong> the CoSAI SRF separates <strong>by design</strong>, then see where <strong>mainstream IT/GRC catalogs</strong> stay generic on AI-specific risk. The <strong>left rail</strong> restates what each layer owns; each card names a risk family and its <strong>catalog thin spot</strong>.</p>
+      <p class="gaps-intro">Start from the <strong>five accountable zones</strong> the CoSAI SRF separates <strong>by design</strong>, then see where <strong>mainstream IT/GRC catalogs</strong> stay generic on AI-specific risk. The <strong>left rail</strong> restates what each layer owns; each card names a risk family and <strong>why typical catalogs underspecify it</strong>.</p>
       <ol class="gaps-srf-outline">
         <li><strong>L1 — Business &amp; Usage.</strong> Who may use AI for what, under which risk acceptance, policy, and regulatory obligations—including lifecycle decisions such as approval, tiering, and retirement.</li>
         <li><strong>L2 — Information.</strong> What data trains and feeds models, with what rights, lineage, and integrity—including <strong>training data</strong>, <strong>answer-time source stores</strong> (often structured as RAG knowledge bases), <strong>embeddings</strong>, and <strong>retrieval boundaries</strong>—not only generic data-at-rest protection.</li>
@@ -810,7 +810,7 @@ gapLayerBlocks.forEach((block) => {
         <div class="gap-dot" style="background:${block.color}"></div>
         <div class="gap-title">${it.title}</div>
       </div>
-      <div class="gap-catalog"><span class="gap-lbl">Catalog thin spot</span>${it.catalogGap}</div>
+      <div class="gap-catalog"><span class="gap-lbl">Why mainstream catalogs underspecify</span>${it.catalogGap}</div>
     </div>`
     )
     .join('');
