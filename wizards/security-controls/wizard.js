@@ -311,6 +311,7 @@
     btn.setAttribute('aria-checked', 'true');
     persist();
     updateLivePanel();
+    maybeRefreshResults();
   }
 
   function doOwaspAnswer(id, val, btn) {
@@ -335,6 +336,14 @@
     updateOwaspCoverageLabel();
     persist();
     updateLivePanel();
+    maybeRefreshResults();
+  }
+
+  /** Rebuild results HTML if the report was already shown (answers changed afterward). */
+  function maybeRefreshResults() {
+    if (state.completedPhases.includes(PHASE_COUNT - 1) || state.completedPhases.includes(PHASE_COUNT)) {
+      renderResults();
+    }
   }
 
   function togglePhase(n) {
@@ -784,7 +793,7 @@
       </section>`;
 
     const pdfBtn = document.getElementById('btn-pdf');
-    if (pdfBtn) pdfBtn.addEventListener('click', generatePDF);
+    if (pdfBtn) pdfBtn.onclick = function () { generatePDF(); };
   }
 
   // ─── 6. PDF export ────────────────────────────────────────────────────────
