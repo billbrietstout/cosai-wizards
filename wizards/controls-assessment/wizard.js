@@ -712,14 +712,13 @@
 
     const gapsHtml = gapItems.length === 0
       ? '<p class="gaps-clear">✅ No gaps identified across all layers.</p>'
-      : gapItems.slice(0, 15)
+      : gapItems
           .map((g) => `
             <div class="gap-item ${g.severity === 'warn' ? 'warn' : ''}">
               <div class="gap-item-title">${escapeHtml(g.label)}</div>
               <div class="gap-item-layer">${escapeHtml(g.layer)}</div>
             </div>`)
-          .join('') +
-        (gapItems.length > 15 ? `<p class="gaps-more">+ ${gapItems.length - 15} more gaps</p>` : '');
+          .join('');
 
     const owaspResultsHtml = DATA.owasp
       .map((r) => {
@@ -999,7 +998,7 @@
       doc.setTextColor(navy[0], navy[1], navy[2]);
       doc.text('Critical Gaps (' + critGaps.length + ')', M, y);
       y += 6;
-      critGaps.slice(0, 12).forEach((g) => {
+      critGaps.forEach((g) => {
         if (y + 10 > H - 20) { doc.addPage(); y = 20; }
         doc.setFillColor(254, 242, 242);
         doc.setDrawColor(252, 165, 165);
@@ -1017,14 +1016,15 @@
       y += 4;
     }
 
-    if (warnGaps.length > 0 && y + 20 < H - 20) {
+    if (warnGaps.length > 0) {
+      if (y + 14 > H - 20) { doc.addPage(); y = 20; }
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
       doc.setTextColor(navy[0], navy[1], navy[2]);
       doc.text('Partial Implementation (' + warnGaps.length + ')', M, y);
       y += 6;
-      warnGaps.slice(0, 8).forEach((g) => {
-        if (y + 10 > H - 20) return;
+      warnGaps.forEach((g) => {
+        if (y + 10 > H - 20) { doc.addPage(); y = 20; }
         doc.setFillColor(255, 251, 235);
         doc.setDrawColor(252, 211, 77);
         doc.roundedRect(M, y, W - M * 2, 9, 1, 1, 'FD');
