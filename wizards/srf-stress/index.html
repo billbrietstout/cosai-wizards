@@ -632,8 +632,12 @@
     </div>
 
     <div class="alt-models">
-      <div class="section-label">05 — Alternative frameworks</div>
-      <h2>Is there a better model?</h2>
+      <div class="section-label">05 — How other frameworks compare</div>
+      <h2>Where other frameworks fit</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;max-width:66ch;line-height:1.6;font-weight:300;">
+        CoSAI SRF is the only framework that assigns accountability at the <em>technical layer</em> level — across model providers, platforms, applications, data governance, and business use.
+        Frameworks marked <strong style="color:#7c3aed">ADDS ENFORCEMENT</strong> provide legal liability at the legal-entity level (who gets fined); they work alongside SRF, not instead of it.
+      </p>
       <div class="model-cards" id="modelCards"></div>
     </div>
   </div>
@@ -686,10 +690,10 @@ const SCENARIOS = {
 };
 
 const ALT_FRAMEWORKS_DEFAULT = [
-  { name: 'NIST AI RMF', origin: 'NIST, 2023', description: 'Govern, Map, Measure, Manage risk functions.', vsCoSAI: 'Lifecycle risk functions complement CoSAI’s actor-layer split for this case.', verdict: 'COMPLEMENTARY' },
-  { name: 'ISO 42001', origin: 'ISO/IEC, 2023', description: 'AI management system standard.', vsCoSAI: 'Adds auditable management-system evidence beyond layer RACI alone.', verdict: 'COMPLEMENTARY' },
-  { name: 'EU AI Act', origin: 'EU, 2024', description: 'Risk-tiered regulatory obligations.', vsCoSAI: 'Deployer/provider duties and high-risk obligations sharpen enforcement paths.', verdict: 'STRONGER HERE' },
-  { name: 'Google SAIF', origin: 'Google, 2023', description: 'Secure AI Framework for AI-specific risks.', vsCoSAI: 'Security control themes map cleanly onto L3–L5 technical measures.', verdict: 'COMPLEMENTARY' }
+  { name: ‘NIST AI RMF’, origin: ‘NIST, 2023’, description: ‘Govern, Map, Measure, Manage risk functions.’, vsCoSAI: ‘Defines what risk activities to perform; CoSAI names who performs them per technical layer — the two are designed to be used together.’, verdict: ‘COMPLEMENTARY’ },
+  { name: ‘ISO 42001’, origin: ‘ISO/IEC, 2023’, description: ‘AI management system standard.’, vsCoSAI: ‘Adds auditable management-system evidence; CoSAI supplies the per-layer RACI structure ISO 42001 requires but does not define.’, verdict: ‘COMPLEMENTARY’ },
+  { name: ‘EU AI Act’, origin: ‘EU, 2024’, description: ‘Risk-tiered legal obligations for providers and deployers.’, vsCoSAI: ‘Assigns legal liability at the legal-entity level — who gets fined. CoSAI assigns operational accountability at the technical-layer level — who must act. They answer different questions; use both.’, verdict: ‘ADDS ENFORCEMENT’ },
+  { name: ‘Google SAIF’, origin: ‘Google, 2023’, description: ‘Secure AI Framework for AI-specific risks.’, vsCoSAI: ‘Security control themes map onto L3–L5 technical controls; CoSAI adds the business (L1) and information (L2) layers SAIF omits.’, verdict: ‘COMPLEMENTARY’ }
 ];
 
 const ANALYSIS_PRESETS = {
@@ -883,10 +887,17 @@ async function runTest() {
 
 SCENARIO: ${scenario}
 
-Respond ONLY with a JSON object, no markdown, no backticks, no explanation. Use this exact structure with short string values:
-{"verdict":"FUNCTIONAL","verdictSummary":"One or two sentences max.","layers":[{"layer":"L1 — AI Business & Usage","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L2 — AI Information","finding":"Short finding.","status":"WARN","owner":"Role name"},{"layer":"L3 — AI Application","finding":"Short finding.","status":"GAP","owner":"Role name"},{"layer":"L4 — AI Platform","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L5 — AI Model Provider","finding":"Short finding.","status":"OK","owner":"Role name"}],"scores":{"accountabilityClarity":75,"regulatoryAlignment":60,"incidentResponse":50,"agenticCoverage":40,"practicalEnforceability":55},"strengths":["Strength one.","Strength two.","Strength three."],"gaps":["Gap one.","Gap two.","Gap three."],"recommendations":["Rec one.","Rec two.","Rec three."],"alternativeFrameworks":[{"name":"NIST AI RMF","origin":"NIST, 2023","description":"Govern, Map, Measure, Manage risk functions.","vsCoSAI":"One sentence comparison for this scenario.","verdict":"COMPLEMENTARY"},{"name":"ISO 42001","origin":"ISO/IEC, 2023","description":"AI management system standard.","vsCoSAI":"One sentence comparison.","verdict":"COMPLEMENTARY"},{"name":"EU AI Act","origin":"EU, 2024","description":"Risk-tiered regulatory obligations.","vsCoSAI":"One sentence comparison.","verdict":"STRONGER HERE"},{"name":"Google SAIF","origin":"Google, 2023","description":"Secure AI Framework for AI-specific risks.","vsCoSAI":"One sentence comparison.","verdict":"COMPLEMENTARY"}]}
+KEY DISTINCTION FOR ALTERNATIVE FRAMEWORKS:
+- CoSAI SRF assigns operational accountability at the TECHNICAL LAYER level (who must act at L1–L5).
+- EU AI Act assigns legal LIABILITY at the legal-entity level (who gets fined). These answer different questions — they are complementary, not competing.
+- Use verdict "ADDS ENFORCEMENT" for frameworks that add legal/regulatory enforcement CoSAI intentionally omits.
+- Use verdict "COMPLEMENTARY" for frameworks that add risk management, process, or security dimensions alongside SRF.
+- Use verdict "NARROWER SCOPE" only if a framework covers substantially less than SRF for this scenario.
 
-Fill in real values for this scenario. verdict must be FUNCTIONAL, PARTIAL, or GAPS_FOUND. status must be OK, WARN, or GAP. framework verdict must be COMPLEMENTARY, STRONGER HERE, or WEAKER HERE.`;
+Respond ONLY with a JSON object, no markdown, no backticks, no explanation. Use this exact structure with short string values:
+{"verdict":"FUNCTIONAL","verdictSummary":"One or two sentences max.","layers":[{"layer":"L1 — AI Business & Usage","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L2 — AI Information","finding":"Short finding.","status":"WARN","owner":"Role name"},{"layer":"L3 — AI Application","finding":"Short finding.","status":"GAP","owner":"Role name"},{"layer":"L4 — AI Platform","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L5 — AI Model Provider","finding":"Short finding.","status":"OK","owner":"Role name"}],"scores":{"accountabilityClarity":75,"regulatoryAlignment":60,"incidentResponse":50,"agenticCoverage":40,"practicalEnforceability":55},"strengths":["Strength one.","Strength two.","Strength three."],"gaps":["Gap one.","Gap two.","Gap three."],"recommendations":["Rec one.","Rec two.","Rec three."],"alternativeFrameworks":[{"name":"NIST AI RMF","origin":"NIST, 2023","description":"Govern, Map, Measure, Manage risk functions.","vsCoSAI":"One sentence on what it adds for this scenario.","verdict":"COMPLEMENTARY"},{"name":"ISO 42001","origin":"ISO/IEC, 2023","description":"AI management system standard.","vsCoSAI":"One sentence on what it adds.","verdict":"COMPLEMENTARY"},{"name":"EU AI Act","origin":"EU, 2024","description":"Risk-tiered legal obligations for providers and deployers.","vsCoSAI":"Adds legal liability at entity level — who gets fined. CoSAI adds operational layer accountability — who must act. Use both.","verdict":"ADDS ENFORCEMENT"},{"name":"Google SAIF","origin":"Google, 2023","description":"Secure AI Framework for AI-specific risks.","vsCoSAI":"One sentence on what it adds.","verdict":"COMPLEMENTARY"}]}
+
+Fill in real values for this scenario. Overall verdict must be FUNCTIONAL, PARTIAL, or GAPS_FOUND. Layer status must be OK, WARN, or GAP. Framework verdict must be COMPLEMENTARY, ADDS ENFORCEMENT, or NARROWER SCOPE.`;
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -991,9 +1002,10 @@ const VERDICT_MAP = {
 };
 
 const MC_COLORS = {
-  'COMPLEMENTARY': 'var(--l2-accent)',
-  'STRONGER HERE': 'var(--l1-accent)',
-  'WEAKER HERE':   'var(--l3-accent)'
+  'COMPLEMENTARY':    'var(--l2-accent)',   // blue  — adds value alongside SRF
+  'ADDS ENFORCEMENT': '#7c3aed',            // purple — adds legal/regulatory force
+  'STRONGER HERE':    '#7c3aed',            // backward-compat alias → same purple
+  'WEAKER HERE':      'var(--l3-accent)'    // orange — narrower scope
 };
 
 function renderResults(r) {
@@ -1064,7 +1076,7 @@ function renderResults(r) {
       <div class="model-origin">${sanitize(m.origin)}</div>
       <div class="model-desc">${sanitize(m.description)}</div>
       <div class="model-vs">${sanitize(m.vsCoSAI)}</div>
-      <div class="model-verdict">${sanitize(m.verdict)}</div>
+      <div class="model-verdict" style="color:${MC_COLORS[m.verdict] || 'var(--subtle)'}">${sanitize(m.verdict)}</div>
     </div>`).join('');
 
   document.getElementById('results').classList.add('visible');
