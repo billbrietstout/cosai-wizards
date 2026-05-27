@@ -687,10 +687,10 @@ const SCENARIOS = {
 };
 
 const ALT_FRAMEWORKS_DEFAULT = [
-  { name: ‘NIST AI RMF’, origin: ‘NIST, 2023’, description: ‘Govern, Map, Measure, Manage risk functions.’, vsCoSAI: ‘Defines what risk activities to perform; CoSAI names who performs them per technical layer — the two are designed to be used together.’, verdict: ‘COMPLEMENTARY’ },
-  { name: ‘ISO 42001’, origin: ‘ISO/IEC, 2023’, description: ‘AI management system standard.’, vsCoSAI: ‘Adds auditable management-system evidence; CoSAI supplies the per-layer RACI structure ISO 42001 requires but does not define.’, verdict: ‘COMPLEMENTARY’ },
-  { name: ‘EU AI Act’, origin: ‘EU, 2024’, description: ‘Risk-tiered legal obligations for providers and deployers.’, vsCoSAI: ‘Assigns legal liability at the legal-entity level — who gets fined. CoSAI assigns operational accountability at the technical-layer level — who must act. They answer different questions; use both.’, verdict: ‘ADDS ENFORCEMENT’ },
-  { name: ‘Google SAIF’, origin: ‘Google, 2023’, description: ‘Secure AI Framework for AI-specific risks.’, vsCoSAI: ‘Security control themes map onto L3–L5 technical controls; CoSAI adds the business (L1) and information (L2) layers SAIF omits.’, verdict: ‘COMPLEMENTARY’ }
+  { name: 'NIST AI RMF', origin: 'NIST, 2023', description: 'Govern, Map, Measure, Manage risk functions.', vsCoSAI: 'Defines what risk activities to perform; CoSAI names who performs them per technical layer — the two are designed to be used together.', verdict: 'COMPLEMENTARY' },
+  { name: 'ISO 42001', origin: 'ISO/IEC, 2023', description: 'AI management system standard.', vsCoSAI: 'Adds auditable management-system evidence; CoSAI supplies the per-layer RACI structure ISO 42001 requires but does not define.', verdict: 'COMPLEMENTARY' },
+  { name: 'EU AI Act', origin: 'EU, 2024', description: 'Risk-tiered legal obligations for providers and deployers.', vsCoSAI: 'Assigns legal liability at the legal-entity level — who gets fined. CoSAI assigns operational accountability at the technical-layer level — who must act. They answer different questions; use both.', verdict: 'ADDS ENFORCEMENT' },
+  { name: 'Google SAIF', origin: 'Google, 2023', description: 'Secure AI Framework for AI-specific risks.', vsCoSAI: 'Security control themes map onto L3–L5 technical controls; CoSAI adds the business (L1) and information (L2) layers SAIF omits.', verdict: 'COMPLEMENTARY' }
 ];
 
 const ANALYSIS_PRESETS = {
@@ -714,7 +714,7 @@ const ANALYSIS_PRESETS = {
     verdict: 'GAPS_FOUND',
     verdictSummary: 'Autonomous spend outside limits is exactly where CoSAI needs crisp human-on-loop and authorization boundaries; the framework names layers but under-specifies enforcement.',
     layers: [
-      { layer: 'L1 — AI Business & Usage', finding: 'Procurement use case and dollar limits belong here; policy did not bind the agent’s tools.', status: 'GAP', owner: ' — Finance / procurement' },
+      { layer: 'L1 — AI Business & Usage', finding: 'Procurement use case and dollar limits belong here; policy did not bind the agent\'s tools.', status: 'GAP', owner: ' — Finance / procurement' },
       { layer: 'L2 — AI Information', finding: 'Contract metadata sensitivity is clear; who may commit spend was not encoded as data rules.', status: 'WARN', owner: ' — Legal / records' },
       { layer: 'L3 — AI Application', finding: 'LangChain workflow lacked hard stops before PO issuance.', status: 'GAP', owner: ' — Engineering lead' },
       { layer: 'L4 — AI Platform', finding: 'Bedrock and IAM could enforce tool scopes; configuration gap vs policy.', status: 'WARN', owner: ' — Cloud security' },
@@ -830,7 +830,7 @@ function localFrameworkAnalysis(scenario, presetId) {
       { layer: 'L1 — AI Business & Usage', finding: `Business context and risk appetite should anchor decisions for: ${sn}`, status: 'WARN', owner: ' — Executive sponsor' },
       { layer: 'L2 — AI Information', finding: 'Data classification, lawful use, and retention for model inputs/outputs need explicit owners.', status: hasLeak ? 'GAP' : 'WARN', owner: ' — Data governance' },
       { layer: 'L3 — AI Application', finding: 'Workflow design, testing, and human oversight for the AI feature sit with the application team.', status: 'WARN', owner: ' — Product / engineering' },
-      { layer: 'L4 — AI Platform', finding: 'Cloud and API guardrails (identity, logging, quotas) must align to the app’s threat model.', status: 'OK', owner: ' — Platform security' },
+      { layer: 'L4 — AI Platform', finding: 'Cloud and API guardrails (identity, logging, quotas) must align to the app\'s threat model.', status: 'OK', owner: ' — Platform security' },
       { layer: 'L5 — AI Model Provider', finding: 'Model capabilities, safety claims, and update channels belong to the model supplier relationship.', status: 'WARN', owner: ' — Vendor management' }
     ],
     scores: {
